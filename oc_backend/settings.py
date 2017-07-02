@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'oc_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
+        'NAME': 'oc_dev',
         'USER': 'postgres',
         'PASSWORD': 'BLAHBLAH'
     }
