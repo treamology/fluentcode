@@ -18,8 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+
     url(r'^', include("oc_server.urls")),
     url(r'^api/', include("oc_api.urls"))
-    # url(r'^login/', views.login_page),
-    # url(r'^register/', views.register_page)
 ]
