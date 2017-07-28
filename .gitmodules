@@ -1,3 +1,6 @@
 [submodule "oc_api"]
 	path = oc_api
 	url = git@bitbucket.org:treamous/oc_api.git
+[submodule "oc_server"]
+	path = oc_server
+	url = git@bitbucket.org:treamous/oc_server.git
