@@ -4,3 +4,6 @@
 [submodule "oc_server"]
 	path = oc_server
 	url = git@bitbucket.org:treamous/oc_server.git
+[submodule "oc_pyexec"]
+	path = oc_pyexec
+	url = git@bitbucket.org:treamous/oc_pyexec.git
