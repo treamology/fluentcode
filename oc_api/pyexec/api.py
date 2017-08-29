@@ -6,7 +6,3 @@ class PythonResult(object):
         self.status = status
         self.output = output
 
-
-class PythonResultSerializer(serializers.Serializer):
-    status = serializers.IntegerField()
-    output = serializers.CharField(max_length=255)
