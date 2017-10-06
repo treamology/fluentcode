@@ -1,12 +1,12 @@
-import * as React from 'react'
-import '../App.css'
+import * as React from 'react';
+import '../App.css';
 
 class OutputPanel extends React.Component {
-	render() {
-		return (
-			<div className="outputPanel" />
-		);
-	}
+    render() {
+        return (
+            <div className="outputPanel" />
+        );
+    }
 }
 
-export default OutputPanel
+export default OutputPanel;
