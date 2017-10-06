@@ -15,24 +15,44 @@ body {
 }
 
 .header {
-  background-color: #FF0000;
+  background: linear-gradient(#5F5F5F, #4C4C4C);
+  box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.5);
+  z-index: 10;
+
   grid-area: header;
 }
 
-.output {
-  background-color: #0000FF;
+.outputPanel {
+  background-color: #1E1E1E;
+  border-top-style: solid;
+  border-top-color: #111111;
+  border-top-width: 1px;
+  z-index: 10;
+
   grid-column: output;
   grid-row: 3;
 }
 
-.docSidebar {
-  background-color: #00FF00;
+.sidebarLeft {
+  background-color: #1E1E1E;
+  border-right-style: solid;
+  border-right-color: #111111;
+  border-right-width: 1px;
+  box-shadow: 1px 0 12px 0 rgba(0, 0, 0, .2);
+  z-index: 10;
+
   grid-column: docSidebar;
   grid-row: docSidebar;
 }
 
-.dragSidebar {
-  background-color: #FFFF00;
+.sidebarRight {
+  background-color: #1E1E1E;
+  border-left-style: solid;
+  border-left-color: #111111;
+  border-left-width: 1px;
+  box-shadow: -1px 0 12px 0 rgba(0, 0, 0, .2);
+  z-index: 10;
+  
   grid-column: dragSidebar;
   grid-row: dragSidebar;
 }
