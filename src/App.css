@@ -1,21 +1,40 @@
-.App {
-  text-align: center;
+body {
+  background-color: #2C2C2C;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.gridContainer {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 375px auto 260px;
+  grid-template-rows: 64px auto 344px;
+  grid-template-areas:
+    "header header header"
+    "docSidebar editor dragSidebar"
+    "docSidebar output dragSidebar"
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.header {
+  background-color: #FF0000;
+  grid-area: header;
 }
 
-.App-intro {
-  font-size: large;
+.output {
+  background-color: #0000FF;
+  grid-column: output;
+  grid-row: 3;
+}
+
+.docSidebar {
+  background-color: #00FF00;
+  grid-column: docSidebar;
+  grid-row: docSidebar;
+}
+
+.dragSidebar {
+  background-color: #FFFF00;
+  grid-column: dragSidebar;
+  grid-row: dragSidebar;
 }
 
 @keyframes App-logo-spin {
