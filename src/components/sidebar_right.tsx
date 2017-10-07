@@ -1,10 +1,14 @@
 import * as React from 'react';
 import '../App.css';
 
+import { PanelHeader } from './small_ui';
+
 class SidebarRight extends React.Component {
     render() {
         return (
-            <div className="sidebarRight" />
+            <div className="sidebarRight">
+                <PanelHeader headerText="Code Blocks" />
+            </div>
         );
     }
 }

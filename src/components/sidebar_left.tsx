@@ -7,7 +7,7 @@ class SidebarLeft extends React.Component {
     render() {
         return (
             <div className="sidebarLeft">
-                <PanelHeader />
+                <PanelHeader headerText="Course Outline" />
             </div>
         );
     }
