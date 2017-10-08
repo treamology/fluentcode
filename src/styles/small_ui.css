@@ -6,8 +6,10 @@
 
     background-color: #111111;
     color: #FFF;
+    font-family: 'Open Sans';
+    font-size: 14px;
 }
 
-/*.panelHeaderText {
-	display: flex:;
-}*/
+.panelHeaderText {
+	margin-left: 10px;
+}

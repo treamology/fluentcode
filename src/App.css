@@ -7,7 +7,7 @@ body {
   height: 100vh;
   display: grid;
   grid-template-columns: 375px auto 260px;
-  grid-template-rows: 64px auto 344px;
+  grid-template-rows: 48px auto 35%;
   grid-template-areas:
     "header header header"
     "docSidebar editor dragSidebar"
@@ -55,9 +55,4 @@ body {
   
   grid-column: dragSidebar;
   grid-row: dragSidebar;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
