@@ -1,6 +1,6 @@
 import * as React from 'react';
 import '../App.css';
-import '../styles/sidebar_left.css';
+import '../styles/sidebar_left.scss';
 
 import { PanelHeader } from './small_ui';
 

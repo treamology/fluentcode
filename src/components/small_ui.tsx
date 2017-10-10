@@ -1,5 +1,5 @@
 import * as React from 'react';
-import '../styles/small_ui.css';
+import '../styles/small_ui.scss';
 
 interface PanelHeaderProps {
     headerText: string;
