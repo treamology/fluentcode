@@ -1,5 +1,7 @@
+@import 'styles/palette';
+
 body {
-  background-color: #2C2C2C;
+  background-color: $color_background;
 }
 
 .gridContainer {
@@ -15,7 +17,7 @@ body {
 }
 
 .header {
-  background: linear-gradient(#5F5F5F, #4C4C4C);
+  background: linear-gradient($color_header_top, $color_header_bottom);
   box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.5);
   z-index: 10;
 
@@ -23,9 +25,9 @@ body {
 }
 
 .outputPanel {
-  background-color: #1E1E1E;
+  background-color: $color_panel;
   border-top-style: solid;
-  border-top-color: #111111;
+  border-top-color: $color_dark_highlight;
   border-top-width: 1px;
   z-index: 10;
 
@@ -34,11 +36,11 @@ body {
 }
 
 .sidebarLeft {
-  background-color: #1E1E1E;
+  background-color: $color_panel;
   border-right-style: solid;
-  border-right-color: #111111;
+  border-right-color: $color_dark_highlight;
   border-right-width: 1px;
-  box-shadow: 1px 0 12px 0 rgba(0, 0, 0, .2);
+  box-shadow: 1px 0 $panel_shadow_spread 0 rgba(0, 0, 0, .2);
   z-index: 10;
 
   grid-column: docSidebar;
@@ -46,11 +48,11 @@ body {
 }
 
 .sidebarRight {
-  background-color: #1E1E1E;
+  background-color: $color_panel;
   border-left-style: solid;
-  border-left-color: #111111;
+  border-left-color: $color_dark_highlight;
   border-left-width: 1px;
-  box-shadow: -1px 0 12px 0 rgba(0, 0, 0, .2);
+  box-shadow: -1px 0 $panel_shadow_spread 0 rgba(0, 0, 0, .2);
   z-index: 10;
   
   grid-column: dragSidebar;
