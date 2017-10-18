@@ -18,6 +18,8 @@
     "postcss-loader": "2.0.6",
     "promise": "8.0.1",
     "react": "^16.0.0",
+    "react-codemirror": "^1.0.0",
+    "react-codemirror2": "^2.0.2",
     "react-dev-utils": "^4.0.1",
     "react-dom": "^16.0.0",
     "source-map-loader": "^0.2.1",
