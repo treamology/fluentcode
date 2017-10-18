@@ -9,7 +9,7 @@ body {
   height: 100vh;
   display: grid;
   grid-template-columns: 375px auto 260px;
-  grid-template-rows: 48px auto 35%;
+  grid-template-rows: 48px auto 300px;
   grid-template-areas:
     "header header header"
     "docSidebar editor dragSidebar"
