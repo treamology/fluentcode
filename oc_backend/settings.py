@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'oc_api.apps.OcApiConfig',
     'oc_server.apps.OcServerConfig',
-    'rest_framework'
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -86,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'oc_dev',
         'USER': 'postgres',
-        'PASSWORD': 'BLAHBLAH'
+        'PASSWORD': 'postgres'
     }
 }
 
@@ -133,3 +134,9 @@ CELERY_BROKER_URL = 'redis://'
 CELERY_RESULT_BACKEND = 'redis'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
