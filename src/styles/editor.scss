@@ -7,6 +7,8 @@
     // Prevent editor from moving other divs around. CSS Grid usually doesn't allow text overflow, this fixes that.
     min-width: 0;
     min-height: 0;
+
+    position: relative;
 }
 
 .editor {
@@ -33,10 +35,10 @@
 /* PADDING */
 
 .CodeMirror-lines {
-  padding: 4px 0; /* Vertical padding around content */
+  padding: 16px 0; /* Vertical padding around content */
 }
 .CodeMirror pre {
-  padding: 0 4px; /* Horizontal padding of content */
+  padding: 0 16px; /* Horizontal padding of content */
 }
 
 .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
