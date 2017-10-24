@@ -16,6 +16,9 @@ class CodeEditor extends React.Component {
                         mode: 'python',
                     }}
                 />
+                <div className="runBar">
+            
+                </div>
                 <RunButton />
             </div>
         );
