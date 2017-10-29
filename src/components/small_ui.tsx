@@ -19,7 +19,7 @@ class RunButton extends React.Component {
     constructor(props: Object) {
         super(props);
         
-        this.click = this.click.bind(this)
+        this.click = this.click.bind(this);
     }
 
     render() {

@@ -4,7 +4,6 @@ import OCSite from './OCSite';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
-
 ReactDOM.render(
   <OCSite />,
   document.getElementById('root') as HTMLElement

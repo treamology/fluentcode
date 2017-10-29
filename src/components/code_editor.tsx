@@ -14,11 +14,10 @@ class CodeEditor extends React.Component {
                     value="hue"
                     options={{
                         mode: 'python',
+                        lineNumbers: true,
                     }}
                 />
-                <div className="runBar">
-            
-                </div>
+                <div className="runBar" />
                 <RunButton />
             </div>
         );

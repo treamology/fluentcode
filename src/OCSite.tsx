@@ -19,10 +19,6 @@ class OCSite extends React.Component {
       </div>
     );
   }
-
-  componentWillMount() {
-    
-  }
 }
 
 export default OCSite;

@@ -24,7 +24,7 @@
 
 .editor {
     flex: 1;
-    overflow: scroll;
+    overflow: auto;
 }
 
 //
@@ -59,16 +59,16 @@
 /* GUTTER */
 
 .CodeMirror-gutters {
-  border-right: 1px solid #ddd;
-  background-color: #f7f7f7;
+  border-right: 1px solid $color_panel;
+  background-color: $color_background;
   white-space: nowrap;
 }
 .CodeMirror-linenumbers {}
 .CodeMirror-linenumber {
-  padding: 0 3px 0 5px;
+  padding: 0 3px 0 3px;
   min-width: 20px;
   text-align: right;
-  color: #999;
+  color: $color_light_highlight;
   white-space: nowrap;
 }
 
@@ -146,7 +146,7 @@
 .cm-link {text-decoration: underline;}
 .cm-strikethrough {text-decoration: line-through;}
 
-.cm-s-default .cm-keyword {color: #6697D0;}
+.cm-s-default .cm-keyword {color: $color_oc_blue; font-weight: bold;}
 .cm-s-default .cm-atom {color: #219;}
 .cm-s-default .cm-number {color: #164;}
 .cm-s-default .cm-def {}
@@ -161,7 +161,7 @@
 .cm-s-default .cm-string-2 {color: #f50;}
 .cm-s-default .cm-meta {color: #555;}
 .cm-s-default .cm-qualifier {color: #555;}
-.cm-s-default .cm-builtin {color: #6697D0; font-style: italic}
+.cm-s-default .cm-builtin {color: $color_oc_blue; font-style: italic;}
 .cm-s-default .cm-bracket {color: #997;}
 .cm-s-default .cm-tag {color: #170;}
 .cm-s-default .cm-attribute {color: #00c;}
