@@ -1,7 +1,7 @@
 import * as React from 'react';
 import '../App.scss';
 
-import { PanelHeader } from './small_ui';
+import { PanelHeader } from './smallui';
 
 class OutputPanel extends React.Component {
     render() {

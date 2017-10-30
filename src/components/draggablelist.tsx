@@ -22,7 +22,8 @@ const DraggableList = (props: DraggableListProps) => (
             <Draggable 
                 codeTitleText={codeBlock.codeTitleText}
                 nonCodeTitleText={codeBlock.nonCodeTitleText}
-                descriptionText={codeBlock.descriptionText} 
+                descriptionText={codeBlock.descriptionText}
+                droppedCode={codeBlock.droppedCode} 
             />
         )
     }
