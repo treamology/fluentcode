@@ -4,15 +4,10 @@ import './App.scss';
 import Header from './components/header';
 import OutputPanel from './components/output_panel';
 import CodeEditor from './components/code_editor';
+import CurrentDraggableList from './containers/current_draggable_list';
 import { PanelHeader } from './components/small_ui';
 
-//import { CodeBlock } from './state/types';
-
-interface OCSiteProps {
-  // currentDraggables: Array<CodeBlock>;
-}
-
-class OCSite extends React.Component<OCSiteProps> {
+class OCSite extends React.Component {
   render() {
     return (
       <div className="gridContainer">
@@ -28,6 +23,7 @@ class OCSite extends React.Component<OCSiteProps> {
         </div>
         <div className="sidebarRight">
           <PanelHeader headerText="Code Blocks" />
+          <CurrentDraggableList />
         </div>
         <OutputPanel />
       </div>

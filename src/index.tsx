@@ -8,9 +8,15 @@ import './index.css';
 
 import { createStore } from 'redux';
 import ocSite from './state/reducer';
-import { ApplicationState } from './state/types'
+import { ApplicationState } from './state/types';
 
-let store: Store<ApplicationState> = createStore(ocSite)
+// For testing.
+let initialState: ApplicationState = { visibleCodeBlocks: 
+  [{codeTitleText: 'if', 
+  nonCodeTitleText: 'statement', 
+  descriptionText: 'Something about an if statement.'}]};
+
+let store: Store<ApplicationState> = createStore(ocSite, initialState);
 
 ReactDOM.render(
   <Provider store={store}>
