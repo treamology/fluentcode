@@ -3,7 +3,7 @@ import * as CodeMirror from 'react-codemirror';
 import '../styles/editor.scss';
 import 'codemirror/mode/python/python';
 
-import { RunButton } from './small_ui';
+import { RunButton } from './smallui';
 
 class CodeEditor extends React.Component {
     render() {

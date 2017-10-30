@@ -5,7 +5,9 @@ import Header from './components/header';
 import OutputPanel from './components/outputpanel';
 import CodeEditor from './components/codeeditor';
 import CurrentDraggableList from './containers/currentdraggablelist';
-import { PanelHeader } from './components/small_ui';
+import { PanelHeader } from './components/smallui';
+import HTML5Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-dnd';
 
 class OCSite extends React.Component {
   render() {
@@ -31,4 +33,4 @@ class OCSite extends React.Component {
   }
 }
 
-export default OCSite;
+export default DragDropContext(HTML5Backend)(OCSite);
