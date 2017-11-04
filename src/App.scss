@@ -31,6 +31,7 @@ body {
   justify-content: space-between;
 
   max-height: calc(100vh - 48px);
+  max-width: inherit;
 }
 
 // Excluding the two sidebars
@@ -41,6 +42,7 @@ body {
   
   height: inherit;
   max-height: inherit;
+  max-width: inherit;
 }
 
 .runBar {
