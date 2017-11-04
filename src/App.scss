@@ -5,24 +5,49 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
-.gridContainer {
-  width: 100vw;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: 375px auto 260px;
-  grid-template-rows: 48px auto 300px;
-  grid-template-areas:
-    "header header header"
-    "docSidebar editor dragSidebar"
-    "docSidebar output dragSidebar"
+// Contains absolutely everything
+.appContainer {
+  height: inherit;
+  max-width: 100vw;
+  max-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
   background: linear-gradient($color_header_top, $color_header_bottom);
   box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.5);
   z-index: 10;
+  min-height: 48px;
+}
 
-  grid-area: header;
+// Everything but the header
+.appContent {
+  flex: 1;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  max-height: calc(100vh - 48px);
+}
+
+// Excluding the two sidebars
+.centerContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  
+  height: inherit;
+  max-height: inherit;
+}
+
+.runBar {
+  width: 100%;
+  height: 40px;
+
+  background-color: $color_panel;
 }
 
 .outputPanel {
@@ -31,9 +56,7 @@ body {
   border-top-color: $color_dark_highlight;
   border-top-width: 1px;
   z-index: 10;
-
-  grid-column: output;
-  grid-row: 3;
+  height: 344px;
 }
 
 .sidebarLeft {
@@ -42,10 +65,8 @@ body {
   border-right-color: $color_dark_highlight;
   border-right-width: 1px;
   box-shadow: 1px 0 $panel_shadow_spread 0 rgba(0, 0, 0, .2);
-  z-index: 10;
-
-  grid-column: docSidebar;
-  grid-row: docSidebar;
+  z-index: 11;
+  width: 375px;
 }
 
 .sidebarRight {
@@ -54,10 +75,8 @@ body {
   border-left-color: $color_dark_highlight;
   border-left-width: 1px;
   box-shadow: -1px 0 $panel_shadow_spread 0 rgba(0, 0, 0, .2);
-  z-index: 10;
-  
-  grid-column: dragSidebar;
-  grid-row: dragSidebar;
+  z-index: 11;
+  width: 260px;
 }
 
 .courseOutlineSection {

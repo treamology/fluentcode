@@ -1,4 +1,13 @@
+html {
+  height: 100%;
+}
+
 body {
+  height: inhert;
   margin: 0;
   padding: 0;
+}
+
+#root {
+  height: inherit;
 }

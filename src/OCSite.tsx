@@ -12,22 +12,28 @@ import { DragDropContext } from 'react-dnd';
 class OCSite extends React.Component {
   render() {
     return (
-      <div className="gridContainer">
+      <div className="appContainer">
         <Header />
-        <CodeEditor />
-        <div className="sidebarLeft">
-            <div className="courseOutlineSection">
-                <PanelHeader headerText="Course Outline" />
-            </div>
-            <div className="lessonContentSection">
-                <PanelHeader headerText="Current Lesson" />
-            </div>
+        <div className="appContent">
+          <div className="sidebarLeft">
+              <div className="courseOutlineSection">
+                  <PanelHeader headerText="Course Outline" />
+              </div>
+              <div className="lessonContentSection">
+                  <PanelHeader headerText="Current Lesson" />
+              </div>
+          </div>
+          <div className="centerContent">
+            <CodeEditor />
+            <div className="runBar" />
+            <OutputPanel />
+          </div>
+          <div className="sidebarRight">
+            <PanelHeader headerText="Code Blocks" />
+            <CurrentDraggableList />
+          </div>
         </div>
-        <div className="sidebarRight">
-          <PanelHeader headerText="Code Blocks" />
-          <CurrentDraggableList />
-        </div>
-        <OutputPanel />
+        
       </div>
     );
   }
