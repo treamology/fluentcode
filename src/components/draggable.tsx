@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DragSource } from 'react-dnd';
+import { DragSource, DndComponentClass } from 'react-dnd';
 
 import '../styles/draggable.scss';
 
@@ -10,8 +10,9 @@ interface DraggableProps {
     droppedCode: string;
 }
 
-interface DraggablePropsInjection extends DraggableProps {
+interface DraggablePropsCollected extends DraggableProps {
     connectDragSource: Function;
+    isDragging: boolean;
 }
 
 const draggableSource = {
@@ -24,7 +25,7 @@ const draggableSource = {
         }
 
         return;
-    }
+    }  
 };
 
 function collect(connect: any, monitor: any) {
@@ -34,7 +35,7 @@ function collect(connect: any, monitor: any) {
     };
 }
 
-class NotDraggableDraggable extends React.Component<DraggablePropsInjection> {
+class UnwrappedDraggable extends React.Component<DraggablePropsCollected> {
     render() {
         return this.props.connectDragSource(
             <div className="draggable">
@@ -46,6 +47,6 @@ class NotDraggableDraggable extends React.Component<DraggablePropsInjection> {
     }
 }
 
-const Draggable: React.ComponentClass<DraggableProps> = DragSource("Draggable", draggableSource, collect)(NotDraggableDraggable);
+const Draggable: DndComponentClass<DraggableProps> = DragSource("Draggable", draggableSource, collect)(UnwrappedDraggable);
 
 export default Draggable;
