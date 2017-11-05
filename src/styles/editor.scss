@@ -226,6 +226,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   display: inline-block;
   vertical-align: top;
   margin-bottom: -30px;
+  min-width: 29px;
 }
 .CodeMirror-gutter-wrapper {
   position: absolute;
