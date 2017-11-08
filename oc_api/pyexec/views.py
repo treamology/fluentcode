@@ -6,8 +6,13 @@ from celery.result import AsyncResult
 from ..tasks import execute_code
 from . import serializers
 
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 class ExecuteView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
     def get(self, request):
         """Get status of code execution"""
         failure_reason = 'An error has occurred.'
