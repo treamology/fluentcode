@@ -12,5 +12,5 @@ class ExecutionRequestSerializer(serializers.Serializer):
 
 class ExecutionStateSerializer(serializers.Serializer):
     """Status update for code execution"""
-    token = serializers.CharField()
+    # token = serializers.CharField()
 
