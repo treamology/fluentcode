@@ -99,6 +99,7 @@ module.exports = {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
+      'assets': path.resolve(__dirname, "assets")
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).
@@ -209,6 +210,7 @@ module.exports = {
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
+              includePaths: paths.appAssets
             },
           },
         ],

@@ -15,22 +15,4 @@ class PanelHeader extends React.Component<PanelHeaderProps> {
     }
 }
 
-class RunButton extends React.Component {
-    constructor(props: Object) {
-        super(props);
-        
-        this.click = this.click.bind(this);
-    }
-
-    render() {
-        return (
-            <a href="#" className="runButton" onClick={this.click}>Run</a>
-        );
-    }
-
-    click() {
-        console.log("hey");
-    }
-}
-
-export { PanelHeader, RunButton };
+export { PanelHeader };

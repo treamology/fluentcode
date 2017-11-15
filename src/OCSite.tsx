@@ -5,6 +5,7 @@ import Header from './components/header';
 import OutputPanel from './components/outputpanel';
 import CodeEditor from './components/codeeditor';
 import CurrentDraggableList from './containers/currentdraggablelist';
+import RunBar from './components/runbar';
 import { PanelHeader } from './components/smallui';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
@@ -25,7 +26,7 @@ class OCSite extends React.Component {
           </div>
           <div className="centerContent">
             <CodeEditor />
-            <div className="runBar" />
+            <RunBar />
             <OutputPanel />
           </div>
           <div className="sidebarRight">
