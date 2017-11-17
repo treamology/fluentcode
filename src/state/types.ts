@@ -1,5 +1,16 @@
 interface ApplicationState {
     visibleCodeBlocks: Array<CodeBlock>;
+    codeExecution: CodeExecutionState;
+}
+
+enum ExecutionState {
+    none,
+    running,
+    success,
+    failed,
+}
+interface CodeExecutionState {
+    state: ExecutionState;
 }
 
 interface CodeBlock {
@@ -9,4 +20,4 @@ interface CodeBlock {
     droppedCode: string;
 }
 
-export { ApplicationState, CodeBlock };
+export { ApplicationState, ExecutionState, CodeExecutionState, CodeBlock };
