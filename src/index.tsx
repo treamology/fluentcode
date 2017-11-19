@@ -19,3 +19,5 @@ ReactDOM.render(
     document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();
+
+export default store;

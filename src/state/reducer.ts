@@ -1,4 +1,5 @@
-import { CodeExecutionState, ApplicationState, ExecutionState, CodeBlock } from '../state/types';
+import { CodeExecutionState, ApplicationState, ExecutionState, CodeBlock, CodeEditorState } from '../state/types';
+import { ActionTypes } from '../state/actions'
 import { AnyAction, combineReducers, Reducer } from 'redux';
 
 const defaultVisibleCodeBlocks: Array<CodeBlock> = [
@@ -24,6 +25,10 @@ const defaultCodeExecutionState: CodeExecutionState = {
     state: ExecutionState.none
 };
 
+const defaultCodeEditorState: CodeEditorState = {
+    currentEnteredCode: ""
+}
+
 function codeExecution(state: CodeExecutionState = defaultCodeExecutionState, action: AnyAction) {
     return state;
 }
@@ -32,9 +37,22 @@ function visibleCodeBlocks(state: Array<CodeBlock> = defaultVisibleCodeBlocks, a
     return state;
 }
 
+function codeEditorState(state: CodeEditorState = defaultCodeEditorState, anyAction: AnyAction) {
+    switch (anyAction.type) {
+        case ActionTypes.SET_CODE:
+            let action = anyAction as ActionTypes.SetCodeAction
+            return Object.assign({}, state, {
+                currentEnteredCode: action.code
+            });
+        default:
+            return state;
+    }
+}
+
 const ocSite: Reducer<ApplicationState> = combineReducers({
-    visibleCodeBlocks: visibleCodeBlocks,
-    codeExecution: codeExecution,
+    visibleCodeBlocks,
+    codeExecution,
+    codeEditorState
 });
 
 export default ocSite;

@@ -7,14 +7,6 @@ interface DraggableListProps {
     codeBlocks: Array<CodeBlock>;
 }
 
-// class DraggableList extends React.Component<DraggableListProps> {
-//     render() {
-//         return (
-            
-//         );
-//     }
-// }
-
 const DraggableList = (props: DraggableListProps) => (
     <div>
     {

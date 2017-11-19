@@ -1,17 +1,36 @@
-module ActionTypes {
+import { CodeExecutionState } from "./types";
+import { Dispatch } from 'redux';
+import store from "../index";
+import * from '../endpoints'
+
+// export module ActionInterfaces {
+    
+// }
+
+export module ActionTypes {
+    export interface SetCodeAction {
+        type: string;
+        code: string;
+    }
+
+    export interface RunCodeAction {
+        type: string;
+    }
+
+    export const SET_CODE = "SET_CODE";
     export const RUN_CODE = 'RUN_CODE';
 }
 
-module Actions {
-    export function runCode(code: string) {
+export module Actions {
+    export function setCode(code: string): ActionTypes.SetCodeAction {
         return {
-            type: ActionTypes.RUN_CODE,
+            type: ActionTypes.SET_CODE,
             code
         }
     }
 }
 
-module AsyncActionTypes {
+export module AsyncActionTypes {
     // API call sending code to execute
     export const REQUEST_RUN_CODE = 'REQUEST_RUN_CODE';
     export const RECEIVE_RUN_CODE = 'RECEIVE_RUN_CODE';
@@ -21,7 +40,7 @@ module AsyncActionTypes {
     export const RECEIVE_CODE_STATUS = 'RECEIVE_CODE_STATUS';
 }
 
-module AsyncActions {
+export module AsyncActions {
     export function requestRunCode(code: string) {
         return {
             type: AsyncActionTypes.REQUEST_RUN_CODE,
@@ -33,6 +52,13 @@ module AsyncActions {
             type: AsyncActionTypes.RECEIVE_RUN_CODE,
             json
         }
+    }
+    export function runCode() {
+        return (dispatch: Dispatch<CodeExecutionState>) => {
+            dispatch(requestRunCode(store.getState().codeEditor.currentEnteredCode));
+
+            fetch(`${}`);
+        };
     }
 
     export function requestCodeStatus() {

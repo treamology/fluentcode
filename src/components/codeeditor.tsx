@@ -1,19 +1,21 @@
 import * as React from 'react';
 import '../styles/editor.scss';
 import 'codemirror/mode/python/python';
-
+import { Actions } from '../state/actions'
 import * as ReactCodeMirror from 'react-codemirror';
-
+import { connect, Dispatch } from 'react-redux';
+import { CodeEditorState } from '../state/types';
 import { DroppedCodeItem } from './draggable';
-
 import { DropTarget, DropTargetMonitor, DropTargetConnector, DndComponentClass } from 'react-dnd';
 
-interface CodeEditorProps {}
+interface CodeEditorProps {
+    updateCodeState: (newCode: string) => any;
+}
 interface CodeEditorPropsCollected extends CodeEditorProps {
     connectDropTarget: Function;
     isOver: boolean;
 }
-interface CodeEditorState extends React.ComponentState {
+interface CodeEditorComponentState extends React.ComponentState {
     code: string;
 }
 
@@ -31,7 +33,7 @@ function collect(connect: DropTargetConnector, monitor: DropTargetMonitor) {
     };
 }
 
-class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, CodeEditorState> {
+class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, CodeEditorComponentState> {
     codeMirrorInstance: CodeMirror.Editor;
     editor: ReactCodeMirror.ReactCodeMirror;
 
@@ -41,7 +43,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, Code
             code: ''
         };
 
-        this.updateCodeState = this.updateCodeState.bind(this);
+        //this.updateCodeState = this.updateCodeState.bind(this);
     }
 
     render() {
@@ -51,7 +53,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, Code
                     ref={(editor: ReactCodeMirror.ReactCodeMirror) => this.editor = editor}
                     className="editor"
                     value={this.state.code}
-                    onChange={this.updateCodeState}
+                    onChange={this.props.updateCodeState}
                     options={{
                         mode: 'python',
                         lineNumbers: true,
@@ -61,11 +63,11 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, Code
         );
     }
 
-    updateCodeState(newCode: string) {
-        this.setState({
-            code: newCode
-        });
-    }
+    // updateCodeState(newCode: string) {
+    //     this.setState({
+    //         code: newCode
+    //     });
+    // }
 
     // tslint:disable-next-line
     dropCode(code: string, coords: any) {
@@ -80,7 +82,17 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, Code
     }
 }
 
-const CodeEditor: DndComponentClass<CodeEditorProps> = 
+const mapDispatchToProps = (dispatch: Dispatch<CodeEditorState>) => {
+    return {
+        updateCodeState: (newCode: string) => {
+            dispatch(Actions.setCode(newCode));
+        }
+    }
+}
+
+const UnconnectedCodeEditor: DndComponentClass<CodeEditorProps> = 
     DropTarget('Draggable', dropTarget, collect)(UnwrappedCodeEditor);
+
+const CodeEditor = connect(null, mapDispatchToProps)(UnconnectedCodeEditor);
 
 export default CodeEditor;

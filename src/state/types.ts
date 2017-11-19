@@ -1,23 +1,26 @@
-interface ApplicationState {
+export interface ApplicationState {
     visibleCodeBlocks: Array<CodeBlock>;
+    codeEditor: CodeEditorState;
     codeExecution: CodeExecutionState;
 }
 
-enum ExecutionState {
+export interface CodeEditorState {
+    currentEnteredCode: string;
+}
+
+export enum ExecutionState {
     none,
     running,
     success,
     failed,
 }
-interface CodeExecutionState {
+export interface CodeExecutionState {
     state: ExecutionState;
 }
 
-interface CodeBlock {
+export interface CodeBlock {
     codeTitleText: string;
     nonCodeTitleText: string;
     descriptionText: string;
     droppedCode: string;
 }
-
-export { ApplicationState, ExecutionState, CodeExecutionState, CodeBlock };
