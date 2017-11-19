@@ -1,9 +1,9 @@
-import { CodeExecutionState } from './types';
+import { CodeExecutionState, ApplicationState } from './types';
 import { Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import Store from '../store';
 import * as Endpoints from '../endpoints';
-import { ActionTypes, AsyncActionTypes } from './types';
+import { ActionTypes, AsyncActionTypes, ResponseTypes } from './types';
 
 export module Actions {
     export function setCode(code: string): ActionTypes.SetCodeAction {
@@ -15,6 +15,12 @@ export module Actions {
 }
 
 export module AsyncActions {
+    export function receiveAPIKey(json: ResponseTypes.ReceiveApiKeyResponse): AsyncActionTypes.ReceiveApiKeyAction {
+        return {
+            type: AsyncActionTypes.RECEIVE_API_KEY,
+            json: json
+        };
+    }
 
     export function requestRunCode(code: string) {
         return {
@@ -28,12 +34,49 @@ export module AsyncActions {
             json
         };
     }
+
     export function runCode(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<CodeExecutionState>) => {
-            dispatch(requestRunCode(Store.getInstance().getState().codeEditor.currentEnteredCode));
+            const currentCode = Store.getInstance().getState().codeEditor.currentEnteredCode;
+            dispatch(requestRunCode(currentCode));
+            
+            Endpoints.callAPI(
+                Endpoints.CODE_EXECUTE_ENDPOINT,
+                'POST',
+                JSON.stringify({
+                    code: currentCode
+                })
+            );
 
-            fetch(`${Endpoints.ROOT}${Endpoints.CODE_EXECUTE_ENDPOINT}`);
+            // fetch(`${Endpoints.PROTO}${Endpoints.ROOT}${Endpoints.CODE_EXECUTE_ENDPOINT}`, {
+            //     method: 'POST',
+            //     mode: 'cors',
+            //     headers: new Headers({
+            //         'Content-Type': 'text/json',
+            //     }),
+            //     body: JSON.stringify({
+            //         code: currentCode
+            //     })
+            // });
         };
+    }
+
+    export function getAPIKey(): ThunkAction<void, {}, {}> {
+        return (dispatch: Dispatch<ApplicationState>) => {
+            Endpoints.callAPI(
+                Endpoints.API_KEY_ENDPOINT,
+                'POST',
+                JSON.stringify({
+                    username: 'testuser',
+                    password: 'testuser'
+                })
+            ).then(
+                (response: Response) => response.json(),
+                (error: Error) => console.log(error)
+            ).then(
+                (json: ResponseTypes.ReceiveApiKeyResponse) => dispatch(receiveAPIKey(json))
+            );
+        }
     }
 
     export function requestCodeStatus() {

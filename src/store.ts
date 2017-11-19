@@ -8,7 +8,7 @@ class Store {
 
     static getInstance(): Redux.Store<ApplicationState> {
         if (Store.instance == null) {
-            Store.instance = Redux.createStore(ocSite, Redux.applyMiddleware(thunkMiddleware));
+            Store.instance = Redux.createStore(ocSite, Redux.applyMiddleware(thunkMiddleware)) as Redux.Store<ApplicationState>;
         }
 
         return Store.instance;

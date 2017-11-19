@@ -1,6 +1,6 @@
-import { CodeExecutionState, ApplicationState, ExecutionState, CodeBlock, CodeEditorState } from '../state/types';
+import { CodeExecutionState, ApplicationState, ExecutionState, CodeBlock, CodeEditorState, AsyncActionTypes } from '../state/types';
 import { ActionTypes } from '../state/types';
-import { AnyAction, combineReducers, Reducer } from 'redux';
+import { AnyAction } from 'redux';
 
 const defaultVisibleCodeBlocks: Array<CodeBlock> = [
     {codeTitleText: 'if', 
@@ -29,18 +29,24 @@ const defaultCodeEditorState: CodeEditorState = {
     currentEnteredCode: ''
 };
 
-function codeExecution(state: CodeExecutionState = defaultCodeExecutionState, action: AnyAction) {
+const defaultApplicationState: ApplicationState = {
+    apiKey: '',
+    visibleCodeBlocks: defaultVisibleCodeBlocks,
+    codeEditor: defaultCodeEditorState,
+    codeExecution: defaultCodeExecutionState
+}
+
+function codeExecution(state: CodeExecutionState, action: AnyAction) {
     return state;
 }
 
-function visibleCodeBlocks(state: Array<CodeBlock> = defaultVisibleCodeBlocks, action: AnyAction) {
+function visibleCodeBlocks(state: Array<CodeBlock>, action: AnyAction) {
     return state;
 }
 
-function codeEditor(state: CodeEditorState = defaultCodeEditorState, anyAction: AnyAction) {
-    switch (anyAction.type) {
+function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorActions) {
+    switch (action.type) {
         case ActionTypes.SET_CODE:
-            let action = anyAction as ActionTypes.SetCodeAction;
             return Object.assign({}, state, {
                 currentEnteredCode: action.code
             });
@@ -49,10 +55,26 @@ function codeEditor(state: CodeEditorState = defaultCodeEditorState, anyAction: 
     }
 }
 
-const ocSite: Reducer<ApplicationState> = combineReducers({
-    visibleCodeBlocks,
-    codeExecution,
-    codeEditor
-});
+export default function ocSite(state: ApplicationState = defaultApplicationState, action: AnyAction): ApplicationState {
+    switch (action.type) {
+        case AsyncActionTypes.RECEIVE_API_KEY:
+            return Object.assign({}, state, {
+                apiKey: action.json.token
+            });
+        default:
+            return {
+                apiKey: state.apiKey,
+                codeExecution: codeExecution(state.codeExecution, action),
+                codeEditor: codeEditor(state.codeEditor, action as ActionTypes.CodeEditorActions),
+                visibleCodeBlocks: visibleCodeBlocks(state.visibleCodeBlocks, action)
+            };
+    }
+}
 
-export default ocSite;
+// const ocSite: Reducer<ApplicationState> = combineReducers({
+//     visibleCodeBlocks,
+//     codeExecution,
+//     codeEditor,
+// });
+
+// export default ocSite;
