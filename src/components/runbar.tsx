@@ -1,10 +1,10 @@
 import * as React from 'react';
 import '../App.scss';
 import { connect, Dispatch } from 'react-redux';
-import { CodeExecutionState } from '../state/types'
+import { CodeExecutionState } from '../state/types';
 
-import { Actions } from '../state/actions';
-//import { bindActionCreators } from 'redux';
+import { AsyncActions } from '../state/actions';
+import { AnyAction } from 'redux';
 
 let runTriangle = require('../assets/svg/runtriangle.svg');
 
@@ -13,7 +13,7 @@ interface RunBarState {
 }
 
 interface RunBarProps {
-    runButtonClicked: () => any;
+    runButtonClicked: () => AnyAction;
 }
 
 class UnconnectedRunBar extends React.Component<RunBarProps, RunBarState> {
@@ -33,10 +33,10 @@ class UnconnectedRunBar extends React.Component<RunBarProps, RunBarState> {
 const mapDispatchToProps = (dispatch: Dispatch<CodeExecutionState>) => {
     return {
         runButtonClicked: () => {
-            dispatch(Actions.runCode());
-        } 
-    }
-}
+            dispatch(AsyncActions.runCode());
+        }
+    };
+};
 
 // const mapDispatchToProps = (dispatch: Dispatch<CodeExecutionState>) => bindActionCreators({
 

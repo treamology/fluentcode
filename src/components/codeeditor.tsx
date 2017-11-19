@@ -1,15 +1,16 @@
 import * as React from 'react';
 import '../styles/editor.scss';
 import 'codemirror/mode/python/python';
-import { Actions } from '../state/actions'
+import { Actions } from '../state/actions';
 import * as ReactCodeMirror from 'react-codemirror';
 import { connect, Dispatch } from 'react-redux';
+import { AnyAction } from 'redux';
 import { CodeEditorState } from '../state/types';
 import { DroppedCodeItem } from './draggable';
 import { DropTarget, DropTargetMonitor, DropTargetConnector, DndComponentClass } from 'react-dnd';
 
 interface CodeEditorProps {
-    updateCodeState: (newCode: string) => any;
+    updateCodeState: (newCode: string) => AnyAction;
 }
 interface CodeEditorPropsCollected extends CodeEditorProps {
     connectDropTarget: Function;
@@ -26,9 +27,9 @@ const dropTarget = {
     }
 };
 
-function collect(connect: DropTargetConnector, monitor: DropTargetMonitor) {
+function collect(dropConnect: DropTargetConnector, monitor: DropTargetMonitor) {
     return {
-        connectDropTarget: connect.dropTarget(),
+        connectDropTarget: dropConnect.dropTarget(),
         isOver: monitor.isOver()
     };
 }
@@ -42,8 +43,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, Code
         this.state = {
             code: ''
         };
-
-        //this.updateCodeState = this.updateCodeState.bind(this);
     }
 
     render() {
@@ -63,12 +62,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, Code
         );
     }
 
-    // updateCodeState(newCode: string) {
-    //     this.setState({
-    //         code: newCode
-    //     });
-    // }
-
     // tslint:disable-next-line
     dropCode(code: string, coords: any) {
         let codemirrorTags: ReactCodeMirror.ReactCodeMirror = this.editor;
@@ -87,8 +80,8 @@ const mapDispatchToProps = (dispatch: Dispatch<CodeEditorState>) => {
         updateCodeState: (newCode: string) => {
             dispatch(Actions.setCode(newCode));
         }
-    }
-}
+    };
+};
 
 const UnconnectedCodeEditor: DndComponentClass<CodeEditorProps> = 
     DropTarget('Draggable', dropTarget, collect)(UnwrappedCodeEditor);

@@ -1,16 +1,15 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { Store } from 'redux';
 import OCSite from './OCSite';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
-import { createStore } from 'redux';
-import ocSite from './state/reducer';
-import { ApplicationState } from './state/types';
+import Store from './store';
+import * as Redux from 'redux';
 
-let store: Store<ApplicationState> = createStore(ocSite);
+import { ApplicationState } from './state/types';
+const store: Redux.Store<ApplicationState> = Store.getInstance();
 
 ReactDOM.render(
     <Provider store={store}>
@@ -19,5 +18,3 @@ ReactDOM.render(
     document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();
-
-export default store;
