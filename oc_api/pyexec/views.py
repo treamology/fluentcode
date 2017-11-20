@@ -20,10 +20,10 @@ class ExecuteView(APIView):
         if serializer.is_valid(raise_exception=True):
             result = AsyncResult(request.auth.key)
             if result is not None:
-                return Response({'success': True, 'result': result.get()})
+                return Response({'status': 0, 'result': result.get()})
             else:
                 failure_reason = 'The provided token is invalid.'
-        return Response({'success': False, 'reason': failure_reason})
+        return Response({'status': 1, 'reason': failure_reason})
 
     def post(self, request):
         """Accept some code for execution"""
