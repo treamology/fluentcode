@@ -10,13 +10,15 @@ export interface CodeEditorState {
 }
 
 export enum ExecutionState {
-    none,
-    running,
-    success,
-    failed,
+    none = -1,
+    running = 2,
+    success = 0,
+    failed = 1,
+    metafail = 3
 }
 export interface CodeExecutionState {
     state: ExecutionState;
+    lastOutput: string;
 }
 
 export interface CodeBlock {
@@ -31,6 +33,14 @@ export module AsyncActionTypes {
         type: string,
         json: ResponseTypes.ReceiveApiKeyResponse
     };
+    export interface RequestRunCodeAction {
+        type: string;
+        code: string;
+    };
+    export interface APIAction {
+        type: string;
+        json: ResponseTypes.AnyResponse;
+    };
 
     export const RECEIVE_API_KEY = 'RECEIVE_API_KEY';
 
@@ -43,6 +53,7 @@ export module AsyncActionTypes {
     export const RECEIVE_CODE_STATUS = 'RECEIVE_CODE_STATUS';
 
     export type RootActions = ReceiveApiKeyAction;
+    export type CodeExecutionActions = RequestRunCodeAction | APIAction;
 }
 
 export module ActionTypes {
@@ -50,8 +61,9 @@ export module ActionTypes {
         type: string;
         code: string;
     };
-
+    
     export const SET_CODE = 'SET_CODE';
+    export const RESET_EXECUTION_STATE = 'RESET_EXECUTION_STATE';
 
     export type CodeEditorActions = SetCodeAction;
 }
@@ -60,4 +72,13 @@ export module ResponseTypes {
     export interface ReceiveApiKeyResponse {
         token: string;
     }
+    export interface RunCodeResponse {
+        success: boolean;
+    }
+    export interface ExecStatusResponse {
+        status: number;
+        result: string;
+    }
+
+    export type AnyResponse = ReceiveApiKeyResponse | RunCodeResponse | ExecStatusResponse
 }

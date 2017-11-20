@@ -1,5 +1,5 @@
-import { CodeExecutionState, ApplicationState } from './types';
-import { Dispatch } from 'redux';
+import { CodeExecutionState, ApplicationState, ExecutionState } from './types';
+import { Dispatch, AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import Store from '../store';
 import * as Endpoints from '../endpoints';
@@ -22,16 +22,27 @@ export module AsyncActions {
         };
     }
 
-    export function requestRunCode(code: string) {
+    export function requestRunCode(code: string): AsyncActionTypes.RequestRunCodeAction {
         return {
             type: AsyncActionTypes.REQUEST_RUN_CODE,
             code
         };
     }
-    export function receiveRunCode(json: string) {
+    export function receiveRunCode(json: ResponseTypes.RunCodeResponse): AsyncActionTypes.APIAction {
         return {
             type: AsyncActionTypes.RECEIVE_RUN_CODE,
             json
+        };
+    }
+    export function receiveCodeStatus(json: ResponseTypes.ExecStatusResponse): AsyncActionTypes.APIAction {
+        return {
+            type: AsyncActionTypes.RECEIVE_CODE_STATUS,
+            json
+        };
+    }
+    export function resetExecutionState(): AnyAction {
+        return {
+            type: ActionTypes.RESET_EXECUTION_STATE
         };
     }
 
@@ -46,21 +57,46 @@ export module AsyncActions {
                 JSON.stringify({
                     code: currentCode
                 })
+            ).then(
+                (response: Response) => response.json(),
+                (error: Error) => console.log(error)
+            ).then(
+                (json: ResponseTypes.RunCodeResponse) => {
+                    dispatch(receiveRunCode(json));
+                    setTimeout(() => {
+                        dispatch(getCodeStatus());
+                    }, 2000);
+                }
             );
-
-            // fetch(`${Endpoints.PROTO}${Endpoints.ROOT}${Endpoints.CODE_EXECUTE_ENDPOINT}`, {
-            //     method: 'POST',
-            //     mode: 'cors',
-            //     headers: new Headers({
-            //         'Content-Type': 'text/json',
-            //     }),
-            //     body: JSON.stringify({
-            //         code: currentCode
-            //     })
-            // });
         };
     }
-
+    export function getCodeStatus(): ThunkAction<void, {}, {}> {
+        return (dispatch: Dispatch<CodeExecutionState>) => {
+            Endpoints.callAPI(
+                Endpoints.CODE_EXECUTE_ENDPOINT,
+                'GET'
+            ).then(
+                (response: Response) => response.json(),
+                (error: Error) => console.log(error)
+            ).then(
+                (json: ResponseTypes.ExecStatusResponse) => {
+                    dispatch(receiveCodeStatus(json))
+                    switch (json.status) {
+                        case ExecutionState.running:
+                            setTimeout(() => {
+                                dispatch(getCodeStatus());
+                            }, 2000);
+                            return;
+                        case ExecutionState.success:
+                            setTimeout(() => {
+                                dispatch(resetExecutionState());
+                            }, 2000)
+                            return;
+                    }
+                }
+            )
+        }
+    }
     export function getAPIKey(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<ApplicationState>) => {
             Endpoints.callAPI(
@@ -77,17 +113,5 @@ export module AsyncActions {
                 (json: ResponseTypes.ReceiveApiKeyResponse) => dispatch(receiveAPIKey(json))
             );
         }
-    }
-
-    export function requestCodeStatus() {
-        return {
-            type: AsyncActionTypes.REQUEST_CODE_STATUS
-        };
-    }
-    export function receiveCodeStatus(json: string) {
-        return {
-            type: AsyncActionTypes.RECEIVE_CODE_STATUS,
-            json
-        };
     }
 }

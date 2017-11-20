@@ -1,33 +1,56 @@
 import * as React from 'react';
-import '../App.scss';
+import '../styles/runbar.scss';
 import { connect, Dispatch } from 'react-redux';
-import { CodeExecutionState } from '../state/types';
+import { CodeExecutionState, ExecutionState, ApplicationState } from '../state/types';
 
 import { AsyncActions } from '../state/actions';
 import { AnyAction } from 'redux';
 
 let runTriangle = require('../assets/svg/runtriangle.svg');
 
-interface RunBarState {
-    
-}
-
 interface RunBarProps {
+    executionState: ExecutionState;
     runButtonClicked: () => AnyAction;
 }
 
-class UnconnectedRunBar extends React.Component<RunBarProps, RunBarState> {
-
+class UnconnectedRunBar extends React.Component<RunBarProps> {
     render() {
-        return (
-            <div className="runBar">
-                <a className="runButtonContainer" onClick={this.props.runButtonClicked}>
-                    <span className="runButtonText">Run</span>
-                    <img className="runButtonImage" src={runTriangle} />
-                </a>
-            </div>
-        );
+        switch (this.props.executionState) {
+            case ExecutionState.running:
+                return (
+                    <div className="runBar running">
+                        <span className="runningText">Running...</span>
+                    </div>
+                );
+            case ExecutionState.failed:
+                return (
+                    <div className="runBar error">
+                        <span className="errorText">Something went wrong!</span>
+                    </div>
+                );
+            case ExecutionState.success:
+                return (
+                    <div className="runBar success">
+                        <span className="successText">Success!</span>
+                    </div>
+                );
+            default:
+                return (
+                    <div className="runBar idle">
+                        <a className="runButtonContainer" onClick={this.props.runButtonClicked}>
+                            <span className="runButtonText">Run</span>
+                            <img className="runButtonImage" src={runTriangle} />
+                        </a>
+                    </div>
+                );
+        }
     }
+}
+
+const mapStateToProps = (state: ApplicationState) => {
+    return {
+        executionState: state.codeExecution.state
+    };
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<CodeExecutionState>) => {
@@ -38,10 +61,6 @@ const mapDispatchToProps = (dispatch: Dispatch<CodeExecutionState>) => {
     };
 };
 
-// const mapDispatchToProps = (dispatch: Dispatch<CodeExecutionState>) => bindActionCreators({
-
-// })
-
-const RunBar = connect(null, mapDispatchToProps)(UnconnectedRunBar);
+const RunBar = connect(mapStateToProps, mapDispatchToProps)(UnconnectedRunBar);
 
 export default RunBar;

@@ -1,4 +1,4 @@
-import { CodeExecutionState, ApplicationState, ExecutionState, CodeBlock, CodeEditorState, AsyncActionTypes } from '../state/types';
+import { CodeExecutionState, ApplicationState, ExecutionState, CodeBlock, CodeEditorState, AsyncActionTypes, ResponseTypes } from '../state/types';
 import { ActionTypes } from '../state/types';
 import { AnyAction } from 'redux';
 
@@ -22,7 +22,8 @@ const defaultVisibleCodeBlocks: Array<CodeBlock> = [
 ];
 
 const defaultCodeExecutionState: CodeExecutionState = {
-    state: ExecutionState.none
+    state: ExecutionState.none,
+    lastOutput: ''
 };
 
 const defaultCodeEditorState: CodeEditorState = {
@@ -36,8 +37,27 @@ const defaultApplicationState: ApplicationState = {
     codeExecution: defaultCodeExecutionState
 }
 
-function codeExecution(state: CodeExecutionState, action: AnyAction) {
-    return state;
+function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeExecutionActions) {
+    switch (action.type) {
+        case AsyncActionTypes.REQUEST_RUN_CODE:
+            return Object.assign({}, state, {
+                state: ExecutionState.running
+            });
+        case AsyncActionTypes.RECEIVE_CODE_STATUS:
+            let apiaction = action as AsyncActionTypes.APIAction;
+            let json = apiaction.json as ResponseTypes.ExecStatusResponse;
+            console.log(json);
+            return Object.assign({}, state, {
+                state: json.status as ExecutionState,
+                lastOutput: json.result
+            })
+        case ActionTypes.RESET_EXECUTION_STATE:
+            return Object.assign({}, state, {
+               state: ExecutionState.none
+            });
+        default:
+            return state;
+    } 
 }
 
 function visibleCodeBlocks(state: Array<CodeBlock>, action: AnyAction) {
@@ -64,7 +84,7 @@ export default function ocSite(state: ApplicationState = defaultApplicationState
         default:
             return {
                 apiKey: state.apiKey,
-                codeExecution: codeExecution(state.codeExecution, action),
+                codeExecution: codeExecution(state.codeExecution, action as AsyncActionTypes.CodeExecutionActions),
                 codeEditor: codeEditor(state.codeEditor, action as ActionTypes.CodeEditorActions),
                 visibleCodeBlocks: visibleCodeBlocks(state.visibleCodeBlocks, action)
             };
