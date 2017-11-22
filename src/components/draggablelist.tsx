@@ -1,3 +1,5 @@
+import "../App.scss"
+
 import * as React from 'react';
 
 import { CodeBlock } from '../state/types';
@@ -8,7 +10,7 @@ interface DraggableListProps {
 }
 
 const DraggableList = (props: DraggableListProps) => (
-    <div>
+    <div className="draggablesContainer">
     {
         props.codeBlocks.map((codeBlock, index) =>
             <Draggable 

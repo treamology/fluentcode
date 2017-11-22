@@ -88,6 +88,11 @@ body {
   box-shadow: -1px 0 $panel_shadow_spread 0 rgba(0, 0, 0, .2);
   z-index: 11;
   width: 260px;
+  overflow-y: auto;
+}
+
+.draggablesContainer {
+  width: 100%;
 }
 
 .courseOutlineSection {
