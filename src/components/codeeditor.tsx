@@ -35,6 +35,9 @@ function collect(dropConnect: DropTargetConnector, monitor: DropTargetMonitor) {
 }
 
 class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, CodeEditorComponentState> {
+    static TAB_SIZE = 4;
+    static TAB_REPLACEMENT = Array(UnwrappedCodeEditor.TAB_SIZE + 1).join(" ");
+    
     codeMirrorInstance: CodeMirror.Editor;
     editor: ReactCodeMirror.ReactCodeMirror;
 
@@ -56,6 +59,13 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, Code
                     options={{
                         mode: 'python',
                         lineNumbers: true,
+                        tabSize: UnwrappedCodeEditor.TAB_SIZE,
+                        indentUnit: UnwrappedCodeEditor.TAB_SIZE,
+                        extraKeys: {
+                            "Tab": (cm: CodeMirror.Editor) => {
+                                cm.getDoc().replaceSelection(UnwrappedCodeEditor.TAB_REPLACEMENT, "end");
+                            }
+                        }
                     }}
                 />
             </div>

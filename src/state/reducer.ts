@@ -6,7 +6,7 @@ const defaultVisibleCodeBlocks: Array<CodeBlock> = [
     {codeTitleText: 'if', 
     nonCodeTitleText: 'statement', 
     descriptionText: 'Something about an if statement.',
-    droppedCode: 'if [conditional]:'},
+    droppedCode: 'if [conditional]:\n    code'},
     {codeTitleText: 'for', 
     nonCodeTitleText: 'loop', 
     descriptionText: 'Something about an for loop',
