@@ -37,6 +37,7 @@ function collect(dropConnect: DropTargetConnector, monitor: DropTargetMonitor) {
 class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, CodeEditorComponentState> {
     static TAB_SIZE = 4;
     static TAB_REPLACEMENT = Array(UnwrappedCodeEditor.TAB_SIZE + 1).join(" ");
+    static MAGIC_CHARACTER = "\\\\";
     
     codeMirrorInstance: CodeMirror.Editor;
     editor: ReactCodeMirror.ReactCodeMirror;
@@ -70,6 +71,26 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, Code
                 />
             </div>
         );
+    }
+
+    componentDidMount() {
+        let cm = this.editor.getCodeMirror()
+        cm.on("beforeChange", this.cmBeforeChange);
+    }
+
+    cmBeforeChange(cm: CodeMirror.Editor, change: CodeMirror.EditorChangeCancellable) {
+        console.log(change);
+
+        const mc = UnwrappedCodeEditor.MAGIC_CHARACTER;
+        const re = new RegExp(mc + '.*?' + mc, "g");
+
+        //let startLine = change.from.line;
+        for (let relLineNum in change.text) {
+            let text = change.text[relLineNum];
+            console.log(text);
+            let match = re.exec(text);
+            console.log(match);
+        }
     }
 
     // tslint:disable-next-line
