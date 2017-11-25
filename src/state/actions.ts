@@ -12,6 +12,12 @@ export module Actions {
             code
         };
     }
+    export function setTextboxes(changes: {}): ActionTypes.SetTextboxAction {
+        return {
+            type: ActionTypes.SET_TEXTBOXES,
+            changes
+        };
+    }
 }
 
 export module AsyncActions {

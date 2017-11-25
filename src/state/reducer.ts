@@ -18,7 +18,7 @@ const defaultVisibleCodeBlocks: Array<CodeBlock> = [
     {codeTitleText: 'print', 
     nonCodeTitleText: '', 
     descriptionText: 'Something about printing',
-    droppedCode: 'print([string])'}
+    droppedCode: 'print(\\string\\)'}
 ];
 
 const defaultCodeExecutionState: CodeExecutionState = {
@@ -27,7 +27,8 @@ const defaultCodeExecutionState: CodeExecutionState = {
 };
 
 const defaultCodeEditorState: CodeEditorState = {
-    currentEnteredCode: ''
+    currentEnteredCode: '',
+    textBoxes: {}
 };
 
 const defaultApplicationState: ApplicationState = {
@@ -67,9 +68,14 @@ function visibleCodeBlocks(state: Array<CodeBlock>, action: AnyAction) {
 function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorActions) {
     switch (action.type) {
         case ActionTypes.SET_CODE:
+            let codeAction = action as ActionTypes.SetCodeAction;
             return Object.assign({}, state, {
-                currentEnteredCode: action.code
+                currentEnteredCode: codeAction.code
             });
+        case ActionTypes.SET_TEXTBOXES:
+            let tbAction = action as ActionTypes.SetTextboxAction;
+            let newTextboxes = { textBoxes: Object.assign({}, state.textBoxes, tbAction.changes)};
+            return Object.assign({}, state, newTextboxes);
         default:
             return state;
     }

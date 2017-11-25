@@ -11,6 +11,11 @@
   overflow: auto;
 }
 
+.textboxWidget {
+  position: absolute;
+  z-index: 3;
+}
+
 //
 // CodeMirror provided CSS, but customized. This is a mix of css and scss, sorry.
 //

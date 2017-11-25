@@ -7,6 +7,7 @@ export interface ApplicationState {
 
 export interface CodeEditorState {
     currentEnteredCode: string;
+    textBoxes: {};
 }
 
 export enum ExecutionState {
@@ -61,11 +62,17 @@ export module ActionTypes {
         type: string;
         code: string;
     };
+    export interface SetTextboxAction {
+        type: string;
+        changes: {};
+    }
     
     export const SET_CODE = 'SET_CODE';
+    export const SET_TEXTBOXES = 'SET_TEXTBOXES';
+
     export const RESET_EXECUTION_STATE = 'RESET_EXECUTION_STATE';
 
-    export type CodeEditorActions = SetCodeAction;
+    export type CodeEditorActions = SetCodeAction | SetTextboxAction;
 }
 
 export module ResponseTypes {
