@@ -11,7 +11,7 @@ export function callAPI(endpoint: string, method: string, body: string = ''): Pr
         'Content-Type': 'application/json',
     });
 
-    if (Store.getInstance().getState().apiKey != '') {
+    if (Store.getInstance().getState().apiKey !== '') {
         let apiKey = Store.getInstance().getState().apiKey;
         headers.append('Authorization', `Token ${apiKey}`);
     }

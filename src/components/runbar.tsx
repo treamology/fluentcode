@@ -51,7 +51,7 @@ const mapStateToProps = (state: ApplicationState) => {
     return {
         executionState: state.codeExecution.state
     };
-}
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<CodeExecutionState>) => {
     return {

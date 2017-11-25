@@ -1,4 +1,12 @@
-import { CodeExecutionState, ApplicationState, ExecutionState, CodeBlock, CodeEditorState, AsyncActionTypes, ResponseTypes } from '../state/types';
+import {
+    CodeExecutionState,
+    ApplicationState,
+    ExecutionState,
+    CodeBlock,
+    CodeEditorState,
+    AsyncActionTypes,
+    ResponseTypes
+    } from '../state/types';
 import { ActionTypes } from '../state/types';
 import { AnyAction } from 'redux';
 
@@ -36,7 +44,7 @@ const defaultApplicationState: ApplicationState = {
     visibleCodeBlocks: defaultVisibleCodeBlocks,
     codeEditor: defaultCodeEditorState,
     codeExecution: defaultCodeExecutionState
-}
+};
 
 function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeExecutionActions) {
     switch (action.type) {
@@ -47,11 +55,10 @@ function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeE
         case AsyncActionTypes.RECEIVE_CODE_STATUS:
             let apiaction = action as AsyncActionTypes.APIAction;
             let json = apiaction.json as ResponseTypes.ExecStatusResponse;
-            console.log(json);
             return Object.assign({}, state, {
                 state: json.status as ExecutionState,
                 lastOutput: json.result
-            })
+            });
         case ActionTypes.RESET_EXECUTION_STATE:
             return Object.assign({}, state, {
                state: ExecutionState.none

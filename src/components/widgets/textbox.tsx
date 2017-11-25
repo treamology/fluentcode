@@ -16,15 +16,16 @@ export default class TextBoxWidget extends React.Component<TextBoxProps, {}> {
     render() {
 
         if (!this.props.absDimensions) {
-            return <input />
+            return <input />;
         }
         const style = {
             left: this.props.absDimensions.x,
             top: this.props.absDimensions.y,
             width: this.props.absDimensions.width,
             height: this.props.absDimensions.height,
-            backgroundColor: "white",
-        }
-        return <input style={style} className="textboxWidget" />
+            backgroundColor: 'white',
+        };
+
+        return <input style={style} className="textboxWidget" />;
     }
 }

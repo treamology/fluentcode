@@ -31,17 +31,17 @@ export interface CodeBlock {
 
 export module AsyncActionTypes {
     export interface ReceiveApiKeyAction {
-        type: string,
-        json: ResponseTypes.ReceiveApiKeyResponse
-    };
+        type: string;
+        json: ResponseTypes.ReceiveApiKeyResponse;
+    }
     export interface RequestRunCodeAction {
         type: string;
         code: string;
-    };
+    }
     export interface APIAction {
         type: string;
         json: ResponseTypes.AnyResponse;
-    };
+    }
 
     export const RECEIVE_API_KEY = 'RECEIVE_API_KEY';
 
@@ -61,7 +61,7 @@ export module ActionTypes {
     export interface SetCodeAction {
         type: string;
         code: string;
-    };
+    }
     export interface SetTextboxAction {
         type: string;
         changes: {};
@@ -87,5 +87,5 @@ export module ResponseTypes {
         result: string;
     }
 
-    export type AnyResponse = ReceiveApiKeyResponse | RunCodeResponse | ExecStatusResponse
+    export type AnyResponse = ReceiveApiKeyResponse | RunCodeResponse | ExecStatusResponse;
 }

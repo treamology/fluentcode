@@ -10,11 +10,7 @@ interface OutputPanelProps {
 }
 
 class UnconnectedOutputPanel extends React.Component<OutputPanelProps> {
-    
-
     render() {
-       // let decodedOutput = decodeURI(decodeURI(this.props.output));
-        //let newlinedOutput = decodedOutput.replace('\n', '&#10;');
         return (
             <div className="outputPanel">
                 <PanelHeader headerText="Output" />
@@ -27,7 +23,7 @@ class UnconnectedOutputPanel extends React.Component<OutputPanelProps> {
 const mapStateToProps = (state: ApplicationState) => {
     return {
         output: state.codeExecution.lastOutput
-    }
+    };
 };
 
 const OutputPanel = connect(mapStateToProps)(UnconnectedOutputPanel);

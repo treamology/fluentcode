@@ -86,7 +86,7 @@ export module AsyncActions {
                 (error: Error) => console.log(error)
             ).then(
                 (json: ResponseTypes.ExecStatusResponse) => {
-                    dispatch(receiveCodeStatus(json))
+                    dispatch(receiveCodeStatus(json));
                     switch (json.status) {
                         case ExecutionState.running:
                             setTimeout(() => {
@@ -96,12 +96,14 @@ export module AsyncActions {
                         case ExecutionState.success:
                             setTimeout(() => {
                                 dispatch(resetExecutionState());
-                            }, 2000)
+                            }, 2000);
+                            return;
+                        default:
                             return;
                     }
                 }
-            )
-        }
+            );
+        };
     }
     export function getAPIKey(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<ApplicationState>) => {
@@ -118,6 +120,6 @@ export module AsyncActions {
             ).then(
                 (json: ResponseTypes.ReceiveApiKeyResponse) => dispatch(receiveAPIKey(json))
             );
-        }
+        };
     }
 }

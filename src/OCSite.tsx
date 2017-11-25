@@ -9,7 +9,7 @@ import RunBar from './components/runbar';
 import { PanelHeader } from './components/smallui';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
-import Store from './store'
+import Store from './store';
 import { AsyncActions } from './state/actions';
 
 class OCSite extends React.Component {
