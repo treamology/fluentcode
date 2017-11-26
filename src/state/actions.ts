@@ -18,6 +18,11 @@ export module Actions {
             changes
         };
     }
+    export function serverError(): AnyAction {
+        return {
+            type: ActionTypes.SERVER_ERROR
+        };
+    }
 }
 
 export module AsyncActions {
@@ -115,10 +120,13 @@ export module AsyncActions {
                     password: 'testuser'
                 })
             ).then(
-                (response: Response) => response.json(),
-                (error: Error) => console.log(error)
+                (response: Response) => response.json()
             ).then(
                 (json: ResponseTypes.ReceiveApiKeyResponse) => dispatch(receiveAPIKey(json))
+            ).catch(
+                (error: Error) => {
+                    dispatch(Actions.serverError());
+                }
             );
         };
     }

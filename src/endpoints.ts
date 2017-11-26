@@ -28,3 +28,7 @@ export function callAPI(endpoint: string, method: string, body: string = ''): Pr
 
     return fetch(`${PROTO}${ROOT}${endpoint}`, request);
 }
+
+export function handleAPIFailure(error: Error) {
+    throw error;
+}

@@ -3,6 +3,7 @@ export interface ApplicationState {
     visibleCodeBlocks: Array<CodeBlock>;
     codeEditor: CodeEditorState;
     codeExecution: CodeExecutionState;
+    serverError: boolean;
 }
 
 export interface CodeEditorState {
@@ -71,6 +72,8 @@ export module ActionTypes {
     export const SET_TEXTBOXES = 'SET_TEXTBOXES';
 
     export const RESET_EXECUTION_STATE = 'RESET_EXECUTION_STATE';
+
+    export const SERVER_ERROR = 'SERVER_ERROR';
 
     export type CodeEditorActions = SetCodeAction | SetTextboxAction;
 }

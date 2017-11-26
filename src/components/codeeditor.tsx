@@ -60,6 +60,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, {}> 
         this.currentTbWidgets = [];
         for (let line of Object.keys(this.props.textboxProps)) {
             let list: Array<TextBoxProps> = this.props.textboxProps[line];
+            if (!list) { continue; }
             for (let tbIndex of Object.keys(list)) {
                 let props = list[tbIndex];
                 this.currentTbWidgets.push(

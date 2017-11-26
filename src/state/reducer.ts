@@ -43,7 +43,8 @@ const defaultApplicationState: ApplicationState = {
     apiKey: '',
     visibleCodeBlocks: defaultVisibleCodeBlocks,
     codeEditor: defaultCodeEditorState,
-    codeExecution: defaultCodeExecutionState
+    codeExecution: defaultCodeExecutionState,
+    serverError: false
 };
 
 function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeExecutionActions) {
@@ -94,12 +95,17 @@ export default function ocSite(state: ApplicationState = defaultApplicationState
             return Object.assign({}, state, {
                 apiKey: action.json.token
             });
+        case ActionTypes.SERVER_ERROR:
+            return Object.assign({}, state, {
+                serverError: true
+            });
         default:
             return {
                 apiKey: state.apiKey,
                 codeExecution: codeExecution(state.codeExecution, action as AsyncActionTypes.CodeExecutionActions),
                 codeEditor: codeEditor(state.codeEditor, action as ActionTypes.CodeEditorActions),
-                visibleCodeBlocks: visibleCodeBlocks(state.visibleCodeBlocks, action)
+                visibleCodeBlocks: visibleCodeBlocks(state.visibleCodeBlocks, action),
+                serverError: false
             };
     }
 }

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import './App.scss';
+import { connect } from 'react-redux';
 
 import Header from './components/header';
 import OutputPanel from './components/outputpanel';
@@ -11,9 +12,22 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 import Store from './store';
 import { AsyncActions } from './state/actions';
+import { ApplicationState } from './state/types';
 
-class OCSite extends React.Component {
+interface OCSiteProps {
+  serverError: boolean;
+}
+
+class UnconnectedOCSite extends React.Component<OCSiteProps> {
   render() {
+    if (Store.getInstance().getState().serverError) {
+      return (
+        <div style={{ backgroundColor: 'white', width: '100vw', height: '100vh' }}>
+          <span>There was an issue communicating with the server. </span>
+          <a href=".">Reload the page?</a>
+        </div>
+      );
+    }
     return (
       <div className="appContainer">
         <Header />
@@ -46,4 +60,12 @@ class OCSite extends React.Component {
   }
 }
 
-export default DragDropContext(HTML5Backend)(OCSite);
+const mapStateToProps = (state: ApplicationState) => {
+  return {
+      serverError: state.serverError
+  };
+};
+
+const OCSite = connect(mapStateToProps)(DragDropContext(HTML5Backend)(UnconnectedOCSite));
+
+export default OCSite;
