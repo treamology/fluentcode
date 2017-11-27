@@ -11,4 +11,4 @@ def add(x, y):
 def execute_code(code):
     client = docker.from_env()
     output = client.containers.run("python_runner", ["-c", code])
-    return str(output)
+    return output.decode('utf-8')
