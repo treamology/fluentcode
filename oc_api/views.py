@@ -6,7 +6,7 @@ from oc_server import models
 from oc_api import serializers
 
 class ListCourses(APIView):
-    def get(self):
+    def get(self, request):
         courses = models.Course.objects.all()
         names = [{"id": course.id, "name": course.name} for course in courses]
         return Response(names)
@@ -22,11 +22,17 @@ class CourseDetail(APIView):
 
 class ListLessons(APIView):
     def get(self, request):
-        pass
+        lessons = models.Lesson.objects.all()
+        names = [{"id": lesson.id, "name": lesson.name} for lesson in lessons]
+        return Response(names)
 
 class LessonDetail(APIView):
     def get(self, request):
-        pass
+        lesson_id = request.query_params["id"]
+        lesson = models.Lesson.objects.get(pk=lesson_id)
+        serializer = serializers.LessonSerializer(lesson)
+
+        return Response(serializer.data)
 
 class ListSections(APIView):
     def get(self, request):

@@ -9,5 +9,5 @@ urlpatterns = [
     url(r'^learn/courses/list', api_views.ListCourses.as_view()),
     url(r'^learn/courses/detail', api_views.CourseDetail.as_view()),
     url(r'^learn/lessons/list', api_views.ListLessons.as_view()),
-    url(r'^learn/lessons/detail', api_views.LessonDetails.as_view())
+    url(r'^learn/lessons/detail', api_views.LessonDetail.as_view())
 ]
