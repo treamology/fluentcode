@@ -64,7 +64,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, {}> 
             for (let tbIndex of Object.keys(list)) {
                 let props = list[tbIndex];
                 this.currentTbWidgets.push(
-                    <TextBoxWidget absDimensions={props.absDimensions} key={Number(line + tbIndex)} />
+                    <TextBoxWidget absDimensions={props.absDimensions} placeholderText={props.placeholderText} key={Number(line + tbIndex)} />
                 );
             }
         }
@@ -157,7 +157,9 @@ function calculateTextboxChanges(
                 height: height
             };
 
-            lineChanges.push({ absDimensions: dimensions });
+            let placeholder = foundExp[0].replace(/\\/g, "")
+
+            lineChanges.push({ absDimensions: dimensions, placeholderText: placeholder });
         }
 
         // If there are no textboxes, set it to undefined so it gets removed from the state

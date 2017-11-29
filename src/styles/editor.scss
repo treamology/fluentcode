@@ -14,8 +14,24 @@
 .textboxWidget {
   position: absolute;
   z-index: 3;
+  border: none;
+  padding: 0px;
+  
+  background-color: $color_background;
+  border-bottom-style: dashed;
+  border-bottom-color: $color_light_highlight;
+  border-bottom-width: 1px;
+
+  color: white;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 18px;
+  //:-moz-placeholder { font-style: italic; }
 }
 
+.textboxWidget::placeholder {
+  font-style: italic;
+  color: $color_light_highlight;
+}
 //
 // CodeMirror provided CSS, but customized. This is a mix of css and scss, sorry.
 //

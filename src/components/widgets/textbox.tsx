@@ -10,6 +10,7 @@ export interface TextBoxDimensions {
 
 export interface TextBoxProps {
     absDimensions: TextBoxDimensions;
+    placeholderText: string;
 }
 
 export default class TextBoxWidget extends React.Component<TextBoxProps, {}> {
@@ -23,9 +24,8 @@ export default class TextBoxWidget extends React.Component<TextBoxProps, {}> {
             top: this.props.absDimensions.y,
             width: this.props.absDimensions.width,
             height: this.props.absDimensions.height,
-            backgroundColor: 'white',
         };
 
-        return <input style={style} className="textboxWidget" />;
+        return <input style={style} className="textboxWidget" placeholder={this.props.placeholderText}/>;
     }
 }
