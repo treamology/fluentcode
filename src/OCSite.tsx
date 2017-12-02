@@ -7,6 +7,7 @@ import OutputPanel from './components/outputpanel';
 import CodeEditor from './components/codeeditor';
 import CurrentDraggableList from './containers/currentdraggablelist';
 import RunBar from './components/runbar';
+import CourseOutline from './components/courseoutline';
 import { PanelHeader } from './components/smallui';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
@@ -35,6 +36,7 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
           <div className="sidebarLeft">
               <div className="courseOutlineSection">
                   <PanelHeader headerText="Course Outline" />
+                  <CourseOutline />
               </div>
               <div className="lessonContentSection">
                   <PanelHeader headerText="Current Lesson" />

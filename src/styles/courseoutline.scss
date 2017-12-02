@@ -1,0 +1,10 @@
+@import 'palette.scss';
+
+.tree-view_arrow {
+    float: right;
+    margin-right: 8px;
+    color: $color_light_highlight;
+}
+.tree-view_children, .tree-view {
+    color: white;
+}
