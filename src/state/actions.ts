@@ -51,6 +51,12 @@ export module AsyncActions {
             json
         };
     }
+    export function receiveCourseList(json: ResponseTypes.CourseListResponse): AsyncActionTypes.APIAction {
+        return {
+            type: AsyncActionTypes.RECEIVE_COURSE_LIST,
+            json
+        };
+    }
     export function resetExecutionState(): AnyAction {
         return {
             type: ActionTypes.RESET_EXECUTION_STATE
@@ -129,5 +135,18 @@ export module AsyncActions {
                 }
             );
         };
+    }
+    export function getLessonList(): ThunkAction<void, {}, {}> {
+        return (dispatch: Dispatch<ApplicationState>) => {
+            Endpoints.callAPI(
+                Endpoints.COURSE_LIST_ENDPOINT,
+                'POST'
+            ).then(
+                (response: Response) => response.json()
+
+            ).then(
+                (json: ResponseTypes.CourseListResponse) => dispatch(receiveCourseList(json))
+            )
+        }
     }
 }

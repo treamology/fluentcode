@@ -2,7 +2,7 @@ import '../App.scss';
 
 import * as React from 'react';
 
-import { CodeBlock } from '../state/types';
+import { CodeBlock } from '../models';
 import Draggable from './draggable';
 
 interface DraggableListProps {

@@ -2,28 +2,33 @@ import {
     CodeExecutionState,
     ApplicationState,
     ExecutionState,
-    CodeBlock,
     CodeEditorState,
+    LearningState,
     AsyncActionTypes,
-    ResponseTypes
+    ResponseTypes,
+    ActionTypes
     } from '../state/types';
-import { ActionTypes } from '../state/types';
+import { CodeBlock } from '../models';
 import { AnyAction } from 'redux';
 
 const defaultVisibleCodeBlocks: Array<CodeBlock> = [
-    {codeTitleText: 'if', 
+    {id: 0,
+    codeTitleText: 'if', 
     nonCodeTitleText: 'statement', 
     descriptionText: 'Something about an if statement.',
     droppedCode: 'if \\conditional\\:\n    '},
-    {codeTitleText: 'for', 
+    {id: 0,
+    codeTitleText: 'for', 
     nonCodeTitleText: 'loop', 
     descriptionText: 'Something about an for loop',
     droppedCode: 'for [var] in [iterable]:'},
-    {codeTitleText: 'while', 
+    {id: 0,
+    codeTitleText: 'while', 
     nonCodeTitleText: 'loop', 
     descriptionText: 'Something about an while loop',
     droppedCode: 'while [conditional]:'},
-    {codeTitleText: 'print', 
+    {id: 0,
+    codeTitleText: 'print', 
     nonCodeTitleText: '', 
     descriptionText: 'Something about printing',
     droppedCode: 'print(\\string\\)'}
@@ -39,11 +44,18 @@ const defaultCodeEditorState: CodeEditorState = {
     textBoxes: {}
 };
 
+const defaultLearningState: LearningState = {
+    currentCourse: undefined,
+    currentSection: undefined,
+    currentDraggables: undefined
+}
+
 const defaultApplicationState: ApplicationState = {
     apiKey: '',
     visibleCodeBlocks: defaultVisibleCodeBlocks,
     codeEditor: defaultCodeEditorState,
     codeExecution: defaultCodeExecutionState,
+    learning: defaultLearningState,
     serverError: false
 };
 
@@ -89,6 +101,10 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
     }
 }
 
+function learning(state: LearningState, action: AnyAction) {
+    return state;
+}
+
 export default function ocSite(state: ApplicationState = defaultApplicationState, action: AnyAction): ApplicationState {
     switch (action.type) {
         case AsyncActionTypes.RECEIVE_API_KEY:
@@ -105,6 +121,7 @@ export default function ocSite(state: ApplicationState = defaultApplicationState
                 codeExecution: codeExecution(state.codeExecution, action as AsyncActionTypes.CodeExecutionActions),
                 codeEditor: codeEditor(state.codeEditor, action as ActionTypes.CodeEditorActions),
                 visibleCodeBlocks: visibleCodeBlocks(state.visibleCodeBlocks, action),
+                learning: learning(state.learning, action),
                 serverError: false
             };
     }

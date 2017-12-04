@@ -1,9 +1,18 @@
+import {Section, Course, CodeBlock, CourseListing} from '../models';
+
 export interface ApplicationState {
     apiKey: string;
     visibleCodeBlocks: Array<CodeBlock>;
     codeEditor: CodeEditorState;
     codeExecution: CodeExecutionState;
+    learning: LearningState;
     serverError: boolean;
+}
+
+export interface LearningState {
+    currentCourse?: Course;
+    currentSection?: Section;
+    currentDraggables?: CodeBlock[];
 }
 
 export interface CodeEditorState {
@@ -21,13 +30,6 @@ export enum ExecutionState {
 export interface CodeExecutionState {
     state: ExecutionState;
     lastOutput: string;
-}
-
-export interface CodeBlock {
-    codeTitleText: string;
-    nonCodeTitleText: string;
-    descriptionText: string;
-    droppedCode: string;
 }
 
 export module AsyncActionTypes {
@@ -53,6 +55,8 @@ export module AsyncActionTypes {
     // API call asking server about execution status
     export const REQUEST_CODE_STATUS = 'REQUEST_CODE_STATUS';
     export const RECEIVE_CODE_STATUS = 'RECEIVE_CODE_STATUS';
+
+    export const RECEIVE_COURSE_LIST = 'RECEIVE_COURSE_LIST';
 
     export type RootActions = ReceiveApiKeyAction;
     export type CodeExecutionActions = RequestRunCodeAction | APIAction;
@@ -89,6 +93,9 @@ export module ResponseTypes {
         status: number;
         result: string;
     }
+    export interface CourseListResponse {
+        courses: CourseListing[];
+    }
 
-    export type AnyResponse = ReceiveApiKeyResponse | RunCodeResponse | ExecStatusResponse;
+    export type AnyResponse = ReceiveApiKeyResponse | RunCodeResponse | ExecStatusResponse | CourseListResponse;
 }
