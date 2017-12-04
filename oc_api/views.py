@@ -1,12 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from oc_api.pyexec.tasks import add
 from oc_server import models
 from oc_api import serializers
 
 class ListCourses(APIView):
-    def get(self, request):
+    def get(self):
         courses = models.Course.objects.all()
         names = [{"id": course.id, "name": course.name} for course in courses]
         return Response(names)
@@ -19,13 +18,6 @@ class CourseDetail(APIView):
 
         return Response(serializer.data)
 
-
-class ListLessons(APIView):
-    def get(self, request):
-        lessons = models.Lesson.objects.all()
-        names = [{"id": lesson.id, "name": lesson.name} for lesson in lessons]
-        return Response(names)
-
 class LessonDetail(APIView):
     def get(self, request):
         lesson_id = request.query_params["id"]
@@ -34,11 +26,10 @@ class LessonDetail(APIView):
 
         return Response(serializer.data)
 
-class ListSections(APIView):
+class SectionDetail(APIView):
     def get(self, request):
-        pass
+        section_id = request.query_params["id"]
+        section = models.Section.objects.get(pk=section_id)
+        serializer = serializers.SectionSerializer(section)
 
-class TestView(APIView):
-    def get(self, request, format=None):
-        add.delay(2, 2)
-        return Response("{ 'hello': 'hey there' }")
+        return Response(serializer.data)

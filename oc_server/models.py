@@ -6,7 +6,7 @@ class Course(models.Model):
     author = models.CharField(max_length=128)
 
     def __str__(self):
-        return self.name + " by" + self.author
+        return self.name + " by " + self.author
 
 
 class Lesson(models.Model):
@@ -26,3 +26,15 @@ class Section(models.Model):
 
     def __str__(self):
         return "Section " + str(self.number) + ": " + self.name
+
+
+class Draggable(models.Model):
+    codeName = models.CharField(max_length=16)
+    descName = models.CharField(max_length=16)
+    descText = models.TextField()
+    code = models.TextField()
+    course = models.ForeignKey('Course', on_delete=models.CASCADE, null=True, related_name='draggables')
+    sections = models.ManyToManyField('Section', related_name='draggables')
+
+    def __str__(self):
+        return self.codeName + ' ' + self.descName + ' from ' + str(self.course)

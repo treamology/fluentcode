@@ -16,3 +16,8 @@ class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Lesson
         fields = ('id', 'name', 'number', 'sections')
+
+class SectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Section
+        fields = ('id', 'name', 'number', 'text')
