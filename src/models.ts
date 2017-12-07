@@ -5,22 +5,24 @@ export interface CourseListing {
 
 export interface Course extends CourseListing {
     author: string;
-    lessons: Lesson;
+    lessons: Lesson[];
 }
 
 export interface Lesson {
     id: number;
-    num: number;
-    course: Course;
     name: string;
+    number: number;
+    sections: Section[];
 }
 
 export interface Section {
     id: number;
-    num: number;
-    lesson: Lesson;
     name: string;
-    draggables: CodeBlock[];
+    number: number;
+    text: string;
+    // lesson: Lesson;
+    
+    //draggables: CodeBlock[];
 }
 
 export interface CodeBlock {

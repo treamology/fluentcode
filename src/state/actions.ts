@@ -4,6 +4,7 @@ import { ThunkAction } from 'redux-thunk';
 import Store from '../store';
 import * as Endpoints from '../endpoints';
 import { ActionTypes, AsyncActionTypes, ResponseTypes } from './types';
+import * as qs from 'query-string';
 
 export module Actions {
     export function setCode(code: string): ActionTypes.SetCodeAction {
@@ -54,6 +55,12 @@ export module AsyncActions {
     export function receiveCourseList(json: ResponseTypes.CourseListResponse): AsyncActionTypes.APIAction {
         return {
             type: AsyncActionTypes.RECEIVE_COURSE_LIST,
+            json
+        };
+    }
+    export function receiveCourseDetail(json: ResponseTypes.CourseDetailResponse): AsyncActionTypes.APIAction {
+        return {
+            type: AsyncActionTypes.RECEIVE_COURSE_DETAIL,
             json
         };
     }
@@ -136,7 +143,7 @@ export module AsyncActions {
             );
         };
     }
-    export function getLessonList(): ThunkAction<void, {}, {}> {
+    export function getCourseList(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<ApplicationState>) => {
             Endpoints.callAPI(
                 Endpoints.COURSE_LIST_ENDPOINT,
@@ -146,6 +153,21 @@ export module AsyncActions {
 
             ).then(
                 (json: ResponseTypes.CourseListResponse) => dispatch(receiveCourseList(json))
+            )
+        }
+    }
+    export function getCourseDetail(id: number): ThunkAction<void, {}, {}> {
+        return (dispatch: Dispatch<ApplicationState>) => {
+            Endpoints.callAPI(
+                Endpoints.COURSE_DETAIL_ENDPOINT,
+                'GET',
+                qs.stringify({
+                    id: id
+                })
+            ).then(
+                (response: Response) => response.json()
+            ).then(
+                (json: ResponseTypes.CourseDetailResponse) => dispatch(receiveCourseDetail(json))
             )
         }
     }

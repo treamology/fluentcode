@@ -58,6 +58,8 @@ export module AsyncActionTypes {
 
     export const RECEIVE_COURSE_LIST = 'RECEIVE_COURSE_LIST';
 
+    export const RECEIVE_COURSE_DETAIL = 'RECEIVE_COURSE_DETAIL';
+
     export type RootActions = ReceiveApiKeyAction;
     export type CodeExecutionActions = RequestRunCodeAction | APIAction;
 }
@@ -96,6 +98,7 @@ export module ResponseTypes {
     export interface CourseListResponse {
         courses: CourseListing[];
     }
+    export interface CourseDetailResponse extends Course {}
 
-    export type AnyResponse = ReceiveApiKeyResponse | RunCodeResponse | ExecStatusResponse | CourseListResponse;
+    export type AnyResponse = ReceiveApiKeyResponse | RunCodeResponse | ExecStatusResponse | CourseListResponse | CourseDetailResponse;
 }

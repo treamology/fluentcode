@@ -101,8 +101,16 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
     }
 }
 
-function learning(state: LearningState, action: AnyAction) {
-    return state;
+function learning(state: LearningState, action: AsyncActionTypes.APIAction) {
+    switch (action.type) {
+        case AsyncActionTypes.RECEIVE_COURSE_DETAIL:
+            let course = action.json as ResponseTypes.CourseDetailResponse;
+            return Object.assign({}, state, {
+                currentCourse: course
+            });
+        default:
+            return state;
+    }
 }
 
 export default function ocSite(state: ApplicationState = defaultApplicationState, action: AnyAction): ApplicationState {
@@ -121,7 +129,7 @@ export default function ocSite(state: ApplicationState = defaultApplicationState
                 codeExecution: codeExecution(state.codeExecution, action as AsyncActionTypes.CodeExecutionActions),
                 codeEditor: codeEditor(state.codeEditor, action as ActionTypes.CodeEditorActions),
                 visibleCodeBlocks: visibleCodeBlocks(state.visibleCodeBlocks, action),
-                learning: learning(state.learning, action),
+                learning: learning(state.learning, action as AsyncActionTypes.APIAction),
                 serverError: false
             };
     }
