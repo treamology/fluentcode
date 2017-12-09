@@ -64,7 +64,11 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, {}> 
             for (let tbIndex of Object.keys(list)) {
                 let props = list[tbIndex];
                 this.currentTbWidgets.push(
-                    <TextBoxWidget absDimensions={props.absDimensions} placeholderText={props.placeholderText} key={Number(line + tbIndex)} />
+                    <TextBoxWidget
+                        absDimensions={props.absDimensions}
+                        placeholderText={props.placeholderText}
+                        key={Number(line + tbIndex)}
+                    />
                 );
             }
         }
@@ -157,7 +161,7 @@ function calculateTextboxChanges(
                 height: height
             };
 
-            let placeholder = foundExp[0].replace(/\\/g, "")
+            let placeholder = foundExp[0].replace(/\\/g, '');
 
             lineChanges.push({ absDimensions: dimensions, placeholderText: placeholder });
         }

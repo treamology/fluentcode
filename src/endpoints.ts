@@ -27,14 +27,12 @@ export function callAPI(endpoint: string, method: string, body: string = ''): Pr
     };
 
     let query = '';
-    if (method == 'GET') {
+    if (method === 'GET') {
         query = body;
-    }
-    else {
+    } else {
         request.body = body;
     }
     
-
     return fetch(`${PROTO}${ROOT}${endpoint}?${query}`, request);
 }
 

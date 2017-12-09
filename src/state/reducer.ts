@@ -48,7 +48,7 @@ const defaultLearningState: LearningState = {
     currentCourse: undefined,
     currentSection: undefined,
     currentDraggables: undefined
-}
+};
 
 const defaultApplicationState: ApplicationState = {
     apiKey: '',

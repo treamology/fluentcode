@@ -1,33 +1,22 @@
 import * as React from 'react';
-//import * as TreeView from 'react-treeview';
 import TreeView from '../react-treeview';
 import Store from '../store';
-import {AsyncActions} from '../state/actions';
-import {ApplicationState} from '../state/types';
-import {Course} from '../models';
-import {connect} from 'react-redux';
+import { AsyncActions } from '../state/actions';
+import { ApplicationState } from '../state/types';
+import { Course } from '../models';
+import { connect } from 'react-redux';
 
 import '../styles/react-treeview.css';
-import '../styles/courseoutline.scss'
+import '../styles/courseoutline.scss';
 
 let arrowImage = require('../assets/svg/arrow.svg');
 
 interface CourseOutlineProps {
-    currentCourse: Course
+    currentCourse: Course;
 }
 
 class UnconnectedCourseOutline extends React.Component<CourseOutlineProps> {
     render() {
-        // return(
-        // <div className="courseOutlineContainer">
-        //     <TreeView nodeLabel="Lesson 1: Blah Blah" defaultCollapsed={true} arrowImage={arrowImage} itemClassName="parentItem">
-        //         <TreeView nodeLabel="Section 1.1: Blah Blah" />
-        //         <TreeView nodeLabel="Section 1.1: Blah Blah" />
-        //     </TreeView>
-        //     <TreeView nodeLabel="Lesson 2: Blah Blah" defaultCollapsed={true} arrowImage={arrowImage} itemClassName="parentItem">
-        //         <TreeView nodeLabel="Section 2.1: Blah Blah" />
-        //     </TreeView>
-        // </div>);
         let trees: JSX.Element[] = [];
         if (this.props.currentCourse) {
             
@@ -37,7 +26,14 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps> {
                 let childrenArray: JSX.Element[] = [];
                 for (let i = lesson.sections.length - 1; i >= 0; --i) {
                     let section = lesson.sections[i];
-                    let tree = <TreeView nodeLabel={`Section ${section.number}: ${section.name}`} arrowImage={arrowImage} key={lesson.number.toString() + section.number} />
+                    let tree = (
+                    <TreeView
+                        nodeLabel={`Section ${section.number}: ${section.name}`}
+                        arrowImage={arrowImage}
+                        key={lesson.number.toString() + section.number}
+                    />
+                    );
+
                     childrenArray.push(tree);
                 }
 
@@ -47,16 +43,24 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps> {
             // for (let lesson of this.props.currentCourse.lessons) {
             for (let i = this.props.currentCourse.lessons.length - 1; i >= 0; --i) {
                 let lesson = this.props.currentCourse.lessons[i];
-                let tree = (<TreeView nodeLabel={`Lesson ${lesson.number}: ${lesson.name}`} arrowImage={arrowImage} itemClassName="parentItem" key={lesson.number}>
-                {lessonChildren[i].map((child) => child)}
+                let tree = (
+                <TreeView
+                    nodeLabel={`Lesson ${lesson.number}: ${lesson.name}`}
+                    arrowImage={arrowImage}
+                    itemClassName="parentItem"
+                    key={lesson.number}
+                >
+                    {lessonChildren[i].map((child) => child)}
                 </TreeView>);
                 trees.push(tree);
             }
         }
 
-        return (<div className="courseOutlineContainer">
+        return (
+        <div className="courseOutlineContainer">
             {trees.map((tree) => tree)}
-        </div>);
+        </div>
+        );
     }
     
     // temporary
@@ -68,8 +72,8 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps> {
 const mapStateToProps = (state: ApplicationState) => {
     return {
         currentCourse: state.learning.currentCourse
-    }
-}
+    };
+};
 
 const CourseOutline = connect(mapStateToProps)(UnconnectedCourseOutline);
 

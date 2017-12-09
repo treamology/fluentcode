@@ -153,8 +153,8 @@ export module AsyncActions {
 
             ).then(
                 (json: ResponseTypes.CourseListResponse) => dispatch(receiveCourseList(json))
-            )
-        }
+            );
+        };
     }
     export function getCourseDetail(id: number): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<ApplicationState>) => {
@@ -168,7 +168,7 @@ export module AsyncActions {
                 (response: Response) => response.json()
             ).then(
                 (json: ResponseTypes.CourseDetailResponse) => dispatch(receiveCourseDetail(json))
-            )
-        }
+            );
+        };
     }
 }

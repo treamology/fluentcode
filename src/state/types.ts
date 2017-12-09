@@ -1,4 +1,4 @@
-import {Section, Course, CodeBlock, CourseListing} from '../models';
+import { Section, Course, CodeBlock, CourseListing } from '../models';
 
 export interface ApplicationState {
     apiKey: string;
@@ -100,5 +100,10 @@ export module ResponseTypes {
     }
     export interface CourseDetailResponse extends Course {}
 
-    export type AnyResponse = ReceiveApiKeyResponse | RunCodeResponse | ExecStatusResponse | CourseListResponse | CourseDetailResponse;
+    export type AnyResponse = 
+        ReceiveApiKeyResponse | 
+        RunCodeResponse | 
+        ExecStatusResponse | 
+        CourseListResponse | 
+        CourseDetailResponse;
 }
