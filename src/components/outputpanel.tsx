@@ -1,6 +1,6 @@
 import * as React from 'react';
 import '../App.scss';
-import { ApplicationState } from '../state/types';
+import { ApplicationState } from '../state/types/state';
 import { connect } from 'react-redux';
 
 import { PanelHeader } from './smallui';

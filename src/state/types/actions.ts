@@ -1,36 +1,4 @@
-import { Section, Course, CodeBlock, CourseListing } from '../models';
-
-export interface ApplicationState {
-    apiKey: string;
-    visibleCodeBlocks: Array<CodeBlock>;
-    codeEditor: CodeEditorState;
-    codeExecution: CodeExecutionState;
-    learning: LearningState;
-    serverError: boolean;
-}
-
-export interface LearningState {
-    currentCourse?: Course;
-    currentSection?: Section;
-    currentDraggables?: CodeBlock[];
-}
-
-export interface CodeEditorState {
-    currentEnteredCode: string;
-    textBoxes: {};
-}
-
-export enum ExecutionState {
-    none = -1,
-    running = 2,
-    success = 0,
-    failed = 1,
-    metafail = 3
-}
-export interface CodeExecutionState {
-    state: ExecutionState;
-    lastOutput: string;
-}
+import { Course, CourseListing } from '../../models';
 
 export module AsyncActionTypes {
     export interface ReceiveApiKeyAction {
@@ -56,8 +24,10 @@ export module AsyncActionTypes {
     export const REQUEST_CODE_STATUS = 'REQUEST_CODE_STATUS';
     export const RECEIVE_CODE_STATUS = 'RECEIVE_CODE_STATUS';
 
+    // Unimplemented
     export const RECEIVE_COURSE_LIST = 'RECEIVE_COURSE_LIST';
 
+    // Received details of course
     export const RECEIVE_COURSE_DETAIL = 'RECEIVE_COURSE_DETAIL';
 
     export type RootActions = ReceiveApiKeyAction;

@@ -2,7 +2,7 @@ import * as React from 'react';
 import TreeView from '../react-treeview';
 import Store from '../store';
 import { AsyncActions } from '../state/actions';
-import { ApplicationState } from '../state/types';
+import { ApplicationState } from '../state/types/state';
 import { Course } from '../models';
 import { connect } from 'react-redux';
 

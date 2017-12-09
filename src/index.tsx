@@ -8,7 +8,7 @@ import './index.css';
 import Store from './store';
 import * as Redux from 'redux';
 
-import { ApplicationState } from './state/types';
+import { ApplicationState } from './state/types/state';
 const store: Redux.Store<ApplicationState> = Store.getInstance();
 
 ReactDOM.render(

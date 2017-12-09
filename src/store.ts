@@ -1,6 +1,6 @@
 import * as Redux from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import { ApplicationState } from './state/types';
+import { ApplicationState } from './state/types/state';
 import ocSite from './state/reducer';
 
 class Store {

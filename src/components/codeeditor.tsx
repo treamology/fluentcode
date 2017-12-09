@@ -6,7 +6,7 @@ import { Actions } from '../state/actions';
 import * as ReactCodeMirror from 'react-codemirror';
 import { connect, Dispatch } from 'react-redux';
 import { AnyAction } from 'redux';
-import { CodeEditorState, ApplicationState } from '../state/types';
+import { CodeEditorState, ApplicationState } from '../state/types/state';
 import { DroppedCodeItem } from './draggable';
 import { DropTarget, DropTargetMonitor, DropTargetConnector, DndComponentClass } from 'react-dnd';
 import TextBoxWidget, { TextBoxProps, TextBoxDimensions } from './widgets/textbox';

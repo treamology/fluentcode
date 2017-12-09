@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import DraggableList, { DraggableListProps } from '../components/draggablelist';
-import { ApplicationState } from '../state/types';
+import { ApplicationState } from '../state/types/state';
 
 const mapStateToProps = (state: ApplicationState, ownProps: DraggableListProps) => {
     return {

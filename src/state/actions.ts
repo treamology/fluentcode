@@ -1,9 +1,9 @@
-import { CodeExecutionState, ApplicationState, ExecutionState } from './types';
+import { CodeExecutionState, ApplicationState, ExecutionState } from './types/state';
 import { Dispatch, AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import Store from '../store';
 import * as Endpoints from '../endpoints';
-import { ActionTypes, AsyncActionTypes, ResponseTypes } from './types';
+import { ActionTypes, AsyncActionTypes, ResponseTypes } from './types/actions';
 import * as qs from 'query-string';
 
 export module Actions {

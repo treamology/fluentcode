@@ -1,13 +1,15 @@
 import {
+    AsyncActionTypes,
+    ResponseTypes,
+    ActionTypes
+    } from '../state/types/actions';
+import {
     CodeExecutionState,
     ApplicationState,
     ExecutionState,
     CodeEditorState,
     LearningState,
-    AsyncActionTypes,
-    ResponseTypes,
-    ActionTypes
-    } from '../state/types';
+} from '../state/types/state';
 import { CodeBlock } from '../models';
 import { AnyAction } from 'redux';
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import '../styles/runbar.scss';
 import { connect, Dispatch } from 'react-redux';
-import { CodeExecutionState, ExecutionState, ApplicationState } from '../state/types';
+import { CodeExecutionState, ExecutionState, ApplicationState } from '../state/types/state';
 
 import { AsyncActions } from '../state/actions';
 import { AnyAction } from 'redux';
