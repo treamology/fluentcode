@@ -7,6 +7,7 @@ export interface ApplicationState {
     codeExecution: CodeExecutionState;
     learning: LearningState;
     serverError: boolean;
+    checkingConnection: boolean;
 }
 
 export interface LearningState {

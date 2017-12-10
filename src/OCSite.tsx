@@ -17,11 +17,12 @@ import { ApplicationState } from './state/types/state';
 
 interface OCSiteProps {
   serverError: boolean;
+  checkingConnection: boolean;
 }
 
 class UnconnectedOCSite extends React.Component<OCSiteProps> {
   render() {
-    if (Store.getInstance().getState().serverError) {
+    if (this.props.serverError) {
       return (
         <div style={{ backgroundColor: 'white', width: '100vw', height: '100vh' }}>
           <span>There was an issue communicating with the server. </span>
@@ -29,8 +30,20 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
         </div>
       );
     }
+    let connectionCheck;
+    if (this.props.checkingConnection) {
+      connectionCheck = (
+        <div className="connectionCheckContainer">
+          <div className="connectionCheck">
+            <span className="uhoh">!</span>
+            <span className="connectionMessage">We're having trouble connecting to the server. Still trying...</span>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="appContainer">
+        {connectionCheck}
         <Header />
         <div className="appContent">
           <div className="sidebarLeft">
@@ -64,7 +77,8 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
 
 const mapStateToProps = (state: ApplicationState) => {
   return {
-      serverError: state.serverError
+      serverError: state.serverError,
+      checkingConnection: state.checkingConnection
   };
 };
 

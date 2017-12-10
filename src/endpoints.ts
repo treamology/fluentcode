@@ -3,6 +3,7 @@ import Store from './store';
 export const PROTO = 'http://';
 export const ROOT = 'localhost:8000/api';
 
+export const HEARTBEAT_ENDPOINT = '/heartbeat';
 export const API_KEY_ENDPOINT = '/get_auth_token';
 export const CODE_EXECUTE_ENDPOINT = '/code/execute';
 export const COURSE_LIST_ENDPOINT = '/learn/courses/list';

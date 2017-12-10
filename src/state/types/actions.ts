@@ -50,6 +50,8 @@ export module ActionTypes {
     export const RESET_EXECUTION_STATE = 'RESET_EXECUTION_STATE';
 
     export const SERVER_ERROR = 'SERVER_ERROR';
+    export const CHECK_CONNECTION = 'CHECK_CONNECTION';
+    export const CONNECTION_OK = 'CONNECTION_OK';
 
     export type CodeEditorActions = SetCodeAction | SetTextboxAction;
 }

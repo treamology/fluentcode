@@ -58,7 +58,8 @@ const defaultApplicationState: ApplicationState = {
     codeEditor: defaultCodeEditorState,
     codeExecution: defaultCodeExecutionState,
     learning: defaultLearningState,
-    serverError: false
+    serverError: false,
+    checkingConnection: false
 };
 
 function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeExecutionActions) {
@@ -125,6 +126,14 @@ export default function ocSite(state: ApplicationState = defaultApplicationState
             return Object.assign({}, state, {
                 serverError: true
             });
+        case ActionTypes.CHECK_CONNECTION:
+            return Object.assign({}, state, {
+                checkingConnection: true
+            });
+        case ActionTypes.CONNECTION_OK:
+            return Object.assign({}, state, {
+                checkingConnection: false
+            });
         default:
             return {
                 apiKey: state.apiKey,
@@ -132,7 +141,8 @@ export default function ocSite(state: ApplicationState = defaultApplicationState
                 codeEditor: codeEditor(state.codeEditor, action as ActionTypes.CodeEditorActions),
                 visibleCodeBlocks: visibleCodeBlocks(state.visibleCodeBlocks, action),
                 learning: learning(state.learning, action as AsyncActionTypes.APIAction),
-                serverError: false
+                serverError: state.serverError,
+                checkingConnection: state.checkingConnection
             };
     }
 }

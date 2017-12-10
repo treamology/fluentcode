@@ -101,3 +101,42 @@ body {
 .lessonContentSection {
   height: 50%;
 }
+
+.connectionCheckContainer {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+.connectionCheck {
+  position: fixed;
+  border-radius: 20px;
+  z-index: 100;
+  width: 600px;
+  height: 300px;
+
+  top: 50%;
+  left: 50%;
+  margin-left: -300px;
+  margin-top: -150px;
+
+  background-color: $color_background;
+  text-align: center;
+}
+
+.uhoh {
+  display: inline-block;
+  margin-top: 40px;
+
+  color: white;
+  font-size: 96px;
+  font-weight: bold;
+}
+
+.connectionMessage {
+  color: white;
+  font-size: 16px;
+  display: block;
+}

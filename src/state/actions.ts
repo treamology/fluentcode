@@ -24,6 +24,16 @@ export module Actions {
             type: ActionTypes.SERVER_ERROR
         };
     }
+    export function checkingConnection(): AnyAction {
+        return {
+            type: ActionTypes.CHECK_CONNECTION
+        };
+    }
+    export function connectionOK(): AnyAction {
+        return {
+            type: ActionTypes.CONNECTION_OK
+        };
+    }
 }
 
 export module AsyncActions {
@@ -69,7 +79,21 @@ export module AsyncActions {
             type: ActionTypes.RESET_EXECUTION_STATE
         };
     }
+    export function checkConnection(): ThunkAction<void, {}, {}> {
+        return (dispatch: Dispatch<ApplicationState>) => {
+            dispatch(Actions.checkingConnection());
 
+            Endpoints.callAPI(
+                Endpoints.HEARTBEAT_ENDPOINT,
+                'GET'
+            ).then(() => dispatch(Actions.connectionOK())
+            ).catch(() => {
+                setTimeout(() => {
+                    dispatch(checkConnection());
+                }, 2000);
+            });
+        };
+    }
     export function runCode(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<CodeExecutionState>) => {
             const currentCode = Store.getInstance().getState().codeEditor.currentEnteredCode;
@@ -82,8 +106,7 @@ export module AsyncActions {
                     code: currentCode
                 })
             ).then(
-                (response: Response) => response.json(),
-                (error: Error) => console.log(error)
+                (response: Response) => response.json()
             ).then(
                 (json: ResponseTypes.RunCodeResponse) => {
                     dispatch(receiveRunCode(json));
@@ -91,7 +114,10 @@ export module AsyncActions {
                         dispatch(getCodeStatus());
                     }, 2000);
                 }
-            );
+            ).catch(() => {
+                dispatch(resetExecutionState());
+                dispatch(checkConnection());
+            });
         };
     }
     export function getCodeStatus(): ThunkAction<void, {}, {}> {
@@ -100,8 +126,7 @@ export module AsyncActions {
                 Endpoints.CODE_EXECUTE_ENDPOINT,
                 'GET'
             ).then(
-                (response: Response) => response.json(),
-                (error: Error) => console.log(error)
+                (response: Response) => response.json()
             ).then(
                 (json: ResponseTypes.ExecStatusResponse) => {
                     dispatch(receiveCodeStatus(json));
@@ -120,7 +145,10 @@ export module AsyncActions {
                             return;
                     }
                 }
-            );
+            ).catch(() => {
+                dispatch(resetExecutionState());
+                dispatch(checkConnection());
+            });
         };
     }
     export function getAPIKey(): ThunkAction<void, {}, {}> {
@@ -153,6 +181,7 @@ export module AsyncActions {
 
             ).then(
                 (json: ResponseTypes.CourseListResponse) => dispatch(receiveCourseList(json))
+            ).catch(() => dispatch(checkConnection())
             );
         };
     }
@@ -168,6 +197,7 @@ export module AsyncActions {
                 (response: Response) => response.json()
             ).then(
                 (json: ResponseTypes.CourseDetailResponse) => dispatch(receiveCourseDetail(json))
+            ).catch(() => dispatch(checkConnection())
             );
         };
     }
