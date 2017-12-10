@@ -1,10 +1,11 @@
 import * as React from 'react';
 import TreeView from '../react-treeview';
 import Store from '../store';
-import { AsyncActions } from '../state/actions';
+import { AsyncActions, Actions } from '../state/actions';
 import { ApplicationState } from '../state/types/state';
-import { Course } from '../models';
+import { Course, Section } from '../models';
 import { connect } from 'react-redux';
+import { Dispatch, AnyAction } from 'redux';
 
 import '../styles/react-treeview.css';
 import '../styles/courseoutline.scss';
@@ -13,6 +14,7 @@ let arrowImage = require('../assets/svg/arrow.svg');
 
 interface CourseOutlineProps {
     currentCourse: Course;
+    setSection: (section: Section) => AnyAction;
 }
 
 class UnconnectedCourseOutline extends React.Component<CourseOutlineProps> {
@@ -31,6 +33,7 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps> {
                         nodeLabel={`Section ${section.number}: ${section.name}`}
                         arrowImage={arrowImage}
                         key={lesson.number.toString() + section.number}
+                        onClick={() => this.props.setSection(section)}
                     />
                     );
 
@@ -75,6 +78,14 @@ const mapStateToProps = (state: ApplicationState) => {
     };
 };
 
-const CourseOutline = connect(mapStateToProps)(UnconnectedCourseOutline);
+const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => {
+    return {
+        setSection: (section: Section) => {
+            dispatch(Actions.selectSection(section));
+        }
+    };
+};
+
+const CourseOutline = connect(mapStateToProps, mapDispatchToProps)(UnconnectedCourseOutline);
 
 export default CourseOutline;

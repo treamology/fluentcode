@@ -1,4 +1,4 @@
-import { Course, CourseListing } from '../../models';
+import { Course, CourseListing, Section } from '../../models';
 
 export module AsyncActionTypes {
     export interface ReceiveApiKeyAction {
@@ -43,6 +43,10 @@ export module ActionTypes {
         type: string;
         changes: {};
     }
+    export interface SelectSectionAction {
+        type: string;
+        section: Section;
+    }
     
     export const SET_CODE = 'SET_CODE';
     export const SET_TEXTBOXES = 'SET_TEXTBOXES';
@@ -52,6 +56,8 @@ export module ActionTypes {
     export const SERVER_ERROR = 'SERVER_ERROR';
     export const CHECK_CONNECTION = 'CHECK_CONNECTION';
     export const CONNECTION_OK = 'CONNECTION_OK';
+
+    export const SELECT_SECTION = 'SELECT_SECTION';
 
     export type CodeEditorActions = SetCodeAction | SetTextboxAction;
 }

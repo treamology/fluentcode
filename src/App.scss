@@ -78,6 +78,9 @@ body {
   box-shadow: 1px 0 $panel_shadow_spread 0 rgba(0, 0, 0, .2);
   z-index: 11;
   width: 375px;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebarRight {
@@ -93,13 +96,6 @@ body {
 
 .draggablesContainer {
   width: 100%;
-}
-
-.courseOutlineSection {
-  height: 50%;
-}
-.lessonContentSection {
-  height: 50%;
 }
 
 .connectionCheckContainer {

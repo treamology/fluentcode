@@ -104,12 +104,17 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
     }
 }
 
-function learning(state: LearningState, action: AsyncActionTypes.APIAction) {
+function learning(state: LearningState, action: AnyAction) {
     switch (action.type) {
         case AsyncActionTypes.RECEIVE_COURSE_DETAIL:
             let course = action.json as ResponseTypes.CourseDetailResponse;
             return Object.assign({}, state, {
                 currentCourse: course
+            });
+        case ActionTypes.SELECT_SECTION:
+            let selectSectionAction = action as ActionTypes.SelectSectionAction;
+            return Object.assign({}, state, {
+                currentSection: selectSectionAction.section
             });
         default:
             return state;
@@ -146,11 +151,3 @@ export default function ocSite(state: ApplicationState = defaultApplicationState
             };
     }
 }
-
-// const ocSite: Reducer<ApplicationState> = combineReducers({
-//     visibleCodeBlocks,
-//     codeExecution,
-//     codeEditor,
-// });
-
-// export default ocSite;

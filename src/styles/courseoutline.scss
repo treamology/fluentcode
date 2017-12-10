@@ -2,6 +2,15 @@
 
 .courseOutlineContainer {
     margin-top: 12px;
+    flex: 1;
+
+    > .tree-view {
+        margin-left: 7px;
+        margin-top: 8px;
+    }
+    .tree-view:first-of-type {
+        margin-top: 2px;
+    }
 }
 
 .tree-view_arrow {
@@ -15,20 +24,6 @@
     margin-left: 7px;
     font-size: 14px;
     height: 24px;
-
-    #text {
-        vertical-align: middle;
-    }
-}
-
-.courseOutlineSection .courseOutlineContainer {
-    > .tree-view {
-        margin-left: 7px;
-        margin-top: 8px;
-    }
-    .tree-view:first-of-type {
-        margin-top: 2px;
-    }
 }
 
 .parentItem {
@@ -36,4 +31,8 @@
     border-bottom: solid;
     border-bottom-width: 1px;
     border-bottom-color: $color_background;
+}
+
+.tree-view_children > .tree-view:first-child {
+    margin-top: 4px;
 }

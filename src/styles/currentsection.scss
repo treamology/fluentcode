@@ -1,0 +1,26 @@
+@import 'palette.scss';
+
+.currentSectionContainer {
+    padding: 8px;
+    overflow-y: auto;
+    overflow-x: wrap;
+    //max-height: calc(100% - 52px);
+
+    flex: 1;
+}
+
+.sectionText {
+    color: white;
+
+    p {
+        margin: 8px 0px;
+    }
+
+    h1 {
+        margin: 12px 0px;
+    }
+
+    p:first-child {
+        margin-top: 0px;
+    }
+}

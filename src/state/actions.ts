@@ -4,6 +4,7 @@ import { ThunkAction } from 'redux-thunk';
 import Store from '../store';
 import * as Endpoints from '../endpoints';
 import { ActionTypes, AsyncActionTypes, ResponseTypes } from './types/actions';
+import { Section } from '../models';
 import * as qs from 'query-string';
 
 export module Actions {
@@ -32,6 +33,12 @@ export module Actions {
     export function connectionOK(): AnyAction {
         return {
             type: ActionTypes.CONNECTION_OK
+        };
+    }
+    export function selectSection(section: Section): AnyAction {
+        return {
+            type: ActionTypes.SELECT_SECTION,
+            section: section
         };
     }
 }
