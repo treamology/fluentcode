@@ -2,28 +2,44 @@ import '../App.scss';
 
 import * as React from 'react';
 
-import { CodeBlock } from '../models';
+import { Course } from '../models';
 import Draggable from './draggable';
+import { ApplicationState } from '../state/types/state';
+import { connect } from 'react-redux';
 
 interface DraggableListProps {
-    codeBlocks: Array<CodeBlock>;
+    currentCourse: Course
 }
 
-const DraggableList = (props: DraggableListProps) => (
-    <div className="draggablesContainer">
-    {
-        props.codeBlocks.map((codeBlock, index) =>
-            <Draggable 
-                codeTitleText={codeBlock.codeTitleText}
-                nonCodeTitleText={codeBlock.nonCodeTitleText}
-                descriptionText={codeBlock.descriptionText}
-                droppedCode={codeBlock.droppedCode}
-                key={index}
-            />
-        )
+class UnconnectedDraggableList extends React.Component<DraggableListProps> {
+    render() {
+        let draggables: JSX.Element[] = [];
+        if (this.props.currentCourse) {
+            draggables = this.props.currentCourse.draggables.map((codeBlock, index) =>
+                <Draggable 
+                    codeTitleText={codeBlock.codeName}
+                    nonCodeTitleText={codeBlock.descName}
+                    descriptionText={codeBlock.descText}
+                    droppedCode={codeBlock.code}
+                    key={index}
+                />
+            )
+
+        }
+        
+        return (
+        <div className="draggablesContainer">
+            {draggables}
+        </div>);
     }
-    </div>
-);
+}
+
+const mapStateToProps = (state: ApplicationState) => {
+    return {
+        currentCourse: state.learning.currentCourse
+    };
+};
+
+const DraggableList = connect(mapStateToProps)(UnconnectedDraggableList);
 
 export default DraggableList;
-export { DraggableListProps };

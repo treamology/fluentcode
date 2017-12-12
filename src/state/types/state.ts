@@ -1,8 +1,7 @@
-import { Section, CodeBlock, Course } from '../../models';
+import { Section, Course } from '../../models';
 
 export interface ApplicationState {
     apiKey: string;
-    visibleCodeBlocks: Array<CodeBlock>;
     codeEditor: CodeEditorState;
     codeExecution: CodeExecutionState;
     learning: LearningState;
@@ -13,7 +12,6 @@ export interface ApplicationState {
 export interface LearningState {
     currentCourse?: Course;
     currentSection?: Section;
-    currentDraggables?: CodeBlock[];
 }
 
 export interface CodeEditorState {

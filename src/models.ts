@@ -6,6 +6,15 @@ export interface CourseListing {
 export interface Course extends CourseListing {
     author: string;
     lessons: Lesson[];
+    draggables: DraggableData[];
+}
+
+export interface DraggableData {
+    id: number;
+    codeName: string;
+    descName: string;
+    descText: string;
+    code: string;
 }
 
 export interface Lesson {
@@ -20,15 +29,5 @@ export interface Section {
     name: string;
     number: number;
     text: string;
-    // lesson: Lesson;
-    
-    //draggables: CodeBlock[];
-}
-
-export interface CodeBlock {
-    id: number;
-    codeTitleText: string;
-    nonCodeTitleText: string;
-    descriptionText: string;
-    droppedCode: string;
+    draggables: number[];
 }

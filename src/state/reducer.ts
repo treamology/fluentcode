@@ -10,31 +10,30 @@ import {
     CodeEditorState,
     LearningState,
 } from '../state/types/state';
-import { CodeBlock } from '../models';
 import { AnyAction } from 'redux';
 
-const defaultVisibleCodeBlocks: Array<CodeBlock> = [
-    {id: 0,
-    codeTitleText: 'if', 
-    nonCodeTitleText: 'statement', 
-    descriptionText: 'Something about an if statement.',
-    droppedCode: 'if \\conditional\\:\n    '},
-    {id: 0,
-    codeTitleText: 'for', 
-    nonCodeTitleText: 'loop', 
-    descriptionText: 'Something about an for loop',
-    droppedCode: 'for [var] in [iterable]:'},
-    {id: 0,
-    codeTitleText: 'while', 
-    nonCodeTitleText: 'loop', 
-    descriptionText: 'Something about an while loop',
-    droppedCode: 'while [conditional]:'},
-    {id: 0,
-    codeTitleText: 'print', 
-    nonCodeTitleText: '', 
-    descriptionText: 'Something about printing',
-    droppedCode: 'print(\\string\\)'}
-];
+// const defaultVisibleCodeBlocks: Array<DraggableData> = [
+//     {id: 0,
+//     codeName: 'if', 
+//     descName: 'statement', 
+//     descText: 'Something about an if statement.',
+//     code: 'if \\conditional\\:\n    '},
+//     {id: 0,
+//     codeName: 'for', 
+//     descName: 'loop', 
+//     descText: 'Something about an for loop',
+//     code: 'for [var] in [iterable]:'},
+//     {id: 0,
+//     codeName: 'while', 
+//     descName: 'loop', 
+//     descText: 'Something about an while loop',
+//     code: 'while [conditional]:'},
+//     {id: 0,
+//     codeName: 'print', 
+//     descName: '', 
+//     descText: 'Something about printing',
+//     code: 'print(\\string\\)'}
+// ];
 
 const defaultCodeExecutionState: CodeExecutionState = {
     state: ExecutionState.none,
@@ -48,13 +47,11 @@ const defaultCodeEditorState: CodeEditorState = {
 
 const defaultLearningState: LearningState = {
     currentCourse: undefined,
-    currentSection: undefined,
-    currentDraggables: undefined
+    currentSection: undefined
 };
 
 const defaultApplicationState: ApplicationState = {
     apiKey: '',
-    visibleCodeBlocks: defaultVisibleCodeBlocks,
     codeEditor: defaultCodeEditorState,
     codeExecution: defaultCodeExecutionState,
     learning: defaultLearningState,
@@ -82,10 +79,6 @@ function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeE
         default:
             return state;
     } 
-}
-
-function visibleCodeBlocks(state: Array<CodeBlock>, action: AnyAction) {
-    return state;
 }
 
 function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorActions) {
@@ -144,7 +137,6 @@ export default function ocSite(state: ApplicationState = defaultApplicationState
                 apiKey: state.apiKey,
                 codeExecution: codeExecution(state.codeExecution, action as AsyncActionTypes.CodeExecutionActions),
                 codeEditor: codeEditor(state.codeEditor, action as ActionTypes.CodeEditorActions),
-                visibleCodeBlocks: visibleCodeBlocks(state.visibleCodeBlocks, action),
                 learning: learning(state.learning, action as AsyncActionTypes.APIAction),
                 serverError: state.serverError,
                 checkingConnection: state.checkingConnection
