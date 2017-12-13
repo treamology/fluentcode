@@ -88,13 +88,12 @@ export module AsyncActions {
     }
     export function checkConnection(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<ApplicationState>) => {
-            dispatch(Actions.checkingConnection());
-
             Endpoints.callAPI(
                 Endpoints.HEARTBEAT_ENDPOINT,
                 'GET'
             ).then(() => dispatch(Actions.connectionOK())
             ).catch(() => {
+                dispatch(Actions.checkingConnection());
                 setTimeout(() => {
                     dispatch(checkConnection());
                 }, 2000);
