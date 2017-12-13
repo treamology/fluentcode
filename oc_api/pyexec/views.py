@@ -4,9 +4,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from oc_api.pyexec.tasks import execute_code
+from oc_api.pyexec.tasks import execute_code, ExecutionResult
 from . import serializers
 
+from enum import Enum
+
+class ExecutionState(Enum):
+    none = -1,
+    running = 2,
+    success = 0,
+    failed = 1,
+    metafail = 3
 
 class ExecuteView(APIView):
     authentication_classes = (TokenAuthentication,)
@@ -20,10 +28,19 @@ class ExecuteView(APIView):
         if serializer.is_valid(raise_exception=True):
             result = AsyncResult(request.auth.key)
             if result is not None:
-                return Response({'status': 0, 'result': result.get()})
+                if result.ready():
+                    exec_result = result.result
+                    if not exec_result.error_output:
+                        return Response({'status': ExecutionState.success, 'result': exec_result.result})
+                    else:
+                        return Response({'status': ExecutionState.error,
+                                         'result': exec_result.result,
+                                         'error': exec_result.error_output})
+                else:
+                    return Response({'status': ExecutionState.running})
             else:
                 failure_reason = 'The provided token is invalid.'
-        return Response({'status': 1, 'reason': failure_reason})
+        return Response({'status': ExecutionState.metafail, 'reason': failure_reason})
 
     def post(self, request):
         """Accept some code for execution"""
