@@ -33,3 +33,8 @@ class SectionDetail(APIView):
         serializer = serializers.SectionSerializer(section)
 
         return Response(serializer.data)
+
+class Heartbeat(APIView):
+    def get(self, request):
+        return Response()
+

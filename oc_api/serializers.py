@@ -3,14 +3,20 @@ from rest_framework import serializers
 from oc_server import models
 
 
+class DraggableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Draggable
+        fields = ('id', 'codeName', 'descName', 'descText', 'code')
+
+
 class SectionSerializer(serializers.ModelSerializer):
+    draggables = DraggableSerializer(many=True, read_only=True)
     class Meta:
         model = models.Section
-        fields = ('id', 'name', 'number', 'text')
+        fields = ('id', 'name', 'number', 'text', 'draggables')
 
 
 class LessonSerializer(serializers.ModelSerializer):
-    #sections = serializers.PrimaryKeyRelatedField(many=True, queryset=models.Section.objects.all())
     sections = SectionSerializer(many=True, read_only=True)
 
     class Meta:
@@ -19,9 +25,9 @@ class LessonSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    # lessons = serializers.PrimaryKeyRelatedField(many=True, queryset=models.Lesson.objects.all())
     lessons = LessonSerializer(many=True, read_only=True)
+    draggables = DraggableSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Course
-        fields = ('id', 'name', 'author', 'lessons')
+        fields = ('id', 'name', 'author', 'lessons', 'draggables')
