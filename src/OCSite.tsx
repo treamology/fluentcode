@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Header from './components/header';
 import OutputPanel from './components/outputpanel';
 import CodeEditor from './components/codeeditor';
-import CurrentDraggableList from './containers/currentdraggablelist';
+import DraggableList from './components/draggablelist';
 import RunBar from './components/runbar';
 import CourseOutline from './components/courseoutline';
 import CurrentSection from './components/currentsection';
@@ -60,7 +60,7 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
           </div>
           <div className="sidebarRight">
             <PanelHeader headerText="Code Blocks" />
-            <CurrentDraggableList />
+            <DraggableList />
           </div>
         </div>
         
