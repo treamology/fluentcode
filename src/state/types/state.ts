@@ -29,4 +29,6 @@ export enum ExecutionState {
 export interface CodeExecutionState {
     state: ExecutionState;
     lastOutput: string;
+    lastException: string;
+    lastError: string;
 }

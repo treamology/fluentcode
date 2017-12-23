@@ -37,7 +37,9 @@ import { AnyAction } from 'redux';
 
 const defaultCodeExecutionState: CodeExecutionState = {
     state: ExecutionState.none,
-    lastOutput: ''
+    lastOutput: '',
+    lastException: '',
+    lastError: ''
 };
 
 const defaultCodeEditorState: CodeEditorState = {
@@ -68,10 +70,22 @@ function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeE
         case AsyncActionTypes.RECEIVE_CODE_STATUS:
             let apiaction = action as AsyncActionTypes.APIAction;
             let json = apiaction.json as ResponseTypes.ExecStatusResponse;
-            return Object.assign({}, state, {
+            let stateObject = {
                 state: json.status as ExecutionState,
-                lastOutput: json.result
-            });
+                lastOutput: '',
+                lastError: '',
+                lastException: ''
+            }
+            if (json.status === ExecutionState.metafail) {
+                stateObject.lastError = json.error
+            } else {
+                stateObject.lastOutput = json.result
+                if (json.status === ExecutionState.failed) {
+                    stateObject.lastException = json.error
+                }
+            }
+
+            return Object.assign({}, state, stateObject);
         case ActionTypes.RESET_EXECUTION_STATE:
             return Object.assign({}, state, {
                state: ExecutionState.none

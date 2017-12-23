@@ -72,6 +72,8 @@ export module ResponseTypes {
     export interface ExecStatusResponse {
         status: number;
         result: string;
+        exception: string;
+        error: string;
     }
     export interface CourseListResponse {
         courses: CourseListing[];

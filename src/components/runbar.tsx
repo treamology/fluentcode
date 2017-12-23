@@ -25,6 +25,12 @@ class UnconnectedRunBar extends React.Component<RunBarProps> {
             case ExecutionState.failed:
                 return (
                     <div className="runBar error">
+                        <span className="errorText">There is an error in your code!</span>
+                    </div>
+                );
+            case ExecutionState.metafail:
+                return (
+                    <div className="runBar error">
                         <span className="errorText">Something went wrong!</span>
                     </div>
                 );
