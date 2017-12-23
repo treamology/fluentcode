@@ -7,9 +7,9 @@ from rest_framework.views import APIView
 from oc_api.pyexec.tasks import execute_code, ExecutionResult
 from . import serializers
 
-from enum import Enum
+from enum import IntEnum
 
-class ExecutionState(Enum):
+class ExecutionState(IntEnum):
     none = -1,
     running = 2,
     success = 0,
@@ -33,7 +33,7 @@ class ExecuteView(APIView):
                     if not exec_result.error_output:
                         return Response({'status': ExecutionState.success, 'result': exec_result.result})
                     else:
-                        return Response({'status': ExecutionState.error,
+                        return Response({'status': ExecutionState.failed,
                                          'result': exec_result.result,
                                          'error': exec_result.error_output})
                 else:
