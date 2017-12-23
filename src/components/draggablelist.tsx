@@ -8,8 +8,8 @@ import { ApplicationState } from '../state/types/state';
 import { connect } from 'react-redux';
 
 interface DraggableListProps {
-    currentCourse: Course
-    currentSection: Section
+    currentCourse: Course;
+    currentSection: Section;
 }
 
 class UnconnectedDraggableList extends React.Component<DraggableListProps> {
@@ -17,13 +17,13 @@ class UnconnectedDraggableList extends React.Component<DraggableListProps> {
         let draggableData: DraggableData[] = [];
         let draggables: JSX.Element[] = [];
 
-
         if (this.props.currentCourse && this.props.currentSection) {
-            for (let id in this.props.currentSection.draggables) {
-                draggableData.push(this.props.currentCourse.draggables[id])
+            for (let id of Object.keys(this.props.currentSection.draggables)) {
+                draggableData.push(this.props.currentCourse.draggables[id]);
             }
 
             draggables = draggableData.map((codeBlock, index) =>
+                (
                 <Draggable 
                     codeTitleText={codeBlock.codeName}
                     nonCodeTitleText={codeBlock.descName}
@@ -31,7 +31,8 @@ class UnconnectedDraggableList extends React.Component<DraggableListProps> {
                     droppedCode={codeBlock.code}
                     key={index}
                 />
-            )
+                )
+            );
 
         }
         

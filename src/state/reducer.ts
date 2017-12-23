@@ -75,13 +75,13 @@ function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeE
                 lastOutput: '',
                 lastError: '',
                 lastException: ''
-            }
+            };
             if (json.status === ExecutionState.metafail) {
-                stateObject.lastError = json.error
+                stateObject.lastError = json.error;
             } else {
-                stateObject.lastOutput = json.result
+                stateObject.lastOutput = json.result;
                 if (json.status === ExecutionState.failed) {
-                    stateObject.lastException = json.error
+                    stateObject.lastException = json.error;
                 }
             }
 

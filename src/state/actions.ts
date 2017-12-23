@@ -142,12 +142,10 @@ export module AsyncActions {
                                 dispatch(getCodeStatus());
                             }, 2000);
                             return;
-                        case ExecutionState.success:
+                        default:
                             setTimeout(() => {
                                 dispatch(resetExecutionState());
                             }, 2000);
-                            return;
-                        default:
                             return;
                     }
                 }
