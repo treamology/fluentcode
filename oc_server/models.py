@@ -20,6 +20,10 @@ class Lesson(models.Model):
         return "Lesson " + str(self.number) + ": " + self.name
 
 
+class SectionRequirement(models.Model):
+    description = models.CharField(max_length=128)
+
+
 class Section(models.Model):
     name = models.CharField(max_length=128)
     number = models.IntegerField()
