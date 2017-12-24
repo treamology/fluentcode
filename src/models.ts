@@ -30,4 +30,9 @@ export interface Section {
     number: number;
     text: string;
     draggables: number[];
+    requirements: SectionRequirement[];
+}
+
+export interface SectionRequirement {
+    description: string;
 }

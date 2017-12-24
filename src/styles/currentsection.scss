@@ -12,15 +12,11 @@
 .sectionText {
     color: white;
 
-    p {
-        margin: 8px 0px;
-    }
-
-    h1 {
+    p, h1, h2, h3 {
         margin: 12px 0px;
     }
 
-    p:first-child {
+    *:first-child {
         margin-top: 0px;
     }
 }
