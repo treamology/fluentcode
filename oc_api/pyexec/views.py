@@ -28,8 +28,11 @@ class ExecuteView(APIView):
         if serializer.is_valid(raise_exception=True):
             result = AsyncResult(request.auth.key)
             if result is not None:
-                if result.ready():
+                if result.children is None:
+                    failure_reason = 'Could not connect to the execution backend.'
+                elif result.ready():
                     exec_result = result.result
+                    result.forget()  # Don't cache the result if we send it out
                     if not exec_result.error_output:
                         return Response({'status': ExecutionState.success, 'result': exec_result.result})
                     else:
@@ -37,7 +40,10 @@ class ExecuteView(APIView):
                                          'result': exec_result.result,
                                          'error': exec_result.error_output})
                 else:
-                    return Response({'status': ExecutionState.running})
+                    if result.failed():
+                        failure_reason = 'The code attempted to run, but an error occurred.'
+                    else:
+                        return Response({'status': ExecutionState.running})
             else:
                 failure_reason = 'The provided token is invalid.'
         return Response({'status': ExecutionState.metafail, 'reason': failure_reason})

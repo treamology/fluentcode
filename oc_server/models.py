@@ -22,6 +22,10 @@ class Lesson(models.Model):
 
 class SectionRequirement(models.Model):
     description = models.CharField(max_length=128)
+    unitTests = models.TextField()
+
+    def __str__(self):
+        return "Section Requirement"
 
 
 class Section(models.Model):

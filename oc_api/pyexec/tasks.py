@@ -16,7 +16,7 @@ class ExecutionResult:
 def add(x, y):
     return x + y
 
-@shared_task
+@shared_task(max_retries=1)
 def execute_code(code):
     client = docker.from_env()
     output = b''
