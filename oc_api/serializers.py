@@ -24,10 +24,18 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'number', 'sections')
 
 
+class CourseRequirementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.SectionRequirement
+        fields = ('id', 'description',)
+
+
 class CourseSerializer(serializers.ModelSerializer):
     lessons = LessonSerializer(many=True, read_only=True)
     draggables = DraggableSerializer(many=True, read_only=True)
+    requirements = CourseRequirementSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Course
-        fields = ('id', 'name', 'author', 'lessons', 'draggables')
+        fields = ('id', 'name', 'author', 'lessons', 'draggables', 'requirements')
+
