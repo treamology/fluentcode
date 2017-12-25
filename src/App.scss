@@ -5,6 +5,10 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
+span {
+  user-select: none;
+}
+
 // Contains absolutely everything
 .appContainer {
   height: inherit;

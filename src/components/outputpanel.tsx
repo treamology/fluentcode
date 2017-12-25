@@ -4,6 +4,7 @@ import { ApplicationState } from '../state/types/state';
 import { connect } from 'react-redux';
 
 import { PanelHeader } from './smallui';
+import RequirementsBar from './requirementsbar';
 
 interface OutputPanelProps {
     output: string;
@@ -22,6 +23,7 @@ class UnconnectedOutputPanel extends React.Component<OutputPanelProps> {
             <div className="outputPanel">
                 <PanelHeader headerText="Output" />
                 <textarea className="outputArea" spellCheck={false} value={output} />
+                <RequirementsBar />
             </div>
         );
     }

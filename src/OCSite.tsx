@@ -15,10 +15,12 @@ import { DragDropContext } from 'react-dnd';
 import Store from './store';
 import { AsyncActions } from './state/actions';
 import { ApplicationState } from './state/types/state';
+import { Section } from './models';
 
 interface OCSiteProps {
   serverError: boolean;
   checkingConnection: boolean;
+  currentSection: Section;
 }
 
 class UnconnectedOCSite extends React.Component<OCSiteProps> {
@@ -42,6 +44,10 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
         </div>
       );
     }
+    let sectionTitle = 'Current Section';
+    if (this.props.currentSection) {
+      sectionTitle = 'Section ' + this.props.currentSection.number + ': ' + this.props.currentSection.name;
+    }
     return (
       <div className="appContainer">
         {connectionCheck}
@@ -50,7 +56,7 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
           <div className="sidebarLeft">
               <PanelHeader headerText="Course Outline" />
               <CourseOutline />
-              <PanelHeader headerText="Current Section" />
+              <PanelHeader headerText={sectionTitle} />
               <CurrentSection />
           </div>
           <div className="centerContent">
@@ -76,7 +82,8 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
 const mapStateToProps = (state: ApplicationState) => {
   return {
       serverError: state.serverError,
-      checkingConnection: state.checkingConnection
+      checkingConnection: state.checkingConnection,
+      currentSection: state.learning.currentSection
   };
 };
 
