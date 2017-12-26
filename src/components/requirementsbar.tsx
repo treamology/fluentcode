@@ -55,8 +55,6 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
                     <PanelHeader headerText="Requirements" />
                     <div className="requirementsList">
                         {requirementElements}
-                        {/* <RequirementCheckbox description="A requirement" completed={false} />
-                        <RequirementCheckbox description="A requirement" completed={true} /> */}
                     </div>
                 </div>
             </div>
