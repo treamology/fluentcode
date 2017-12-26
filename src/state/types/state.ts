@@ -16,6 +16,7 @@ export interface LearningState {
 
 export interface CodeEditorState {
     currentEnteredCode: string;
+    requirementsOpen: boolean;
     textBoxes: {};
 }
 

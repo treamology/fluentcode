@@ -41,6 +41,11 @@ export module Actions {
             section: section
         };
     }
+    export function toggleRequirements(): AnyAction {
+        return {
+            type: ActionTypes.TOGGLE_REQUIREMENTS
+        };
+    }
 }
 
 export module AsyncActions {

@@ -58,6 +58,7 @@ export module ActionTypes {
     export const CONNECTION_OK = 'CONNECTION_OK';
 
     export const SELECT_SECTION = 'SELECT_SECTION';
+    export const TOGGLE_REQUIREMENTS = 'TOGGLE_REQUIREMENTS';
 
     export type CodeEditorActions = SetCodeAction | SetTextboxAction;
 }

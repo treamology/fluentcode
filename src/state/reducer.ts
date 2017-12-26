@@ -44,7 +44,8 @@ const defaultCodeExecutionState: CodeExecutionState = {
 
 const defaultCodeEditorState: CodeEditorState = {
     currentEnteredCode: '',
-    textBoxes: {}
+    textBoxes: {},
+    requirementsOpen: false
 };
 
 const defaultLearningState: LearningState = {
@@ -106,6 +107,10 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
             let tbAction = action as ActionTypes.SetTextboxAction;
             let newTextboxes = { textBoxes: Object.assign({}, state.textBoxes, tbAction.changes)};
             return Object.assign({}, state, newTextboxes);
+        case ActionTypes.TOGGLE_REQUIREMENTS:
+            return Object.assign({}, state, {
+                requirementsOpen: !state.requirementsOpen
+            });
         default:
             return state;
     }

@@ -16,6 +16,7 @@ import Store from './store';
 import { AsyncActions } from './state/actions';
 import { ApplicationState } from './state/types/state';
 import { Section } from './models';
+import RequirementsBar from './components/requirementsbar';
 
 interface OCSiteProps {
   serverError: boolean;
@@ -63,6 +64,7 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
             <CodeEditor />
             <RunBar />
             <OutputPanel />
+            <RequirementsBar />
           </div>
           <div className="sidebarRight">
             <PanelHeader headerText="Code Blocks" />
