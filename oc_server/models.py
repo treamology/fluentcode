@@ -21,6 +21,7 @@ class Lesson(models.Model):
 
 
 class SectionRequirement(models.Model):
+
     description = models.CharField(max_length=128)
     unitTests = models.TextField()
     section = models.ForeignKey('Section', related_name='requirements')
