@@ -9,7 +9,7 @@ class DraggableSerializer(serializers.ModelSerializer):
         fields = ('id', 'codeName', 'descName', 'descText', 'code')
 
 
-class CourseRequirementSerializer(serializers.ModelSerializer):
+class SectionRequirementSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.SectionRequirement
         fields = ('id', 'description',)
@@ -17,7 +17,7 @@ class CourseRequirementSerializer(serializers.ModelSerializer):
 
 class SectionSerializer(serializers.ModelSerializer):
     draggables = DraggableSerializer(many=True, read_only=True)
-    requirements = CourseRequirementSerializer(many=True, read_only=True)
+    requirements = SectionRequirementSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Section

@@ -1,7 +1,17 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
+class BaseProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    completed_sections = models.ManyToManyField('Section', related_name='done_users')
 
+@receiver(post_save, sender=User)
+def create_initial_profile(sender, instance, created, **kwargs):
+    if created:
+        BaseProfile.objects.create(user=instance)
 
 class Course(models.Model):
     name = models.CharField(max_length=128)
