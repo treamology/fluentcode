@@ -17,7 +17,7 @@ def add(x, y):
     return x + y
 
 @shared_task(max_retries=1)
-def execute_code(code):
+def execute_code(code, tests):
     client = docker.from_env()
     output = b''
     error_output = b''
@@ -28,4 +28,4 @@ def execute_code(code):
 
     result = ExecutionResult(output.decode('utf-8'), error_output.decode('utf-8'))
 
-    return result
+    return vars(result)
