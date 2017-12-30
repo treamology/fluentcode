@@ -172,7 +172,10 @@ export module AsyncActions {
             ).then(
                 (response: Response) => response.json()
             ).then(
-                (json: ResponseTypes.ReceiveApiKeyResponse) => dispatch(receiveAPIKey(json))
+                (json: ResponseTypes.ReceiveApiKeyResponse) => {
+                    dispatch(receiveAPIKey(json));
+                    dispatch(AsyncActions.getCourseDetail(1));
+                }
             ).catch(
                 (error: Error) => {
                     dispatch(Actions.serverError());

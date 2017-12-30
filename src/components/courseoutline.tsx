@@ -1,7 +1,6 @@
 import * as React from 'react';
 import TreeView from '../react-treeview';
-import Store from '../store';
-import { AsyncActions, Actions } from '../state/actions';
+import { Actions } from '../state/actions';
 import { ApplicationState } from '../state/types/state';
 import { Course, Section } from '../models';
 import { connect } from 'react-redux';
@@ -20,7 +19,7 @@ interface CourseOutlineProps {
 class UnconnectedCourseOutline extends React.Component<CourseOutlineProps> {
     render() {
         let trees: JSX.Element[] = [];
-        if (this.props.currentCourse) {
+        if (this.props.currentCourse && this.props.currentCourse.lessons) {
             
             let lessonChildren: JSX.Element[][] = [];
             for (let h = 0; h < this.props.currentCourse.lessons.length; h++) {
@@ -64,11 +63,6 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps> {
             {trees.map((tree) => tree)}
         </div>
         );
-    }
-    
-    // temporary
-    componentWillMount() {
-        Store.getInstance().dispatch(AsyncActions.getCourseDetail(1));
     }
 }
 
