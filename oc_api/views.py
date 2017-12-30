@@ -1,16 +1,23 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from oc_server import models
 from oc_api import serializers
 
-class ListCourses(APIView):
+
+class AuthAPIView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+class ListCourses(AuthAPIView):
     def get(self):
         courses = models.Course.objects.all()
         names = [{"id": course.id, "name": course.name} for course in courses]
         return Response(names)
 
-class CourseDetail(APIView):
+class CourseDetail(AuthAPIView):
     def get(self, request):
         course_id = request.query_params["id"]
         course = models.Course.objects.get(pk=course_id)
@@ -18,7 +25,7 @@ class CourseDetail(APIView):
 
         return Response(serializer.data)
 
-class LessonDetail(APIView):
+class LessonDetail(AuthAPIView):
     def get(self, request):
         lesson_id = request.query_params["id"]
         lesson = models.Lesson.objects.get(pk=lesson_id)
@@ -26,7 +33,7 @@ class LessonDetail(APIView):
 
         return Response(serializer.data)
 
-class SectionDetail(APIView):
+class SectionDetail(AuthAPIView):
     def get(self, request):
         section_id = request.query_params["id"]
         section = models.Section.objects.get(pk=section_id)
@@ -34,7 +41,7 @@ class SectionDetail(APIView):
 
         return Response(serializer.data)
 
-class Heartbeat(APIView):
+class Heartbeat(AuthAPIView):
     def get(self, request):
         return Response()
 

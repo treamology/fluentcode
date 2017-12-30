@@ -2,4 +2,8 @@ FROM python:slim
 
 WORKDIR .
 
-ENTRYPOINT ["python"]
+COPY . .
+
+RUN python --version
+
+ENTRYPOINT ["python", "-u", "./runner.py"]
