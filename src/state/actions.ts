@@ -108,13 +108,19 @@ export module AsyncActions {
     export function runCode(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<CodeExecutionState>) => {
             const currentCode = Store.getInstance().getState().codeEditor.currentEnteredCode;
+            const currentSection = Store.getInstance().getState().learning.currentSection;
+            let sectionID;
+            if (currentSection) {
+                sectionID = currentSection.id;
+            }
             dispatch(requestRunCode(currentCode));
             
             Endpoints.callAPI(
                 Endpoints.CODE_EXECUTE_ENDPOINT,
                 'POST',
                 JSON.stringify({
-                    code: currentCode
+                    code: currentCode,
+                    section_id: sectionID
                 })
             ).then(
                 (response: Response) => response.json()
