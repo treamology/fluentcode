@@ -29,4 +29,4 @@ class ExecutionResultSerializer(serializers.Serializer):
 
     reason = serializers.CharField(required=False)
 
-    requirements = TestResultSerializer(required=False, many=True)
+    results = TestResultSerializer(required=False, many=True)

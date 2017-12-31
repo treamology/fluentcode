@@ -40,7 +40,7 @@ class ExecuteView(APIView):
                             reqs = [TestResult(*res) for res in exec_result.results]
                             return ExecutionResult(status=ExecutionState.success,
                                                    result=exec_result.mainExecOutput,
-                                                   requirements=reqs)
+                                                   results=reqs)
                         else:
                             return ExecutionResult(status=ExecutionState.failed,
                                                    result=exec_result.mainExecOutput,
