@@ -20,22 +20,32 @@ mainExecError = execStdErr.getvalue()
 
 taskStdOut = []
 taskStdErr = []
+results = []
 
-for i in range(2, len(sys.argv) - 1):
-    execStdOut.flush()
-    execStdErr.flush()
+testResults = []
 
-    task = sys.argv[i]
-    exec(task)
+if not mainExecError:
+    for i in range(2, len(sys.argv)):
+        execStdOut = StringIO()
+        execStdErr = StringIO()
+        sys.stdout = execStdOut
+        sys.stderr = execStdErr
 
-    taskStdOut.append(execStdOut.getvalue())
-    taskStdErr.append(execStdErr.getvalue())
+        task = sys.argv[i]
+        exec(task)
+        success = test()
 
-execStdOut.close()
-execStdErr.close()
+        result = (success, execStdOut.getvalue(), execStdErr.getvalue())
+        testResults.append(result)
+        #testResults.append(TestResult(success=success, out=execStdOut.getvalue(), err=execStdErr.getvalue()))
+
+        execStdOut.close()
+        execStdErr.close()
 
 sys.stdout = sys.__stdout__
 sys.stderr = sys.__stderr__
 
-# Dump the result tuple to stdout
-result = pickle.dump((mainExecOutput, mainExecError, taskStdOut, taskStdErr), sys.stdout.buffer)
+# pickle returns a set of bytes, so we decode the bytes into latin-1 (which can store 256 bits).
+# When we send this off to stdout, it gets encoded into utf-8 (or whatever encoding the system uses).
+result = pickle.dumps((mainExecOutput, mainExecError, testResults)).decode('latin-1')
+print(result)

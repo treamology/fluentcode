@@ -4,7 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from oc_api.pyexec.tasks import execute_code, ExecutionResult
+from oc_api.pyexec.tasks import execute_code
+from oc_api.pyexec.models import CeleryExecutionResult, ExecutionResult, TestResult
 from . import serializers
 from oc_server import models
 
@@ -23,31 +24,38 @@ class ExecuteView(APIView):
 
     def get(self, request):
         """Get status of code execution"""
-        failure_reason = 'An error has occurred.'
+        def get_response():
+            failure_reason = 'An error has occurred.'
 
-        serializer = serializers.ExecutionStateSerializer(data=request.query_params)
-        if serializer.is_valid(raise_exception=True):
-            result = AsyncResult(request.auth.key)
-            if result is not None:
-                if result.children is None:
-                    failure_reason = 'Could not connect to the execution backend.'
-                elif result.ready():
-                    exec_result = result.result
-                    result.forget()  # Don't cache the result if we send it out
-                    if not exec_result['error_output']:
-                        return Response({'status': ExecutionState.success, 'result': exec_result['result']})
+            serializer = serializers.ExecutionStateSerializer(data=request.query_params)
+            if serializer.is_valid(raise_exception=True):
+                result = AsyncResult(request.auth.key)
+                if result is not None:
+                    if result.children is None:
+                        failure_reason = 'Could not connect to the execution backend.'
+                    elif result.ready():
+                        exec_result = CeleryExecutionResult(*result.result)
+                        result.forget()  # Don't cache the result if we send it out
+                        if not exec_result.mainExecError:
+                            reqs = [TestResult(*res) for res in exec_result.results]
+                            return ExecutionResult(status=ExecutionState.success,
+                                                   result=exec_result.mainExecOutput,
+                                                   requirements=reqs)
+                        else:
+                            return ExecutionResult(status=ExecutionState.failed,
+                                                   result=exec_result.mainExecOutput,
+                                                   error=exec_result.mainExecError)
                     else:
-                        return Response({'status': ExecutionState.failed,
-                                         'result': exec_result['result'],
-                                         'error': exec_result['error_output']})
+                        if result.failed():
+                            failure_reason = 'The code attempted to run, but an error occurred.'
+                        else:
+                            return ExecutionResult(status=ExecutionState.running)
                 else:
-                    if result.failed():
-                        failure_reason = 'The code attempted to run, but an error occurred.'
-                    else:
-                        return Response({'status': ExecutionState.running})
-            else:
-                failure_reason = 'The provided token is invalid.'
-        return Response({'status': ExecutionState.metafail, 'reason': failure_reason})
+                    failure_reason = 'The provided token is invalid.'
+
+            return ExecutionResult(status=ExecutionState.metafail, reason=failure_reason)
+
+        return Response(serializers.ExecutionResultSerializer(get_response()).data)
 
     def post(self, request):
         """Accept some code for execution"""

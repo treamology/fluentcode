@@ -1,6 +1,6 @@
 FROM python:slim
 
-WORKDIR .
+WORKDIR ./
 
 COPY . .
 
