@@ -1,5 +1,11 @@
-import sys, pickle
+import sys, pickle, traceback
 from io import StringIO
+
+def print_formatted_exception():
+    t, v, tb = sys.exc_info()
+    print("Traceback (most recent call last):", file=sys.stderr)
+    traceback.print_tb(tb, limit=-len(traceback.extract_tb(tb)) + 1)
+    print(*traceback.format_exception_only(t, v), file=sys.stderr)
 
 if len(sys.argv) == 1:
     exit(2)
@@ -13,7 +19,10 @@ execStdErr = StringIO()
 sys.stdout = execStdOut
 sys.stderr = execStdErr
 
-exec(code)
+try:
+    exec(code)
+except Exception:
+    print_formatted_exception()
 
 mainExecOutput = execStdOut.getvalue()
 mainExecError = execStdErr.getvalue()
@@ -32,12 +41,15 @@ if not mainExecError:
         sys.stderr = execStdErr
 
         task = sys.argv[i]
-        exec(task)
-        success = test()
+        try:
+            exec(task)
+            success = test()
+        except Exception:
+            print_formatted_exception()
+            break
 
         result = (success, execStdOut.getvalue(), execStdErr.getvalue())
         testResults.append(result)
-        #testResults.append(TestResult(success=success, out=execStdOut.getvalue(), err=execStdErr.getvalue()))
 
         execStdOut.close()
         execStdErr.close()
