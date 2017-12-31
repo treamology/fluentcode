@@ -20,16 +20,16 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
     render() {
         let numReqs = 0;
         let completedReqs = 0;
+        let requirementElements;
 
         if (this.props.currentSection && this.props.currentSection.requirements) {
             numReqs = this.props.currentSection.requirements.length
-        }
-
-        let requirementElements;
-        if (numReqs != 0) {
             requirementElements = this.props.currentSection.requirements.map(requirement => {
+                if (requirement.completed) {
+                    completedReqs += 1;
+                }
                 return (
-                    <RequirementCheckbox description={requirement.description} completed={false} />
+                    <RequirementCheckbox description={requirement.description} completed={requirement.completed} />
                 );
             })
         }

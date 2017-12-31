@@ -35,4 +35,11 @@ export interface Section {
 
 export interface SectionRequirement {
     description: string;
+    completed: boolean;
+}
+
+export interface TestResult {
+    success: boolean;
+    out: string;
+    err: string;
 }

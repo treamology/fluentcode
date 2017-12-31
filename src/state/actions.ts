@@ -4,7 +4,7 @@ import { ThunkAction } from 'redux-thunk';
 import Store from '../store';
 import * as Endpoints from '../endpoints';
 import { ActionTypes, AsyncActionTypes, ResponseTypes } from './types/actions';
-import { Section } from '../models';
+import { Section, TestResult } from '../models';
 import * as qs from 'query-string';
 
 export module Actions {
@@ -91,6 +91,12 @@ export module AsyncActions {
             type: ActionTypes.RESET_EXECUTION_STATE
         };
     }
+    export function completeRequirements(results: TestResult[]): ActionTypes.CompleteRequirementsAction {
+        return {
+            type: ActionTypes.COMPLETE_REQUIREMENTS,
+            results: results
+        };
+    }
     export function checkConnection(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<ApplicationState>) => {
             Endpoints.callAPI(
@@ -153,6 +159,11 @@ export module AsyncActions {
                                 dispatch(getCodeStatus());
                             }, 2000);
                             return;
+                        case ExecutionState.success:
+                            if (json.results) {
+                                dispatch(completeRequirements(json.results));
+                            }
+                            // falls through
                         default:
                             setTimeout(() => {
                                 dispatch(resetExecutionState());

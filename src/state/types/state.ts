@@ -27,6 +27,7 @@ export enum ExecutionState {
     failed = 1,
     metafail = 3
 }
+
 export interface CodeExecutionState {
     state: ExecutionState;
     lastOutput: string;

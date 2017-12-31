@@ -1,4 +1,4 @@
-import { Course, CourseListing, Section } from '../../models';
+import { Course, CourseListing, Section, TestResult } from '../../models';
 
 export module AsyncActionTypes {
     export interface ReceiveApiKeyAction {
@@ -47,6 +47,10 @@ export module ActionTypes {
         type: string;
         section: Section;
     }
+    export interface CompleteRequirementsAction {
+        type: string;
+        results: TestResult[];
+    }
     
     export const SET_CODE = 'SET_CODE';
     export const SET_TEXTBOXES = 'SET_TEXTBOXES';
@@ -59,6 +63,8 @@ export module ActionTypes {
 
     export const SELECT_SECTION = 'SELECT_SECTION';
     export const TOGGLE_REQUIREMENTS = 'TOGGLE_REQUIREMENTS';
+
+    export const COMPLETE_REQUIREMENTS = 'COMPLETE_REQUIREMENTS';
 
     export type CodeEditorActions = SetCodeAction | SetTextboxAction;
 }
@@ -75,6 +81,7 @@ export module ResponseTypes {
         result: string;
         exception: string;
         error: string;
+        results: TestResult[];
     }
     export interface CourseListResponse {
         courses: CourseListing[];
