@@ -43,7 +43,7 @@ if not mainExecError:
         task = sys.argv[i]
         try:
             exec(task)
-            success = test()
+            success = test(mainExecOutput)
         except Exception:
             print_formatted_exception()
             break
