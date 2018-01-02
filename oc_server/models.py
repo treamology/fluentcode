@@ -37,7 +37,7 @@ class SectionRequirement(models.Model):
     section = models.ForeignKey('Section', related_name='requirements')
 
     def __str__(self):
-        return "Section Requirement"
+        return self.description
 
 
 class Section(models.Model):
@@ -59,4 +59,4 @@ class Draggable(models.Model):
     sections = models.ManyToManyField('Section', related_name='draggables')
 
     def __str__(self):
-        return self.codeName + ' ' + self.descName + ' from ' + str(self.course)
+        return self.codeName + ' ' + self.descName
