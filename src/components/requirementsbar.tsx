@@ -4,7 +4,8 @@ import { ApplicationState } from '../state/types/state';
 import { Actions } from '../state/actions';
 import { Section } from '../models';
 import { connect } from 'react-redux';
-import { Dispatch, AnyAction } from 'redux';
+import { Dispatch } from 'redux';
+import Store from '../store';
 
 import { PanelHeader } from './smallui';
 import RequirementCheckbox from './requirementcheckbox';
@@ -12,7 +13,8 @@ import RequirementCheckbox from './requirementcheckbox';
 interface RequirementsBarProps {
     currentSection: Section;
     requirementsOpen: boolean;
-    toggleRequirements: () => AnyAction;
+    toggleRequirements: () => void;
+    nextSection: () => void;
 }
 
 class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
@@ -23,15 +25,19 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
         let requirementElements;
 
         if (this.props.currentSection && this.props.currentSection.requirements) {
-            numReqs = this.props.currentSection.requirements.length
-            requirementElements = this.props.currentSection.requirements.map(requirement => {
+            numReqs = this.props.currentSection.requirements.length;
+            requirementElements = this.props.currentSection.requirements.map((requirement, index) => {
                 if (requirement.completed) {
                     completedReqs += 1;
                 }
                 return (
-                    <RequirementCheckbox description={requirement.description} completed={requirement.completed} />
+                    <RequirementCheckbox
+                        description={requirement.description}
+                        completed={requirement.completed}
+                        key={requirement.description}
+                    />
                 );
-            })
+            });
         }
 
         // CSS State
@@ -48,9 +54,13 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
         return (
             <div className="requirementsContainer">
                 <div className="requirementsBar">
-                    <span className="requirementsLabel" onClick={() => this.props.toggleRequirements()}>{completedReqs} of {numReqs} requirements satisfied</span>
+                    <span className="requirementsLabel" onClick={() => this.props.toggleRequirements()}>
+                        {completedReqs} of {numReqs} requirements satisfied
+                    </span>
                     <div className="nextSectionContainer">
-                        <span className={nextSectionClassName}>Complete Section</span>
+                        <span className={nextSectionClassName} onClick={() => this.props.nextSection()}>
+                            Complete Section
+                        </span>
                     </div>
                 </div>
                 <div className={listContainerClassName}>
@@ -74,8 +84,29 @@ const mapStateToProps = (state: ApplicationState) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => {
     return {
-        toggleRequirements: (section: Section) => {
+        toggleRequirements: () => {
             dispatch(Actions.toggleRequirements());
+        },
+        nextSection: () => {
+            let state = Store.getInstance().getState();
+            let currentSection = state.learning.currentSection;
+            let currentCourse = state.learning.currentCourse;
+            
+            if (currentSection && currentCourse) {
+                let lessonNum = currentSection.lessonNumber;
+                try {
+                    // one is already added ( - 1 + 1)
+                    let nextSection = currentCourse.lessons[lessonNum - 1].sections[currentSection.number];
+                    if (!nextSection) { throw new Error('whoops'); }
+                    dispatch(Actions.selectSection(nextSection));
+                } catch (e) {
+                    try {
+                        let nextLesson = currentCourse.lessons[lessonNum]; // one is already added ( - 1 + 1)
+                        if (!nextLesson) { throw new Error('whoops'); }
+                        dispatch(Actions.selectSection(nextLesson.sections[0]));
+                    } catch (e2) { return; }
+                }
+            }
         }
     };
 };

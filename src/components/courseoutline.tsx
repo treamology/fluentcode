@@ -23,7 +23,7 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps> {
             
             let lessonChildren: JSX.Element[][] = [];
             for (let h = 0; h < this.props.currentCourse.lessons.length; h++) {
-            //for (let h = this.props.currentCourse.lessons.length - 1; h >= 0; --h) {
+            // for (let h = this.props.currentCourse.lessons.length - 1; h >= 0; --h) {
                 let lesson = this.props.currentCourse.lessons[h];
                 let childrenArray: JSX.Element[] = [];
                 // for (let i = lesson.sections.length - 1; i >= 0; --i) {

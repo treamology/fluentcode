@@ -132,9 +132,9 @@ function learning(state: LearningState, action: AnyAction) {
             if (state.currentSection) {
                 let completeRequirementsAction = action as ActionTypes.CompleteRequirementsAction;
 //                let reqs = Object.assign({}, state.currentSection.requirements)
-                let reqs = Array.from(state.currentSection.requirements)
+                let reqs = Array.from(state.currentSection.requirements);
                 completeRequirementsAction.results.map((result, index) => {
-                    reqs[index].completed = result.success
+                    reqs[index].completed = result.success;
                 });
                 return Object.assign({}, state, {
                     currentSection: Object.assign({}, state.currentSection, {

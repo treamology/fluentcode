@@ -31,6 +31,7 @@ export interface Section {
     text: string;
     draggables: number[];
     requirements: SectionRequirement[];
+    lessonNumber: number;
 }
 
 export interface SectionRequirement {
