@@ -49,7 +49,9 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
             <div className="requirementsContainer">
                 <div className="requirementsBar">
                     <span className="requirementsLabel" onClick={() => this.props.toggleRequirements()}>{completedReqs} of {numReqs} requirements satisfied</span>
-                    <span className={nextSectionClassName}>Next Section</span>
+                    <div className="nextSectionContainer">
+                        <span className={nextSectionClassName}>Complete Section</span>
+                    </div>
                 </div>
                 <div className={listContainerClassName}>
                     <PanelHeader headerText="Requirements" />

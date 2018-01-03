@@ -26,9 +26,12 @@ $requirements_bar_height: 40px;
     cursor: pointer;
 }
 
-.nextSectionButton {
+.nextSectionContainer {
     flex: 1;
     text-align: right;
+}
+
+.nextSectionButton {
     font-weight: bold;
     cursor: pointer;
 }
