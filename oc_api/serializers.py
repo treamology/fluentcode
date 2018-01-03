@@ -18,11 +18,11 @@ class SectionRequirementSerializer(serializers.ModelSerializer):
 class SectionSerializer(serializers.ModelSerializer):
     draggables = DraggableSerializer(many=True, read_only=True)
     requirements = SectionRequirementSerializer(many=True, read_only=True)
-    lesson_number = serializers.IntegerField(source='lesson.number')
+    lessonNumber = serializers.IntegerField(source='lesson.number', label='lessonNumber')
 
     class Meta:
         model = models.Section
-        fields = ('id', 'name', 'number', 'text', 'draggables', 'requirements', 'lesson_number')
+        fields = ('id', 'name', 'number', 'text', 'draggables', 'requirements', 'lessonNumber')
 
 
 class LessonSerializer(serializers.ModelSerializer):
