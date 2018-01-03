@@ -15,13 +15,13 @@ interface TreeViewProps {
 }
 
 interface TreeViewState {
-  collapsed: boolean;
+  collapsed?: boolean;
 }
 
 class TreeView extends React.PureComponent<TreeViewProps, TreeViewState> {
 
   static defaultProps = {
-    collapsed: true,
+    collapsed: null,
     className: '',
     itemClassName: '',
     treeViewClassName: '',
@@ -32,9 +32,8 @@ class TreeView extends React.PureComponent<TreeViewProps, TreeViewState> {
     super(props);
 
     this.state = {
-      collapsed: true
+      collapsed: this.props.defaultCollapsed
     };
-    this.handleClick = this.handleClick.bind(this);
   }
 
   // tslint:disable-next-line
@@ -46,8 +45,8 @@ class TreeView extends React.PureComponent<TreeViewProps, TreeViewState> {
   }
 
   render() {
-    let collapsed = this.state.collapsed;
-
+    let collapsed = this.props.collapsed;
+    
     let arrowClassName = 'tree-view_arrow';
     let containerClassName = 'tree-view_children';
     if (collapsed) {
@@ -65,7 +64,7 @@ class TreeView extends React.PureComponent<TreeViewProps, TreeViewState> {
 
     return (
       <div className={'tree-view ' + this.props.treeViewClassName}>
-        <div className={'tree-view_item ' + this.props.itemClassName} onClick={this.handleClick}>
+        <div className={'tree-view_item ' + this.props.itemClassName} onClick={() => this.handleClick()}>
           {React.Children.count(this.props.children) === 0 ? null : arrow}
           {this.props.nodeLabel}
         </div>
