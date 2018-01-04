@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from celery import shared_task
+from celery import shared_task, task
 from celery.contrib import rdb
 from collections import namedtuple
 from .models import CeleryExecutionResult, TestResult

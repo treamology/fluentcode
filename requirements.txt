@@ -6,4 +6,3 @@ docker ~= 2.6
 psycopg2 ~= 2.7
 django-cors-headers ~= 2.1
 redis ~= 2.10
-pypiwin32 ~= 220

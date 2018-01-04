@@ -87,10 +87,11 @@ WSGI_APPLICATION = 'oc_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'oc_dev',
+        'NAME': 'ocdev',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost'
+        'HOST': 'db',
+        'PORT': '5432'
     }
 }
 
@@ -133,11 +134,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-CELERY_BROKER_URL = 'redis://'
-CELERY_RESULT_BACKEND = 'redis'
+CELERY_BROKER_URL = 'redis://redis:6379'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
+CELERY_IMPORTS = ['oc_api.pyexec.tasks']
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

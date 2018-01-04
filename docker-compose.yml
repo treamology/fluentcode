@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: python3 /code/manage.py runserver 0.0.0.0:8000
+    # command: ls
+    environment:
+      DOCKER_HOST: 'unix:///var/run/docker.sock'
+    ports:
+      - "8000:8000" # postgres
+      - "6379:6379" # redis
+    depends_on:
+      - db
+      - redis
+      - celery
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: 'ocdev'
+  redis:
+    image: redis
+  celery:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-Celery
+    working_dir: /oc_backend/
+    command: celery -A oc_backend -l info -b "redis://redis:6379" worker
+    user: celery
