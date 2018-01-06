@@ -16,10 +16,14 @@ services:
       - db
       - redis
       - celery
+    volumes:
+      - ./:/code/:ro
   db:
     image: postgres
     environment:
       POSTGRES_DB: 'ocdev'
+    volumes:
+      - ${DB_RESTORE:-''}:/restore.sql
   redis:
     image: redis
   celery:
@@ -29,3 +33,5 @@ services:
     working_dir: /oc_backend/
     command: celery -A oc_backend -l info -b "redis://redis:6379" worker
     user: celery
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
