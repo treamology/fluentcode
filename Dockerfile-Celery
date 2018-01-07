@@ -6,8 +6,8 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY /fluentcode/oc_backend/celery.py /fluentcode/oc_backend/settings.py /fluentcode/oc_backend/__init__.py ./oc_backend/
-COPY oc_api/pyexec ./oc_api/pyexec
+COPY /fluentcode/oc_backend/oc_backend/celery.py /fluentcode/oc_backend/oc_backend/settings.py /fluentcode/oc_backend/oc_backend/__init__.py ./oc_backend/
+COPY /fluantcode/oc_backend/oc_api/pyexec ./oc_api/pyexec
 
 ENV APP_USER celery
 ENV APP_ROOT /src
