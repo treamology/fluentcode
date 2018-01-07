@@ -11,9 +11,9 @@ services:
     image: redis
   celery:
     build:
-      context: .
+      context: /fluentcode/oc_backend/
       dockerfile: ./Dockerfile-Celery
-    working_dir: /fluentcode/oc_backend/
+    working_dir: /oc_backend/
     command: celery -A oc_backend -l info -b "redis://redis:6379" worker
     user: celery
     volumes:
