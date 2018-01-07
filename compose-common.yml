@@ -5,8 +5,8 @@ services:
     image: postgres
     environment:
       POSTGRES_DB: 'ocdev'
-    volumes:
-      - ${DB_RESTORE:-''}:/restore.sql
+    # volumes:
+    #   - ${DB_RESTORE:-''}:/restore.sql
   redis:
     image: redis
   celery:
