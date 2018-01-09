@@ -27,9 +27,9 @@ STATIC_URL = "static/"
 SECRET_KEY = "nokey4u"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DJANGO_DEBUG', False))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['fluentcode.xyz']
 
 
 # Application definition

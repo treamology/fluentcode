@@ -9,6 +9,7 @@ services:
     # command: ls
     environment:
       DOCKER_HOST: 'unix:///var/run/docker.sock'
+      DJANGO_DEBUG: 1
     ports:
       - "8000:8000" # postgres
       - "6379:6379" # redis
