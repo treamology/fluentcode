@@ -29,8 +29,7 @@ SECRET_KEY = "nokey4u"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get('DJANGO_DEBUG', False))
 
-ALLOWED_HOSTS = ['fluentcode.xyz']
-
+ALLOWED_HOSTS = ['localhost', 'fluentcode.xyz']
 
 # Application definition
 
