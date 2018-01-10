@@ -5,6 +5,8 @@ services:
     image: postgres
     environment:
       POSTGRES_DB: 'ocdev'
+    volumes:
+      - /fluentcode/oc_backend/restore.sql:/fluentcode/oc_backend/restore.sql:ro
     # volumes:
     #   - ${DB_RESTORE:-''}:/restore.sql
   redis:
