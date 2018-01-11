@@ -1,7 +1,7 @@
 import Store from './store';
 
-export const PROTO = 'http://';
-export const ROOT = 'localhost:8000/api';
+// export const PROTO = 'http://';
+export const ROOT = window.location.origin + '/api';
 
 export const HEARTBEAT_ENDPOINT = '/heartbeat';
 export const API_KEY_ENDPOINT = '/get_auth_token';
@@ -34,7 +34,7 @@ export function callAPI(endpoint: string, method: string, body: string = ''): Pr
         request.body = body;
     }
     
-    return fetch(`${PROTO}${ROOT}${endpoint}?${query}`, request);
+    return fetch(`${ROOT}${endpoint}?${query}`, request);
 }
 
 export function handleAPIFailure(error: Error) {
