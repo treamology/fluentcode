@@ -12,9 +12,9 @@ export const LESSON_DETAIL_ENDPOINT = '/learn/lessons/detail';
 export const SECTION_DETAIL_ENDPOINT = '/learn/sections/detail';
 
 export function callAPI(endpoint: string, method: string, body: string = ''): Promise<{}> {
-    let root = ROOT
+    let root = ROOT;
     if (process.env.NODE_ENV !== 'production') {
-        root = 'http://' + window.location.hostname + ':8000/api'
+        root = 'http://' + window.location.hostname + ':8000/api';
     }
 
     let headers = new Headers({

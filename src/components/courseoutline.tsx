@@ -6,20 +6,77 @@ import { Course, Section } from '../models';
 import { connect } from 'react-redux';
 import { Dispatch, AnyAction } from 'redux';
 import Store from '../store';
+import { withRouter, match } from 'react-router';
+import { Location, History, Action } from 'history';
 
 import '../styles/react-treeview.css';
 import '../styles/courseoutline.scss';
 
+interface ParsedPath {
+    courseID: number;
+    lessonNum: number;
+    sectionNum: number;
+}
+
 let arrowImage = require('../assets/svg/arrow.svg');
+
+function createRouterPath(courseID: number, lessonNum: number, sectionNum: number): string {
+    let path = '/';
+
+    path += 'course-' + courseID + '/';
+    path += 'lesson-' + lessonNum + '/';
+    path += 'section-' + sectionNum + '/';
+
+    return path;
+}
+
+function parsePath(path: string): ParsedPath {
+
+    let courseMatch = path.match(/course-(\d)/);
+    let lessonMatch = path.match(/lesson-(\d)/);
+    let sectionMatch = path.match(/section-(\d)/);
+    let courseID: number;
+    let lessonNum: number;
+    let sectionNum: number;
+    
+    if (courseMatch) {
+        courseID = +courseMatch[1];
+        if (lessonMatch) {
+            lessonNum = +lessonMatch[1];
+            if (sectionMatch) {
+                sectionNum = +sectionMatch[1];
+            } else {
+                sectionNum = 1;
+            }
+        } else {
+            lessonNum = 1;
+            sectionNum = 1;
+        }
+    } else {
+        throw Error('Course does not exist.');
+    }
+
+    return {
+        courseID: courseID,
+        lessonNum: lessonNum,
+        sectionNum: sectionNum
+    };
+
+}
 
 interface CourseOutlineProps {
     currentCourse: Course;
     currentSection: Section;
-    setSection: (section: Section) => AnyAction;
+    setSection: (course: Course, section: Section, history?: History) => AnyAction;
+
+    match: match<{}>;
+    location: Location;
+    history: History;
 }
 
 interface CourseOutlineState {
     collapsedList: boolean[];
+    firstLoad: boolean;
 }
 
 class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, CourseOutlineState> {
@@ -28,13 +85,32 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
         super(props);
 
         this.state = {
-            collapsedList: []
+            collapsedList: [],
+            firstLoad: true
         };
+
+        props.history.listen((location: Location, action: Action) => {
+            if (action !== 'POP') { return; }
+            let currentCourse = Store.getInstance().getState().learning.currentCourse;
+            let currentSection = Store.getInstance().getState().learning.currentSection;
+            let parsed = parsePath(location.pathname);
+            if (!currentCourse || parsed.courseID !== currentCourse.id) {
+                throw Error('Course changing not implemented.');
+            }
+
+            if (!currentSection || 
+                parsed.sectionNum !== currentSection.number || 
+                parsed.lessonNum !== currentSection.lessonNumber) {
+                this.props.setSection(currentCourse,
+                    currentCourse.lessons[parsed.lessonNum - 1].sections[parsed.sectionNum - 1]);
+            }
+        });
 
         Store.getInstance().subscribe(() => {
             let prevCourse = this.props.currentCourse;
             let currentCourse = Store.getInstance().getState().learning.currentCourse;
             if (currentCourse && prevCourse !== currentCourse) {
+                // If changing courses, collapse everything to be safe.
                 this.setState({
                     collapsedList: currentCourse.lessons.map(() => true)
                 });
@@ -43,6 +119,7 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
             let prevSection = this.props.currentSection;
             let currentSection = Store.getInstance().getState().learning.currentSection;
             if (currentCourse && currentSection && prevSection !== currentSection) {
+                // Collapse and uncollapse the appropriate lesson when switching sections.
                 this.setState({
                     collapsedList: currentCourse.lessons.map((lesson) => {
                         if (currentSection) {
@@ -51,6 +128,14 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
                         return true;
                     })
                 });
+            }
+
+            // First time the course gets set
+            if (currentCourse && this.state.firstLoad) {
+                this.setState({ firstLoad: false });
+                let parsed = parsePath(location.pathname);
+                this.props.setSection(currentCourse,
+                    currentCourse.lessons[parsed.lessonNum - 1].sections[parsed.sectionNum - 1]);
             }
         });
     }
@@ -76,7 +161,7 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
                         nodeLabel={`Section ${section.number}: ${section.name}`}
                         arrowImage={arrowImage}
                         key={lesson.number.toString() + section.number}
-                        onClick={() => this.props.setSection(section)}
+                        onClick={() => this.props.setSection(this.props.currentCourse, section, this.props.history)}
                     />
                     );
 
@@ -88,7 +173,7 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
 
             // for (let lesson of this.props.currentCourse.lessons) {
             // for (let i = this.props.currentCourse.lessons.length - 1; i >= 0; --i) {
-           const collapsedList = this.state.collapsedList;
+            const collapsedList = this.state.collapsedList;
             for (let i = 0; i < this.props.currentCourse.lessons.length; i++) {
                 let lesson = this.props.currentCourse.lessons[i];
                 
@@ -124,7 +209,12 @@ const mapStateToProps = (state: ApplicationState) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => {
     return {
-        setSection: (section: Section) => {
+        setSection: (course: Course, section: Section, history?: History) => {
+            if (history) {
+                history.push(createRouterPath(course.id,
+                    section.lessonNumber,
+                    section.number));
+            }
             dispatch(Actions.selectSection(section));
         }
     };
@@ -132,4 +222,4 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => {
 
 const CourseOutline = connect(mapStateToProps, mapDispatchToProps)(UnconnectedCourseOutline);
 
-export default CourseOutline;
+export default withRouter(CourseOutline);
