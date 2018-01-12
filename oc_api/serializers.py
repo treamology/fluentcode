@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, viewsets
 
 from oc_server import models
 
@@ -26,17 +26,27 @@ class SectionSerializer(serializers.ModelSerializer):
 
 
 class LessonSerializer(serializers.ModelSerializer):
-    sections = SectionSerializer(many=True, read_only=True)
+    # sections = SectionSerializer(many=True, read_only=True)
+    sections = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Lesson
         fields = ('id', 'name', 'number', 'sections')
 
+    def get_sections(self, obj):
+        ordered_queryset = models.Section.objects.filter(lesson__course=obj.course, lesson=obj).order_by('number')
+        return SectionSerializer(ordered_queryset, many=True, read_only=True).data
+
 
 class CourseSerializer(serializers.ModelSerializer):
-    lessons = LessonSerializer(many=True, read_only=True)
+    #lessons = LessonSerializer(many=True, read_only=True)
+    lessons = serializers.SerializerMethodField()
     draggables = DraggableSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Course
         fields = ('id', 'name', 'author', 'lessons', 'draggables')
+
+    def get_lessons(self, obj):
+        ordered_queryset = models.Lesson.objects.filter(course=obj).order_by('number')
+        return LessonSerializer(ordered_queryset, many=True, read_only=True).data
