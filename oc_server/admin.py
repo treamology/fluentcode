@@ -43,3 +43,11 @@ class SectionRequirementAdmin(admin.ModelAdmin):
     def course(self, obj):
         return obj.section.lesson.course.__str__()
     course.admin_order_field = 'section__lesson__course'
+
+@admin.register(models.DraggableTextField)
+class DraggableTextFieldAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'draggable', 'course')
+
+    def course(self, obj):
+        return obj.draggable.course.name
+    course.admin_order_field = 'draggable__course__name'

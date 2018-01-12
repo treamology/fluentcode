@@ -60,3 +60,14 @@ class Draggable(models.Model):
 
     def __str__(self):
         return self.codeName + ' ' + self.descName
+
+
+class DraggableTextField(models.Model):
+    startChar = models.PositiveIntegerField()
+    endChar = models.PositiveIntegerField()
+    placeholderText = models.CharField(max_length=24)
+
+    draggable = models.ForeignKey('Draggable', on_delete=models.CASCADE, related_name='textFields')
+
+    def __str__(self):
+        return self.placeholderText + '[' + str(self.startChar) + ', ' + str(self.endChar) + ']'

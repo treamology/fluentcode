@@ -18,4 +18,4 @@ services:
       - redis
       - celery
     volumes:
-      - ./:/code/:ro
+      - ./:/code/

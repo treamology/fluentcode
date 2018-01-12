@@ -3,10 +3,17 @@ from rest_framework import serializers, viewsets
 from oc_server import models
 
 
+class DraggableTextFieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.DraggableTextField
+        fields = ('id', 'startChar', 'endChar', 'placeholderText')
+
 class DraggableSerializer(serializers.ModelSerializer):
+    textFields = DraggableTextFieldSerializer(many=True)
+
     class Meta:
         model = models.Draggable
-        fields = ('id', 'codeName', 'descName', 'descText', 'code')
+        fields = ('id', 'codeName', 'descName', 'descText', 'code', 'textFields')
 
 
 class SectionRequirementSerializer(serializers.ModelSerializer):
