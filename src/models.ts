@@ -15,6 +15,15 @@ export interface DraggableData {
     descName: string;
     descText: string;
     code: string;
+    textFields: DraggableTextField[];
+}
+
+export interface DraggableTextField {
+    id: number;
+    startChar: number;
+    endChar: number;
+    lineNumber: number;
+    placeholderText: string;
 }
 
 export interface Lesson {

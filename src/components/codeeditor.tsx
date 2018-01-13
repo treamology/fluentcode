@@ -10,14 +10,16 @@ import { CodeEditorState, ApplicationState } from '../state/types/state';
 import { DroppedCodeItem } from './draggable';
 import { DropTarget, DropTargetMonitor, DropTargetConnector, DndComponentClass } from 'react-dnd';
 import TextBoxWidget, { TextBoxProps, TextBoxDimensions } from './widgets/textbox';
+import { DraggableTextField } from '../models';
 
 // For some reason CodeMirror doesn't provide this.
 interface CoordsType { left: number; right: number; top: number; bottom: number; }
 
 interface CodeEditorProps {
     updateCodeState: (newCode: string) => AnyAction;
-    beforeChangeEvent: (cm: CodeMirror.Editor, change: CodeMirror.EditorChangeCancellable) => AnyAction;
+    setTextboxes: (changes: {}, data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>) => AnyAction;
     textboxProps: {};
+    textboxData: Map<CodeMirror.LineHandle, Array<DraggableTextField>>;
 }
 
 // Extra props from the drag/drop library.
@@ -37,7 +39,7 @@ class EditorOverlay extends React.Component<EditorOverlayProps, {}> {
     }
 }
 
-class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, {}> {
+class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
     static TAB_SIZE = 4;
     static TAB_REPLACEMENT = Array(UnwrappedCodeEditor.TAB_SIZE + 1).join(' '); // replace tab characters with 4 spaces
     static MAGIC_CHARACTER = '\\\\';
@@ -49,10 +51,17 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, {}> 
     tbContainerDiv: HTMLDivElement;
     currentTbWidgets: Array<JSX.Element>;
 
+    lastDrop?: DroppedCodeItem;
+    dirtyLines: number[] = [];
+
     constructor(props: CodeEditorPropsCollected) {
         super(props);
 
         this.tbContainerDiv = document.createElement('div');
+
+        this.state = {
+            lastDrop: undefined
+        };
     }
 
     render() {
@@ -103,7 +112,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, {}> 
 
     componentDidMount() {
         let cm = this.editor.getCodeMirror();
-        cm.on('change', this.props.beforeChangeEvent);
 
         // Make the container div a widget so it sticks to each line of the editor.
         // CM changes the positioning when you call this function so some styling needs to be applied afterward.
@@ -112,43 +120,124 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected, {}> 
         cm.addWidget({line: 0, ch: 0}, this.tbContainerDiv, false);
         this.tbContainerDiv.style.top = '0px';
         this.tbContainerDiv.style.left = '0px';
+
+        cm.on('beforeChange', this.calculateTextboxDeletionChanges.bind(this));
     }
 
     // tslint:disable-next-line
-    dropCode(code: string, coords: any) {
+    dropCode(code: DroppedCodeItem, coords: any) {
         let codemirrorInstance: CodeMirror.Editor = this.editor.getCodeMirror();
 
+        this.lastDrop = code;
         let charCoords = codemirrorInstance.coordsChar({
             left: coords.x,
             top: coords.y
         });
-        codemirrorInstance.getDoc().replaceRange(code, charCoords);
+
+        let validBound = this.checkIfDragValid.bind(this)
+        let calcBound = this.calculateTextboxChanges.bind(this)
+        codemirrorInstance.on('beforeChange', validBound);
+        codemirrorInstance.on('change', calcBound);
+        codemirrorInstance.getDoc().replaceRange(code.droppedCode, charCoords);
+        codemirrorInstance.off('beforeChange', validBound);
+        codemirrorInstance.off('change', calcBound);
     }
-}
 
-function calculateTextboxChanges(
+    // Don't allow dragging onto a line that already has a box
+    checkIfDragValid(cm: CodeMirror.Editor, change: CodeMirror.EditorChangeCancellable) {
+        if (!this.lastDrop) return;
+        let lastDrop = this.lastDrop;
+
+        for (let index = 0; index < lastDrop.textFields.length; index++) {
+            let realLine = index + change.from.line;
+            let handle = cm.getDoc().getLineHandle(realLine);
+            let tbData = this.props.textboxData.get(handle)
+            if (tbData && tbData.length !== 0) {
+                change.cancel();
+                return;
+            }
+        }
+    }
+
+    calculateTextboxDeletionChanges(
+        cm: CodeMirror.Editor,
+        change: CodeMirror.EditorChangeCancellable) {
+
+        let textboxData = new Map<CodeMirror.LineHandle, Array<DraggableTextField>>([...this.props.textboxData]);
+        let tbChanges = {} // For rendering
+
+        if (change.origin === '+delete') { // Text is being removed, so we must remove textboxes accordingly
+            for (let line = change.from.line; line <= change.to.line; line++) {
+                let handle = cm.getDoc().getLineHandle(line);
+                let data = textboxData.get(handle);
+                let newData: DraggableTextField[] = [];
+                if (!data) { continue; }
+
+                for (let key of Object.keys(data)) {
+                    let box = data[key];
+
+                    let selectionEndBound = change.to.ch;
+                    // Check if this is the last line
+                    if (line !== change.to.line) {
+                        selectionEndBound = cm.getDoc().getLine(line).length;
+                    }
+
+                    if ((box.startChar >= change.from.ch && box.endChar <= selectionEndBound) ||
+                        (box.startChar >= change.from.ch && box.startChar <= selectionEndBound) ||
+                        (box.endChar >= change.from.ch && box.endChar <= selectionEndBound)) {
+                        
+                        continue;
+                    }
+                    newData.push(data[key]);
+                }
+
+                this.dirtyLines.push(line)
+                if (newData.length === 0) { tbChanges[line] = null; }
+                textboxData.set(handle, newData)
+            }
+            this.calculateTextboxChanges(cm, change);
+        }
+
+        this.props.setTextboxes(tbChanges, textboxData);
+    }
+
+
+    calculateTextboxChanges(
         cm: CodeMirror.Editor, 
-        change: CodeMirror.EditorChangeCancellable,
-        dispatch: Dispatch<CodeEditorState>) {
+        change: CodeMirror.EditorChangeLinkedList | CodeMirror.EditorChangeCancellable) {
+    
+        let textboxData = new Map<CodeMirror.LineHandle, Array<DraggableTextField>>([...this.props.textboxData]);
+        let tbChanges = {} // For rendering
 
-    const mc = UnwrappedCodeEditor.MAGIC_CHARACTER;
-    const re = new RegExp(mc + '.*?' + mc, 'g');
+        
 
-    let tbChanges = {}; // the 'delta' object
+        if (!this.lastDrop) return;
 
-    for (let relLineNum of Object.keys(change.text)) {
-        let text = change.text[relLineNum];
-        let absLine = change.from.line + Number(relLineNum);
+        let dirtyFields: DraggableTextField[] = [];
+        for (let line of this.dirtyLines) {
+            let handle = cm.getDoc().getLineHandle(line)
+            dirtyFields = dirtyFields.concat(this.props.textboxData.get(handle)!);
+        }
+        if (this.dirtyLines.length === 0) {
+            dirtyFields = dirtyFields.concat(this.lastDrop.textFields);
+        }
+        this.dirtyLines = [];
 
-        let lineChanges: Array<TextBoxProps> = [];
+        for (let index = 0; index < dirtyFields.length; index++) {
+            let field: DraggableTextField = dirtyFields[index];
+            let realLine = index + change.from.line;
+            let handle = cm.getDoc().getLineHandle(realLine);
+            
+            if (!textboxData.has(handle)) {
+                textboxData.set(handle, []);
+            }
+            textboxData.get(handle)!.push(field);
 
-        // exec() only finds one thing at a time, so we have to loop through calling it repeatedly
-        let foundExp;
-        while ((foundExp = re.exec(text)) !== null) {
-            let absChar = change.from.ch + foundExp.index;
-            let firstCharPos: CodeMirror.Position = { line: absLine, ch: absChar };
+            // Set up rendering props
+            let absChar = change.from.ch + field.startChar;
+            let firstCharPos: CodeMirror.Position = { line: realLine, ch: absChar };
             let firstCharCoords: CoordsType = cm.charCoords(firstCharPos, 'local');
-            let lastCharPos: CodeMirror.Position = { line: absLine, ch: absChar + (foundExp[0].length - 1) };
+            let lastCharPos: CodeMirror.Position = { line: realLine, ch: change.from.ch + field.endChar };
             let lastCharCoords: CoordsType = cm.charCoords(lastCharPos, 'local');
 
             let width = lastCharCoords.right - firstCharCoords.left;
@@ -161,26 +250,75 @@ function calculateTextboxChanges(
                 height: height
             };
 
-            let placeholder = foundExp[0].replace(/\\/g, '');
-
-            lineChanges.push({ absDimensions: dimensions, placeholderText: placeholder });
+            if (!tbChanges[realLine]) {
+                tbChanges[realLine] = [];
+            }
+            tbChanges[realLine].push({ absDimensions: dimensions, placeholder: field.placeholderText });
+            
         }
 
-        // If there are no textboxes, set it to undefined so it gets removed from the state
-        if (lineChanges.length === 0) {
-            tbChanges[absLine] = null;
-            continue;
-        }
-        tbChanges[absLine] = lineChanges;
+        this.props.setTextboxes(tbChanges, textboxData);
     }
-
-    return dispatch(Actions.setTextboxes(tbChanges));
 }
+
+
+// function calculateTextboxChanges(
+//         cm: CodeMirror.Editor, 
+//         change: CodeMirror.EditorChangeCancellable,
+//         dispatch: Dispatch<CodeEditorState>) {
+
+//     const mc = UnwrappedCodeEditor.MAGIC_CHARACTER;
+//     const re = new RegExp(mc + '.*?' + mc, 'g');
+
+//     let tbChanges = {}; // the 'delta' object
+
+//     for (let relLineNum of Object.keys(change.text)) {
+//         let text = change.text[relLineNum];
+//         let absLine = change.from.line + Number(relLineNum);
+
+//         let lineChanges: Array<TextBoxProps> = [];
+
+        
+
+//         // exec() only finds one thing at a time, so we have to loop through calling it repeatedly
+//         let foundExp;
+//         while ((foundExp = re.exec(text)) !== null) {
+//             let absChar = change.from.ch + foundExp.index;
+//             let firstCharPos: CodeMirror.Position = { line: absLine, ch: absChar };
+//             let firstCharCoords: CoordsType = cm.charCoords(firstCharPos, 'local');
+//             let lastCharPos: CodeMirror.Position = { line: absLine, ch: absChar + (foundExp[0].length - 1) };
+//             let lastCharCoords: CoordsType = cm.charCoords(lastCharPos, 'local');
+
+//             let width = lastCharCoords.right - firstCharCoords.left;
+//             let height = lastCharCoords.bottom - lastCharCoords.top;
+
+//             let dimensions: TextBoxDimensions = {
+//                 x: firstCharCoords.left,
+//                 y: firstCharCoords.top,
+//                 width: width,
+//                 height: height
+//             };
+
+//             let placeholder = foundExp[0].replace(/\\/g, '');
+
+//             lineChanges.push({ absDimensions: dimensions, placeholderText: placeholder });
+//         }
+
+//         // If there are no textboxes, set it to undefined so it gets removed from the state
+//         if (lineChanges.length === 0) {
+//             tbChanges[absLine] = null;
+//             continue;
+//         }
+//         tbChanges[absLine] = lineChanges;
+//     }
+
+//     return dispatch(Actions.setTextboxes(tbChanges));
+// }
 
 const dropTarget = {
     drop(props: CodeEditorProps, monitor: DropTargetMonitor, component: UnwrappedCodeEditor) {
         let item: DroppedCodeItem = monitor.getItem() as DroppedCodeItem;
-        component.dropCode(item.droppedCode, monitor.getClientOffset());
+        component.dropCode(item, monitor.getClientOffset());
     }
 };
 
@@ -196,15 +334,17 @@ const mapDispatchToProps = (dispatch: Dispatch<CodeEditorState>) => {
         updateCodeState: (newCode: string) => {
             dispatch(Actions.setCode(newCode));
         },
-        beforeChangeEvent: (cm: CodeMirror.Editor, change: CodeMirror.EditorChangeCancellable) => {
-            calculateTextboxChanges(cm, change, dispatch);
+        setTextboxes: (changes: {}, data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>) => {
+            dispatch(Actions.setTextboxes(changes));
+            dispatch(Actions.setTextboxData(data));
         }
     };
 };
 
 const mapStateToProps = (state: ApplicationState) => {
     return {
-        textboxProps: state.codeEditor.textBoxes
+        textboxProps: state.codeEditor.textBoxes,
+        textboxData: state.codeEditor.textboxData
     };
 };
 

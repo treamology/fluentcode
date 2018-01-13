@@ -29,6 +29,7 @@ class UnconnectedDraggableList extends React.Component<DraggableListProps> {
                     nonCodeTitleText={codeBlock.descName}
                     descriptionText={codeBlock.descText}
                     droppedCode={codeBlock.code}
+                    textFields={codeBlock.textFields}
                     key={index}
                 />
                 )

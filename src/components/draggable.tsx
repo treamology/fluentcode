@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { DragSource, DragSourceMonitor, DndComponentClass, DndComponent, DragSourceConnector } from 'react-dnd';
+import { DraggableTextField } from '../models';
 
 import '../styles/draggable.scss';
 
@@ -8,6 +9,7 @@ interface DraggableProps {
     nonCodeTitleText: string;
     descriptionText: string;
     droppedCode: string;
+    textFields: DraggableTextField[];
 }
 
 interface DraggablePropsCollected extends DraggableProps {
@@ -17,11 +19,12 @@ interface DraggablePropsCollected extends DraggableProps {
 
 interface DroppedCodeItem {
     droppedCode: string;
+    textFields: DraggableTextField[]
 }
 
 const draggableSource = {
     beginDrag(props: DraggableProps) {
-        return { droppedCode: props.droppedCode };
+        return { droppedCode: props.droppedCode, textFields: props.textFields };
     },
     endDrag(props: DraggableProps, monitor: DragSourceMonitor, component: DndComponent<DraggableProps, {}>) {
         if (!monitor.didDrop()) {

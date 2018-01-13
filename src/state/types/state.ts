@@ -18,6 +18,7 @@ export interface CodeEditorState {
     currentEnteredCode: string;
     requirementsOpen: boolean;
     textBoxes: {};
+    textboxData: {};
 }
 
 export enum ExecutionState {

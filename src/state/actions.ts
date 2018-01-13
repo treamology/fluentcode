@@ -4,7 +4,7 @@ import { ThunkAction } from 'redux-thunk';
 import Store from '../store';
 import * as Endpoints from '../endpoints';
 import { ActionTypes, AsyncActionTypes, ResponseTypes } from './types/actions';
-import { Section, TestResult } from '../models';
+import { Section, TestResult, DraggableTextField } from '../models';
 import * as qs from 'query-string';
 
 export module Actions {
@@ -18,6 +18,12 @@ export module Actions {
         return {
             type: ActionTypes.SET_TEXTBOXES,
             changes
+        };
+    }
+    export function setTextboxData(data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>): ActionTypes.SetTextboxDataAction {
+        return {
+            type: ActionTypes.SET_TEXTBOX_DATA,
+            data
         };
     }
     export function serverError(): AnyAction {

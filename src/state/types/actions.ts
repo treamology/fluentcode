@@ -1,4 +1,4 @@
-import { Course, CourseListing, Section, TestResult } from '../../models';
+import { Course, CourseListing, Section, TestResult, DraggableTextField } from '../../models';
 
 export module AsyncActionTypes {
     export interface ReceiveApiKeyAction {
@@ -43,6 +43,10 @@ export module ActionTypes {
         type: string;
         changes: {};
     }
+    export interface SetTextboxDataAction {
+        type: string;
+        data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>;
+    }
     export interface SelectSectionAction {
         type: string;
         section: Section;
@@ -54,6 +58,7 @@ export module ActionTypes {
     
     export const SET_CODE = 'SET_CODE';
     export const SET_TEXTBOXES = 'SET_TEXTBOXES';
+    export const SET_TEXTBOX_DATA = 'SET_TEXTBOX_DATA';
 
     export const RESET_EXECUTION_STATE = 'RESET_EXECUTION_STATE';
 
@@ -66,7 +71,7 @@ export module ActionTypes {
 
     export const COMPLETE_REQUIREMENTS = 'COMPLETE_REQUIREMENTS';
 
-    export type CodeEditorActions = SetCodeAction | SetTextboxAction;
+    export type CodeEditorActions = SetCodeAction | SetTextboxAction | SetTextboxDataAction;
 }
 
 export module ResponseTypes {
