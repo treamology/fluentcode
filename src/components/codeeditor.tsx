@@ -17,8 +17,9 @@ interface CoordsType { left: number; right: number; top: number; bottom: number;
 
 interface CodeEditorProps {
     updateCodeState: (newCode: string) => AnyAction;
-    setTextboxes: (changes: {}, data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>) => AnyAction;
-    textboxProps: {};
+    setTextboxData: (data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>) => AnyAction;
+    setTextboxChanges: (changes: {}) => AnyAction;
+    textboxProps: Map<CodeMirror.LineHandle, Array<TextBoxProps>>;
     textboxData: Map<CodeMirror.LineHandle, Array<DraggableTextField>>;
 }
 
@@ -52,7 +53,11 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
     currentTbWidgets: Array<JSX.Element>;
 
     lastDrop?: DroppedCodeItem;
-    dirtyLines: number[] = [];
+    dirtyLines: CodeMirror.LineHandle[] = [];
+
+    validBound: (cm: CodeMirror.Editor, change: CodeMirror.EditorChangeCancellable) => void;
+    dataBound: (cm: CodeMirror.Editor, change: CodeMirror.EditorChangeCancellable) => void;
+    calcBound: (cm: CodeMirror.Editor, change: CodeMirror.EditorChangeLinkedList) => void;
 
     constructor(props: CodeEditorPropsCollected) {
         super(props);
@@ -62,23 +67,32 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
         this.state = {
             lastDrop: undefined
         };
+
+        this.validBound = this.checkIfDragValid.bind(this);
+        this.calcBound = this.calculateTextboxRenderChanges.bind(this);
+        this.dataBound = this.calculateTextboxDataChanges.bind(this);
     }
 
     render() {
         // Make TextBoxWidgets based on the textboxProps state.
         this.currentTbWidgets = [];
-        for (let line of Object.keys(this.props.textboxProps)) {
-            let list: Array<TextBoxProps> = this.props.textboxProps[line];
-            if (!list) { continue; }
-            for (let tbIndex of Object.keys(list)) {
-                let props = list[tbIndex];
-                this.currentTbWidgets.push(
-                    <TextBoxWidget
-                        absDimensions={props.absDimensions}
-                        placeholderText={props.placeholderText}
-                        key={Number(line + tbIndex)}
-                    />
-                );
+
+        if (this.editor) {
+            let cm = this.editor.getCodeMirror();
+            for (let key of this.props.textboxProps.keys()) {
+                let list = this.props.textboxProps.get(key)!;
+                let line = cm.getDoc().getLineNumber(key);
+                if (!list) { continue; }
+                for (let tbIndex of Object.keys(list)) {
+                    let props = list[tbIndex];
+                    this.currentTbWidgets.push(
+                        <TextBoxWidget
+                            absDimensions={props.absDimensions}
+                            placeholderText={props.placeholderText}
+                            key={Number(line + tbIndex)}
+                        />
+                    );
+                }
             }
         }
         
@@ -121,7 +135,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
         this.tbContainerDiv.style.top = '0px';
         this.tbContainerDiv.style.left = '0px';
 
-        cm.on('beforeChange', this.calculateTextboxDeletionChanges.bind(this));
+        cm.on('beforeChange', this.dataBound);
     }
 
     // tslint:disable-next-line
@@ -133,14 +147,17 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
             left: coords.x,
             top: coords.y
         });
-
-        let validBound = this.checkIfDragValid.bind(this)
-        let calcBound = this.calculateTextboxChanges.bind(this)
-        codemirrorInstance.on('beforeChange', validBound);
-        codemirrorInstance.on('change', calcBound);
+        
+        // This is the only way to reorder codemirror editor events. Kill me.
+        // Yes, this needs to be here twice.
+        codemirrorInstance.off('beforeChange', this.dataBound);
+        
+        codemirrorInstance.on('beforeChange', this.validBound);
+        codemirrorInstance.on('beforeChange', this.dataBound);
+        codemirrorInstance.on('change', this.calcBound);
         codemirrorInstance.getDoc().replaceRange(code.droppedCode, charCoords);
-        codemirrorInstance.off('beforeChange', validBound);
-        codemirrorInstance.off('change', calcBound);
+        codemirrorInstance.off('beforeChange', this.validBound);
+        codemirrorInstance.off('change', this.calcBound);
     }
 
     // Don't allow dragging onto a line that already has a box
@@ -157,14 +174,19 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                 return;
             }
         }
+
+        //this.calculateTextboxDataChanges(cm, change);
     }
 
-    calculateTextboxDeletionChanges(
+    calculateTextboxDataChanges(
         cm: CodeMirror.Editor,
         change: CodeMirror.EditorChangeCancellable) {
 
         let textboxData = new Map<CodeMirror.LineHandle, Array<DraggableTextField>>([...this.props.textboxData]);
-        let tbChanges = {} // For rendering
+
+        // This whole system needs to be rewritten if we want to handle pastes.
+        // Too bad I'm on a deadline.
+        if (change.origin === 'paste') { change.cancel(); return; }
 
         if (change.origin === '+delete') { // Text is being removed, so we must remove textboxes accordingly
             for (let line = change.from.line; line <= change.to.line; line++) {
@@ -173,6 +195,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                 let newData: DraggableTextField[] = [];
                 if (!data) { continue; }
 
+                // Delete textboxes that are highlighted over
                 for (let key of Object.keys(data)) {
                     let box = data[key];
 
@@ -185,135 +208,160 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                     if ((box.startChar >= change.from.ch && box.endChar <= selectionEndBound) ||
                         (box.startChar >= change.from.ch && box.startChar <= selectionEndBound) ||
                         (box.endChar >= change.from.ch && box.endChar <= selectionEndBound)) {
-                        
                         continue;
                     }
-                    newData.push(data[key]);
+                    // Create a new copy so we don't fuck up any existing instances
+                    newData.push(Object.assign({}, data[key])); 
                 }
 
-                this.dirtyLines.push(line)
-                if (newData.length === 0) { tbChanges[line] = null; }
-                textboxData.set(handle, newData)
-            }
-            this.calculateTextboxChanges(cm, change);
-        }
+                // Move textboxes that have text deleted before or after
+                // No need to check if before or after because some of the boxes have already been deleted
+                if (line === change.from.line) {
+                    for (let key of Object.keys(newData)) {
+                        //let box = data[key];
+                        let numDel = change.to.ch - change.from.ch;
+                        
+                        if (change.from.ch <= newData[key].startChar) {
+                            newData[key].startChar -= numDel;
+                            newData[key].endChar -= numDel;
+                        }
+                    }
+                } else if (line === change.to.line) {
+                    for (let key of Object.keys(newData)) {
+                        //let box = newData[key];
+                        // Since this is the last line, the selection starts from the beginning
+                        let numDel = change.to.ch; 
 
-        this.props.setTextboxes(tbChanges, textboxData);
+                        if (change.to.ch <= newData[key].startChar) {
+                            newData[key].startChar -= numDel;
+                            newData[key].endChar -= numDel;
+                        }
+                    }
+                }
+                
+
+                this.dirtyLines.push(handle);
+                if (newData.length === 0) { 
+                    textboxData.delete(handle);
+                } else {
+                    textboxData.set(handle, newData);
+                }
+                
+            }
+           // this.props.setTextboxes(tbChanges, textboxData);
+        } else {
+            for (let line = change.from.line; line <= change.to.line; line++) {
+                let handle = cm.getDoc().getLineHandle(line);
+                let data = textboxData.get(handle);
+
+                if (this.lastDrop) {
+                    if (!textboxData.has(handle)) {
+                        textboxData.set(handle, []);
+                    }
+                    textboxData.set(handle, textboxData.get(handle)!.concat(this.lastDrop.textFields));
+                    this.dirtyLines.push(handle);
+                } else {
+                    if (!data) { continue; }
+                    // This branch means that something was only typed, and not dropped.
+                    if (line === change.from.line) {
+                        for (let key of Object.keys(data)) {
+                            if (change.to.ch <= data[key].endChar && change.text.length == 1) {
+                                let text = String(change.text[0]);
+                                text.replace('\t', '    ');
+                                let numAdd = text.length;
+
+                                data[key] = Object.assign({}, data[key]);
+                                data[key].startChar += numAdd;
+                                data[key].endChar += numAdd;
+                            }
+                        }
+                    }
+                    this.dirtyLines.push(handle);
+                }
+            }
+            //this.lastDrop = undefined;
+        }
+        this.props.setTextboxData(textboxData);
+        cm.on('change', this.calcBound);
+        //this.calculateTextboxRenderChanges(cm, change);
     }
 
 
-    calculateTextboxChanges(
+    calculateTextboxRenderChanges(
         cm: CodeMirror.Editor, 
         change: CodeMirror.EditorChangeLinkedList | CodeMirror.EditorChangeCancellable) {
     
-        let textboxData = new Map<CodeMirror.LineHandle, Array<DraggableTextField>>([...this.props.textboxData]);
-        let tbChanges = {} // For rendering
+        let tbChanges = new Map<CodeMirror.LineHandle, Array<TextBoxProps>>([...this.props.textboxProps]); // For rendering
 
+        // let dirtyFields: DraggableTextField[] = [];
+        // for (let line of this.dirtyLines) {
+        //     let handle = cm.getDoc().getLineHandle(line)
+        //     dirtyFields = dirtyFields.concat(this.props.textboxData.get(handle)!);
+        // }
+        //this.dirtyLines = [];
+        for (let handle of this.dirtyLines) {
+            let dirtyFields = this.props.textboxData.get(handle)!;
+            
+            tbChanges.set(handle, []);
+            
+            if (!dirtyFields) { continue; }
+
+            for (let index = 0; index < dirtyFields.length; index++) {
+                if (!dirtyFields[index]) { continue; }
+                let field: DraggableTextField = dirtyFields[index];
+                //let realLine = index + change.from.line;
+                let realLine = cm.getDoc().getLineNumber(handle)!;
+
+                // if (!tbChanges.has(handle)) {
+                //     tbChanges.set(handle, []);
+                // }
+    
+                // Set up rendering props
+                let absStartChar = field.startChar;
+                let absEndChar = field.endChar;
+                if (this.lastDrop) {
+                    // Textbox was just dropped, so we must account for existing characters
+                    absStartChar = change.from.ch + field.startChar;
+                    absEndChar = change.from.ch + field.endChar;
+                    
+                    dirtyFields[index].startChar += change.from.ch;
+                    dirtyFields[index].endChar += change.from.ch;
+                }
+                
+                let firstCharPos: CodeMirror.Position = { line: realLine, ch: absStartChar };
+                let firstCharCoords: CoordsType = cm.charCoords(firstCharPos, 'local');
+                let lastCharPos: CodeMirror.Position = { line: realLine, ch: absEndChar };
+                let lastCharCoords: CoordsType = cm.charCoords(lastCharPos, 'local');
+    
+                let width = lastCharCoords.right - firstCharCoords.left;
+                let height = lastCharCoords.bottom - lastCharCoords.top;
+    
+                let dimensions: TextBoxDimensions = {
+                    x: firstCharCoords.left,
+                    y: firstCharCoords.top,
+                    width: width,
+                    height: height
+                };
+    
+                
+                tbChanges.get(handle)!.push({ absDimensions: dimensions, placeholderText: field.placeholderText });
+                
+            }
+        }
         
-
-        if (!this.lastDrop) return;
-
-        let dirtyFields: DraggableTextField[] = [];
-        for (let line of this.dirtyLines) {
-            let handle = cm.getDoc().getLineHandle(line)
-            dirtyFields = dirtyFields.concat(this.props.textboxData.get(handle)!);
-        }
-        if (this.dirtyLines.length === 0) {
-            dirtyFields = dirtyFields.concat(this.lastDrop.textFields);
-        }
+        // for (let line of this.dirtyLines) {
+        //     // let num = cm.getDoc().getLineNumber(line)!;
+        //     if (!tbChanges[num]) {
+        //         tbChanges[num] = null;
+        //     }
+        // }
         this.dirtyLines = [];
 
-        for (let index = 0; index < dirtyFields.length; index++) {
-            let field: DraggableTextField = dirtyFields[index];
-            let realLine = index + change.from.line;
-            let handle = cm.getDoc().getLineHandle(realLine);
-            
-            if (!textboxData.has(handle)) {
-                textboxData.set(handle, []);
-            }
-            textboxData.get(handle)!.push(field);
-
-            // Set up rendering props
-            let absChar = change.from.ch + field.startChar;
-            let firstCharPos: CodeMirror.Position = { line: realLine, ch: absChar };
-            let firstCharCoords: CoordsType = cm.charCoords(firstCharPos, 'local');
-            let lastCharPos: CodeMirror.Position = { line: realLine, ch: change.from.ch + field.endChar };
-            let lastCharCoords: CoordsType = cm.charCoords(lastCharPos, 'local');
-
-            let width = lastCharCoords.right - firstCharCoords.left;
-            let height = lastCharCoords.bottom - lastCharCoords.top;
-
-            let dimensions: TextBoxDimensions = {
-                x: firstCharCoords.left,
-                y: firstCharCoords.top,
-                width: width,
-                height: height
-            };
-
-            if (!tbChanges[realLine]) {
-                tbChanges[realLine] = [];
-            }
-            tbChanges[realLine].push({ absDimensions: dimensions, placeholder: field.placeholderText });
-            
-        }
-
-        this.props.setTextboxes(tbChanges, textboxData);
+        cm.off('change', this.calcBound);
+        this.props.setTextboxChanges(tbChanges);
+        this.lastDrop = undefined;
     }
 }
-
-
-// function calculateTextboxChanges(
-//         cm: CodeMirror.Editor, 
-//         change: CodeMirror.EditorChangeCancellable,
-//         dispatch: Dispatch<CodeEditorState>) {
-
-//     const mc = UnwrappedCodeEditor.MAGIC_CHARACTER;
-//     const re = new RegExp(mc + '.*?' + mc, 'g');
-
-//     let tbChanges = {}; // the 'delta' object
-
-//     for (let relLineNum of Object.keys(change.text)) {
-//         let text = change.text[relLineNum];
-//         let absLine = change.from.line + Number(relLineNum);
-
-//         let lineChanges: Array<TextBoxProps> = [];
-
-        
-
-//         // exec() only finds one thing at a time, so we have to loop through calling it repeatedly
-//         let foundExp;
-//         while ((foundExp = re.exec(text)) !== null) {
-//             let absChar = change.from.ch + foundExp.index;
-//             let firstCharPos: CodeMirror.Position = { line: absLine, ch: absChar };
-//             let firstCharCoords: CoordsType = cm.charCoords(firstCharPos, 'local');
-//             let lastCharPos: CodeMirror.Position = { line: absLine, ch: absChar + (foundExp[0].length - 1) };
-//             let lastCharCoords: CoordsType = cm.charCoords(lastCharPos, 'local');
-
-//             let width = lastCharCoords.right - firstCharCoords.left;
-//             let height = lastCharCoords.bottom - lastCharCoords.top;
-
-//             let dimensions: TextBoxDimensions = {
-//                 x: firstCharCoords.left,
-//                 y: firstCharCoords.top,
-//                 width: width,
-//                 height: height
-//             };
-
-//             let placeholder = foundExp[0].replace(/\\/g, '');
-
-//             lineChanges.push({ absDimensions: dimensions, placeholderText: placeholder });
-//         }
-
-//         // If there are no textboxes, set it to undefined so it gets removed from the state
-//         if (lineChanges.length === 0) {
-//             tbChanges[absLine] = null;
-//             continue;
-//         }
-//         tbChanges[absLine] = lineChanges;
-//     }
-
-//     return dispatch(Actions.setTextboxes(tbChanges));
-// }
 
 const dropTarget = {
     drop(props: CodeEditorProps, monitor: DropTargetMonitor, component: UnwrappedCodeEditor) {
@@ -334,9 +382,11 @@ const mapDispatchToProps = (dispatch: Dispatch<CodeEditorState>) => {
         updateCodeState: (newCode: string) => {
             dispatch(Actions.setCode(newCode));
         },
-        setTextboxes: (changes: {}, data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>) => {
-            dispatch(Actions.setTextboxes(changes));
+        setTextboxData: ( data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>) => {
             dispatch(Actions.setTextboxData(data));
+        },
+        setTextboxChanges: (changes: Map<CodeMirror.LineHandle, Array<TextBoxProps>>) => {
+            dispatch(Actions.setTextboxes(changes));
         }
     };
 };

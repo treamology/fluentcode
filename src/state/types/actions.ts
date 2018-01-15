@@ -1,4 +1,5 @@
 import { Course, CourseListing, Section, TestResult, DraggableTextField } from '../../models';
+import { TextBoxProps } from '../../components/widgets/textbox';
 
 export module AsyncActionTypes {
     export interface ReceiveApiKeyAction {
@@ -41,7 +42,7 @@ export module ActionTypes {
     }
     export interface SetTextboxAction {
         type: string;
-        changes: {};
+        changes: Map<CodeMirror.LineHandle, Array<TextBoxProps>>;
     }
     export interface SetTextboxDataAction {
         type: string;

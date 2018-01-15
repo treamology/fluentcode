@@ -6,6 +6,7 @@ import * as Endpoints from '../endpoints';
 import { ActionTypes, AsyncActionTypes, ResponseTypes } from './types/actions';
 import { Section, TestResult, DraggableTextField } from '../models';
 import * as qs from 'query-string';
+import { TextBoxProps } from '../components/widgets/textbox';
 
 export module Actions {
     export function setCode(code: string): ActionTypes.SetCodeAction {
@@ -14,7 +15,7 @@ export module Actions {
             code
         };
     }
-    export function setTextboxes(changes: {}): ActionTypes.SetTextboxAction {
+    export function setTextboxes(changes: Map<CodeMirror.LineHandle, Array<TextBoxProps>>): ActionTypes.SetTextboxAction {
         return {
             type: ActionTypes.SET_TEXTBOXES,
             changes

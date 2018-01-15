@@ -12,6 +12,7 @@ import {
 } from '../state/types/state';
 import { AnyAction } from 'redux';
 import { DraggableTextField } from '../models';
+import { TextBoxProps } from '../components/widgets/textbox';
 
 // const defaultVisibleCodeBlocks: Array<DraggableData> = [
 //     {id: 0,
@@ -45,7 +46,7 @@ const defaultCodeExecutionState: CodeExecutionState = {
 
 const defaultCodeEditorState: CodeEditorState = {
     currentEnteredCode: '',
-    textBoxes: {},
+    textBoxes: new Map<CodeMirror.LineHandle, Array<TextBoxProps>>(),
     textboxData: new Map<CodeMirror.LineHandle, Array<DraggableTextField>>(),
     requirementsOpen: false
 };
@@ -107,7 +108,7 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
             });
         case ActionTypes.SET_TEXTBOXES:
             let tbAction = action as ActionTypes.SetTextboxAction;
-            let newTextboxes = { textBoxes: Object.assign({}, state.textBoxes, tbAction.changes)};
+            let newTextboxes = { textBoxes: tbAction.changes};
             return Object.assign({}, state, newTextboxes);
         case ActionTypes.SET_TEXTBOX_DATA:
             let tbDataAction = action as ActionTypes.SetTextboxDataAction;
