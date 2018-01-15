@@ -19,16 +19,19 @@ interface RequirementsBarProps {
 
 class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
 
+    numReqs: number;
+    completedReqs: number;
+
     render() {
-        let numReqs = 0;
-        let completedReqs = 0;
+        this.numReqs = 0;
+        this.completedReqs = 0;
         let requirementElements;
 
         if (this.props.currentSection && this.props.currentSection.requirements) {
-            numReqs = this.props.currentSection.requirements.length;
+            this.numReqs = this.props.currentSection.requirements.length;
             requirementElements = this.props.currentSection.requirements.map((requirement, index) => {
                 if (requirement.completed) {
-                    completedReqs += 1;
+                    this.completedReqs += 1;
                 }
                 return (
                     <RequirementCheckbox
@@ -42,7 +45,7 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
 
         // CSS State
         let nextSectionClassName = 'nextSectionButton';
-        if (numReqs !== completedReqs) {
+        if (this.numReqs !== this.completedReqs) {
             nextSectionClassName += ' disabled';
         }
 
@@ -55,10 +58,10 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
             <div className="requirementsContainer">
                 <div className="requirementsBar">
                     <span className="requirementsLabel" onClick={() => this.props.toggleRequirements()}>
-                        {completedReqs} of {numReqs} requirements satisfied
+                        {this.completedReqs} of {this.numReqs} requirements satisfied
                     </span>
                     <div className="nextSectionContainer">
-                        <span className={nextSectionClassName} onClick={() => this.props.nextSection()}>
+                        <span className={nextSectionClassName} onClick={this.nextSection.bind(this)}>
                             Complete Section
                         </span>
                     </div>
@@ -71,6 +74,12 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
                 </div>
             </div>
         );
+    }
+
+    nextSection() {
+        if (this.numReqs === this.completedReqs) {
+            this.props.nextSection();
+        }
     }
 
 }
