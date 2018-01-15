@@ -19,6 +19,7 @@ def execute_code(code, tests):
     try:
         args = [code]
         args.extend(tests)
+
         output = client.containers.run("python_runner", command=args)
 
     except docker.errors.ContainerError as err:

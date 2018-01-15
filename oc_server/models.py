@@ -65,6 +65,7 @@ class Draggable(models.Model):
 class DraggableTextField(models.Model):
     startChar = models.PositiveIntegerField()
     endChar = models.PositiveIntegerField()
+    lineNumber = models.PositiveIntegerField()
     placeholderText = models.CharField(max_length=24)
 
     draggable = models.ForeignKey('Draggable', on_delete=models.CASCADE, related_name='textFields')
