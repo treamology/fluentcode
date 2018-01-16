@@ -26,10 +26,16 @@ class SectionSerializer(serializers.ModelSerializer):
     draggables = DraggableSerializer(many=True, read_only=True)
     requirements = SectionRequirementSerializer(many=True, read_only=True)
     lessonNumber = serializers.IntegerField(source='lesson.number', label='lessonNumber')
+    completed = serializers.SerializerMethodField(method_name='section_completed')
+
+    def section_completed(self, obj):
+        user = self.context['user']
+        base_profile = models.BaseProfile.objects.get(user=user)
+        return bool(obj.done_users.filter(id=base_profile.id).exists())
 
     class Meta:
         model = models.Section
-        fields = ('id', 'name', 'number', 'text', 'draggables', 'requirements', 'lessonNumber')
+        fields = ('id', 'name', 'number', 'text', 'draggables', 'requirements', 'lessonNumber', 'completed')
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -42,7 +48,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
     def get_sections(self, obj):
         ordered_queryset = models.Section.objects.filter(lesson__course=obj.course, lesson=obj).order_by('number')
-        return SectionSerializer(ordered_queryset, many=True, read_only=True).data
+        return SectionSerializer(ordered_queryset, many=True, read_only=True, context=self.context).data
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -56,4 +62,4 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_lessons(self, obj):
         ordered_queryset = models.Lesson.objects.filter(course=obj).order_by('number')
-        return LessonSerializer(ordered_queryset, many=True, read_only=True).data
+        return LessonSerializer(ordered_queryset, many=True, read_only=True, context=self.context).data

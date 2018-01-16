@@ -7,6 +7,7 @@ from django.db.models.signals import post_save
 class BaseProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     completed_sections = models.ManyToManyField('Section', related_name='done_users')
+    current_section = models.ForeignKey('Section', null=True)
 
 @receiver(post_save, sender=User)
 def create_initial_profile(sender, instance, created, **kwargs):

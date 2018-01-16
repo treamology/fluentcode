@@ -38,6 +38,8 @@ class ExecuteView(APIView):
                         result.forget()  # Don't cache the result if we send it out
                         if not exec_result.mainExecError:
                             reqs = [TestResult(*res) for res in exec_result.results]
+                            profile = models.BaseProfile.objects.get(user=request.user)
+                            profile.completed_sections.add(profile.current_section)
                             return ExecutionResult(status=ExecutionState.success,
                                                    result=exec_result.mainExecOutput,
                                                    results=reqs)
@@ -69,6 +71,8 @@ class ExecuteView(APIView):
                 section = models.Section.objects.get(id=section_id)
                 for req in section.requirements.all():
                     tests.append(req.unitTests)
+                request.user.current_section = section
+                request.user.save()
             except KeyError:  # tests are optional
                 pass
 

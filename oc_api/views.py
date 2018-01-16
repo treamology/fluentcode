@@ -21,7 +21,7 @@ class CourseDetail(AuthAPIView):
     def get(self, request):
         course_id = request.query_params["id"]
         course = models.Course.objects.get(pk=course_id)
-        serializer = serializers.CourseSerializer(course)
+        serializer = serializers.CourseSerializer(course, context={'user': request.user})
 
         return Response(serializer.data)
 
@@ -29,7 +29,7 @@ class LessonDetail(AuthAPIView):
     def get(self, request):
         lesson_id = request.query_params["id"]
         lesson = models.Lesson.objects.get(pk=lesson_id)
-        serializer = serializers.LessonSerializer(lesson)
+        serializer = serializers.LessonSerializer(lesson, context={'user': request.user})
 
         return Response(serializer.data)
 
@@ -37,7 +37,7 @@ class SectionDetail(AuthAPIView):
     def get(self, request):
         section_id = request.query_params["id"]
         section = models.Section.objects.get(pk=section_id)
-        serializer = serializers.SectionSerializer(section)
+        serializer = serializers.SectionSerializer(section, context={'user': request.user})
 
         return Response(serializer.data)
 
