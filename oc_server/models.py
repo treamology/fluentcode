@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from rest_framework.authtoken.models import Token
 
 class BaseProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -13,6 +14,7 @@ class BaseProfile(models.Model):
 def create_initial_profile(sender, instance, created, **kwargs):
     if created:
         BaseProfile.objects.create(user=instance)
+        Token.objects.create(user=instance)
 
 class Course(models.Model):
     name = models.CharField(max_length=128)

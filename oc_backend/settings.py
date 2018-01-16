@@ -19,8 +19,8 @@ DOCKER = bool(os.environ.get('USING_DOCKER', False))
 
 LOGIN_REDIRECT_URL = "/app/"
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "web_static")
+STATIC_URL = "/web_static/"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'oc_api.apps.OcApiConfig',
     'oc_server.apps.OcServerConfig',
     'rest_framework',
-    'rest_framework.authtoken',
     'corsheaders'
 ]
 
@@ -83,16 +82,9 @@ WSGI_APPLICATION = 'oc_backend.wsgi.application'
 
 
 # Database
-DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'oc_dev',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            'HOST': 'localhost',
-            'PORT': '5432'
-        }
-    }
+
+
+DATABASES = {}
 
 if DOCKER:
     DATABASES = {
@@ -102,6 +94,17 @@ if DOCKER:
             'USER': 'postgres',
             'PASSWORD': 'postgres',
             'HOST': 'db',
+            'PORT': '5432'
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'ocdev',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
             'PORT': '5432'
         }
     }
@@ -143,7 +146,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
@@ -161,7 +164,7 @@ CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
     )
 }
 

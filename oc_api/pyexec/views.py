@@ -1,5 +1,5 @@
 from celery.result import AsyncResult
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,7 +19,7 @@ class ExecutionState(IntEnum):
     metafail = 3
 
 class ExecuteView(APIView):
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -29,7 +29,7 @@ class ExecuteView(APIView):
 
             serializer = serializers.ExecutionStateSerializer(data=request.query_params)
             if serializer.is_valid(raise_exception=True):
-                result = AsyncResult(request.auth.key)
+                result = AsyncResult(request.user.username)
                 if result is not None:
                     if result.children is None:
                         failure_reason = 'Could not connect to the execution backend.'
@@ -38,8 +38,9 @@ class ExecuteView(APIView):
                         result.forget()  # Don't cache the result if we send it out
                         if not exec_result.mainExecError:
                             reqs = [TestResult(*res) for res in exec_result.results]
-                            profile = models.BaseProfile.objects.get(user=request.user)
-                            profile.completed_sections.add(profile.current_section)
+                            if len(reqs) != 0:
+                                profile = models.BaseProfile.objects.get(user=request.user)
+                                profile.completed_sections.add(profile.current_section)
                             return ExecutionResult(status=ExecutionState.success,
                                                    result=exec_result.mainExecOutput,
                                                    results=reqs)
@@ -62,7 +63,7 @@ class ExecuteView(APIView):
     def post(self, request):
         """Accept some code for execution"""
         serializer = serializers.ExecutionRequestSerializer(data=request.data)
-        token = request.auth.key
+        token = request.user.username
 
         if serializer.is_valid(raise_exception=True):
             tests = []
@@ -71,8 +72,9 @@ class ExecuteView(APIView):
                 section = models.Section.objects.get(id=section_id)
                 for req in section.requirements.all():
                     tests.append(req.unitTests)
-                request.user.current_section = section
-                request.user.save()
+                profile = models.BaseProfile.objects.get(user=request.user)
+                profile.current_section = section
+                profile.save()
             except KeyError:  # tests are optional
                 pass
 

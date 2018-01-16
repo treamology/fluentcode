@@ -1,21 +1,35 @@
 version: '3'
 
 services:
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   command: python3 /code/manage.py runserver 0.0.0.0:8000
+  #   # command: ls
+  #   environment:
+  #     DOCKER_HOST: 'unix:///var/run/docker.sock'
+  #     DJANGO_DEBUG: 1
+  #   ports:
+  #     - "8000:8000" # postgres
+  #     - "6379:6379" # redis
+  #   depends_on:
+  #     - db
+  #     - redis
+  #     - celery
+  #   volumes:
+  #     - ./:/code/
   web:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    command: python3 /code/manage.py runserver 0.0.0.0:8000
-    # command: ls
-    environment:
-      DOCKER_HOST: 'unix:///var/run/docker.sock'
-      DJANGO_DEBUG: 1
-    ports:
-      - "8000:8000" # postgres
-      - "6379:6379" # redis
-    depends_on:
-      - db
-      - redis
-      - celery
+    image: nginx
     volumes:
       - ./:/code/
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "5000:5000"
+    network_mode: "host"
+  db:
+    ports:
+      - "5432:5432"
+  redis:
+    ports:
+      - "6379:6379"
