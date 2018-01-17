@@ -1,4 +1,5 @@
-import Store from './store';
+// import Store from './store';
+import * as Cookies from 'js-cookie';
 
 // export const PROTO = 'http://';
 export const ROOT = window.location.origin + '/api';
@@ -13,23 +14,30 @@ export const SECTION_DETAIL_ENDPOINT = '/learn/sections/detail';
 
 export function callAPI(endpoint: string, method: string, body: string = ''): Promise<{}> {
     let root = ROOT;
-    if (process.env.NODE_ENV !== 'production') {
-        root = 'http://' + window.location.hostname + ':8000/api';
+
+    if (process.env.NODE_ENV !== 'dev') {
+        root = window.location.origin + "/app/api"
     }
 
     let headers = new Headers({
         'Content-Type': 'application/json',
     });
 
-    if (Store.getInstance().getState().apiKey !== '') {
-        let apiKey = Store.getInstance().getState().apiKey;
-        headers.append('Authorization', `Token ${apiKey}`);
+    // if (Store.getInstance().getState().apiKey !== '') {
+    //     let apiKey = Store.getInstance().getState().apiKey;
+    //     headers.append('Authorization', `Token ${apiKey}`);
+        
+    // }
+
+    if (method === 'POST') {
+        headers.append('X-CSRFToken', Cookies.get('csrftoken')!)
     }
     
     let request: RequestInit = {
         method: method,
         mode: 'cors',
-        headers: headers
+        headers: headers,
+        credentials: 'include'
     };
 
     let query = '';

@@ -77,7 +77,7 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
   }
 
   componentWillMount() {
-    Store.getInstance().dispatch(AsyncActions.getAPIKey());
+    Store.getInstance().dispatch(AsyncActions.getCourseDetail(1));
   }
 }
 
