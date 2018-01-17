@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: 'ocdev'
     volumes:
-      - ${DB_RESTORE:-./requirements.txt}:/restore.sql:ro
+      - ${DB_RESTORE:-./requirements.txt}:/restore.dump:ro
   redis:
     image: redis
   celery:
