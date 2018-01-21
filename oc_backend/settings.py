@@ -179,7 +179,7 @@ else:
         'disable_existing_loggers': False,
         'handlers': {
             'console': {
-                'level': 'DEBUG',
+                'level': 'INFO',
                 'filters': None,
                 'class': 'logging.StreamHandler',
             },
@@ -187,7 +187,7 @@ else:
         'loggers': {
             'django': {
                 'handlers': ['console'],
-                'level': 'DEBUG',
+                'level': 'INFO',
             },
         },
     }

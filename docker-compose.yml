@@ -26,7 +26,9 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
       - "5000:5000"
-    network_mode: "host"
+    expose:
+      - "5000"
+    #network_mode: "host"
   db:
     ports:
       - "5432:5432"
