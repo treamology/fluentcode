@@ -15,10 +15,6 @@ export const SECTION_DETAIL_ENDPOINT = '/learn/sections/detail';
 export function callAPI(endpoint: string, method: string, body: string = ''): Promise<{}> {
     let root = ROOT;
 
-    if (process.env.NODE_ENV !== 'dev') {
-        root = window.location.origin + "/app/api"
-    }
-
     let headers = new Headers({
         'Content-Type': 'application/json',
     });

@@ -13,7 +13,7 @@ import { ApplicationState } from './state/types/state';
 const store: Redux.Store<ApplicationState> = Store.getInstance();
 
 ReactDOM.render(
-    <BrowserRouter>
+    <BrowserRouter basename="/app/">
       <Provider store={store}>
         <OCSite />
       </Provider>
