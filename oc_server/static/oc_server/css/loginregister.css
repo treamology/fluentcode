@@ -3,6 +3,7 @@ body {
     padding: 0px;
 
     background-color: #1e1e1e;
+    font-family: "Open Sans", sans-serif;
 }
 
 .content {
@@ -48,6 +49,7 @@ body {
 .formContainer {
     margin: auto;
     text-align: center;
+    max-width: 264px;
 }
 
 .tbContainer {
@@ -65,12 +67,10 @@ body {
     height: 36px;
 
     font-size: 18px;
-    font-family: "Open Sans", sans-serif;
     outline: none;
 }
 
 .logo {
-    font-family: "Open Sans", sans-serif;
     color: white;
     font-size: 48px;
 }
@@ -80,9 +80,14 @@ body {
     border: 0px solid;
     border-radius: 4px;
     color: white;
-    font-family: "Open Sans", sans-serif;
     font-size: 12px;
 
     width: 200px;
     height: 36px;
+}
+
+.errorlist {
+    list-style: none;
+    padding: 0px;
+    color: #C22C3F;
 }

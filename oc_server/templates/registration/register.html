@@ -5,7 +5,17 @@
 {% block form %}
 <form method="post">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit" />
+    {{ form.non_field_errors }}
+    {{ form.username.errors }}
+    {{ form.password1.errors }}
+    {{ form.password2.errors }}
+    <div class="tbContainer">
+        {{ form.username }}
+        <div class="separator"></div>
+        {{ form.password1 }}
+        <div class="separator"></div>
+        {{ form.password2 }}
+    </div>
+    <input type="submit" value="Register" class="submitButton" />
 </form>
 {% endblock %}
