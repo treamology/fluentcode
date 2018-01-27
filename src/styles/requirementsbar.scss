@@ -21,9 +21,12 @@ $requirements_bar_height: 40px;
     color: white;
 }
 
+.requirementsLabelContainer {
+    cursor: pointer;
+}
+
 .requirementsLabel {
     font-size: 12px;
-    cursor: pointer;
 }
 
 .nextSectionContainer {
@@ -88,4 +91,15 @@ $requirements_bar_height: 40px;
 
 .requirementCheckboxDesc {
     margin-left: 8px;
+}
+
+.arrow {
+    margin-left: 2px;
+    transform: rotate(-90deg);
+    transition: 0.1s;
+    vertical-align: middle;
+}
+
+.arrow.open {
+    transform: rotate(-180deg);
 }

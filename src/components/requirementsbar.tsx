@@ -10,6 +10,8 @@ import Store from '../store';
 import { PanelHeader } from './smallui';
 import RequirementCheckbox from './requirementcheckbox';
 
+let arrowImage = require('../assets/svg/arrow.svg');
+
 interface RequirementsBarProps {
     currentSection: Section;
     requirementsOpen: boolean;
@@ -53,18 +55,24 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
         if (this.numReqs !== this.completedReqs) {
             nextSectionClassName += ' disabled';
         }
-
         let listContainerClassName = 'requirementsListContainer';
         if (!this.props.requirementsOpen) {
             listContainerClassName += ' closed';
+        }
+        let arrowClassName = 'arrow';
+        if (this.props.requirementsOpen) {
+            arrowClassName += ' open';
         }
 
         return (
             <div className="requirementsContainer">
                 <div className="requirementsBar">
-                    <span className="requirementsLabel" onClick={() => this.props.toggleRequirements()}>
-                        {this.completedReqs} of {this.numReqs} requirements satisfied
-                    </span>
+                    <div className="requirementsLabelContainer" onClick={() => this.props.toggleRequirements()}>
+                        <span className="requirementsLabel" >
+                            {this.completedReqs} of {this.numReqs} requirements satisfied
+                        </span>
+                        <img src={arrowImage} className={arrowClassName}/>
+                    </div>
                     <div className="nextSectionContainer">
                         <span className={nextSectionClassName} onClick={this.nextSection}>
                             Complete Section
