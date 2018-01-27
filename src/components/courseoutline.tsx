@@ -156,13 +156,21 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
                 // for (let i = lesson.sections.length - 1; i >= 0; --i) {
                 for (let i = 0; i < lesson.sections.length; i++) {
                     let section = lesson.sections[i];
+                    let indicatorClass = 'sectionIndicator';
+                    if (section.completed) {
+                        indicatorClass += ' complete';
+                    }
                     let tree = (
                     <TreeView
                         nodeLabel={`Section ${section.number}: ${section.name}`}
-                        arrowImage={arrowImage}
                         key={lesson.number.toString() + section.number}
                         onClick={() => this.props.setSection(this.props.currentCourse, section, this.props.history)}
-                    />
+                        wantsChildren={false}
+                    >
+                        <div className="sectionIndicatorContainer" >
+                            <div className={indicatorClass} />
+                        </div>
+                    </TreeView>
                     );
 
                     childrenArray.push(tree);

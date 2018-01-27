@@ -11,7 +11,8 @@ interface TreeViewProps {
   treeViewClassName?: string;
   onClick?: Function;
   // tslint:disable-next-line
-  arrowImage: any;
+  arrowImage?: any;
+  wantsChildren?: boolean;
 }
 
 interface TreeViewState {
@@ -25,7 +26,8 @@ class TreeView extends React.PureComponent<TreeViewProps, TreeViewState> {
     className: '',
     itemClassName: '',
     treeViewClassName: '',
-    childrenClassName: ''
+    childrenClassName: '',
+    wantsChildren: true
   };
 
   constructor(props: TreeViewProps) {
@@ -58,7 +60,7 @@ class TreeView extends React.PureComponent<TreeViewProps, TreeViewState> {
       <div
         className={this.props.className + ' ' + arrowClassName}
       >
-        <img src={this.props.arrowImage}/>
+        {this.props.arrowImage ? <img src={this.props.arrowImage}/> : null}
       </div>
     );
 
@@ -66,10 +68,11 @@ class TreeView extends React.PureComponent<TreeViewProps, TreeViewState> {
       <div className={'tree-view ' + this.props.treeViewClassName}>
         <div className={'tree-view_item ' + this.props.itemClassName} onClick={() => this.handleClick()}>
           {React.Children.count(this.props.children) === 0 ? null : arrow}
-          {this.props.nodeLabel}
+          <span className="tree-view_label">{this.props.nodeLabel}</span>
+          {this.props.wantsChildren ? null : this.props.children}
         </div>
         <div className={containerClassName + ' ' + this.props.childrenClassName}>
-          {collapsed ? null : this.props.children}
+          {collapsed || !this.props.wantsChildren ? null : this.props.children}
         </div>
       </div>
     );

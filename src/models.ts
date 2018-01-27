@@ -42,6 +42,7 @@ export interface Section {
     draggables: number[];
     requirements: SectionRequirement[];
     lessonNumber: number;
+    completed: boolean;
 }
 
 export interface SectionRequirement {
