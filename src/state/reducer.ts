@@ -132,9 +132,9 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
 function learning(state: LearningState, action: AnyAction) {
     switch (action.type) {
         case AsyncActionTypes.RECEIVE_COURSE_DETAIL:
-            let course = action.json as ResponseTypes.CourseDetailResponse;
+            let courseAction = action.json as ResponseTypes.CourseDetailResponse;
             return Object.assign({}, state, {
-                currentCourse: course
+                currentCourse: courseAction
             });
         case ActionTypes.SELECT_SECTION:
             let selectSectionAction = action as ActionTypes.SelectSectionAction;
@@ -144,16 +144,36 @@ function learning(state: LearningState, action: AnyAction) {
         case ActionTypes.COMPLETE_REQUIREMENTS:
             if (state.currentSection) {
                 let completeRequirementsAction = action as ActionTypes.CompleteRequirementsAction;
-//                let reqs = Object.assign({}, state.currentSection.requirements)
+                let course = state.currentCourse;
+                
                 let reqs = Array.from(state.currentSection.requirements);
+                let numComplete = 0;
                 completeRequirementsAction.results.map((result, index) => {
                     reqs[index].completed = result.success;
+                    numComplete++;
                 });
-                return Object.assign({}, state, {
-                    currentSection: Object.assign({}, state.currentSection, {
-                        requirements: Array.from(reqs)
-                    })
-                });
+
+                let lessons = course!.lessons;
+                let currentLesson = lessons[state.currentSection.lessonNumber - 1];
+                let currentSection = currentLesson.sections[state.currentSection.number - 1];
+                
+                currentSection.completed = numComplete === reqs.length;
+                currentSection.requirements = Array.from(reqs);
+
+                currentLesson.sections[state.currentSection.number - 1] = currentSection;
+                lessons[state.currentSection.lessonNumber - 1] = currentLesson;
+
+                return Object.assign({}, state, 
+                    {
+                        currentCourse: Object.assign({}, state.currentCourse,
+                            {
+                                lessons: Array.from(lessons)
+                            }
+                        ),
+                        currentSection: Object.assign({}, currentSection)    
+                    }
+                );
+
             } else {
                 return state;
             }
