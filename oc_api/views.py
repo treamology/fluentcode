@@ -41,6 +41,16 @@ class SectionDetail(AuthAPIView):
 
         return Response(serializer.data)
 
+class CompleteEmptySection(AuthAPIView):
+    def post(self, request):
+        section_id = request.data["id"]
+        section = models.Section.objects.get(pk=section_id)
+        if section.requirements and section.requirements.count() == 0:
+            profile = models.BaseProfile.objects.get(user=request.user)
+            profile.completed_sections.add(section_id)
+            return Response(status=200)
+        return Response(status=403)
+
 class Heartbeat(AuthAPIView):
     def get(self, request):
         return Response()
