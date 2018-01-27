@@ -14,6 +14,14 @@ export module AsyncActionTypes {
         type: string;
         json: ResponseTypes.AnyResponse;
     }
+    export interface ResponseAction {
+        type: string;
+        response: Response;
+    }
+    export interface RequestCompleteSectionAction {
+        type: string;
+        section: Section;
+    }
 
     export const RECEIVE_API_KEY = 'RECEIVE_API_KEY';
 
@@ -30,6 +38,9 @@ export module AsyncActionTypes {
 
     // Received details of course
     export const RECEIVE_COURSE_DETAIL = 'RECEIVE_COURSE_DETAIL';
+
+    export const REQUEST_COMPLETE_SECTION = 'REQUEST_COMPLETE_SECTION';
+    export const RECEIVE_COMPLETE_SECTION = 'RECEIVE_COMPLETE_SECTION';
 
     export type RootActions = ReceiveApiKeyAction;
     export type CodeExecutionActions = RequestRunCodeAction | APIAction;

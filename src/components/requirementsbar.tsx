@@ -1,7 +1,7 @@
 import * as React from 'react';
 import '../styles/requirementsbar.scss';
 import { ApplicationState } from '../state/types/state';
-import { Actions } from '../state/actions';
+import { Actions, AsyncActions } from '../state/actions';
 import { Section } from '../models';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -110,11 +110,17 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => {
                 let lessonNum = currentSection.lessonNumber;
                 try {
                     // one is already added ( - 1 + 1)
+                    if (!currentSection.completed) {
+                        dispatch(AsyncActions.completeSection(currentSection));
+                    }
                     let nextSection = currentCourse.lessons[lessonNum - 1].sections[currentSection.number];
                     if (!nextSection) { throw new Error('whoops'); }
                     dispatch(Actions.selectSection(nextSection));
                 } catch (e) {
                     try {
+                        if (!currentSection.completed) {
+                            dispatch(AsyncActions.completeSection(currentSection));
+                        }
                         let nextLesson = currentCourse.lessons[lessonNum]; // one is already added ( - 1 + 1)
                         if (!nextLesson) { throw new Error('whoops'); }
                         dispatch(Actions.selectSection(nextLesson.sections[0]));

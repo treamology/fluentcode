@@ -11,6 +11,7 @@ export const COURSE_LIST_ENDPOINT = '/learn/courses/list';
 export const COURSE_DETAIL_ENDPOINT = '/learn/courses/detail';
 export const LESSON_DETAIL_ENDPOINT = '/learn/lessons/detail';
 export const SECTION_DETAIL_ENDPOINT = '/learn/sections/detail';
+export const COMPLETE_EMPTY_SECTION_ENDPOINT = '/learn/complete_empty_section';
 
 export function callAPI(endpoint: string, method: string, body: string = ''): Promise<{}> {
     let root = ROOT;

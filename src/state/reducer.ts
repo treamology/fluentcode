@@ -14,29 +14,6 @@ import { AnyAction } from 'redux';
 import { DraggableTextField } from '../models';
 import { TextBoxProps } from '../components/widgets/textbox';
 
-// const defaultVisibleCodeBlocks: Array<DraggableData> = [
-//     {id: 0,
-//     codeName: 'if', 
-//     descName: 'statement', 
-//     descText: 'Something about an if statement.',
-//     code: 'if \\conditional\\:\n    '},
-//     {id: 0,
-//     codeName: 'for', 
-//     descName: 'loop', 
-//     descText: 'Something about an for loop',
-//     code: 'for [var] in [iterable]:'},
-//     {id: 0,
-//     codeName: 'while', 
-//     descName: 'loop', 
-//     descText: 'Something about an while loop',
-//     code: 'while [conditional]:'},
-//     {id: 0,
-//     codeName: 'print', 
-//     descName: '', 
-//     descText: 'Something about printing',
-//     code: 'print(\\string\\)'}
-// ];
-
 const defaultCodeExecutionState: CodeExecutionState = {
     state: ExecutionState.none,
     lastOutput: '',
@@ -177,7 +154,33 @@ function learning(state: LearningState, action: AnyAction) {
             } else {
                 return state;
             }
-            
+        case AsyncActionTypes.REQUEST_COMPLETE_SECTION:
+            if (state.currentSection) {
+                let completeSectionAction = action as AsyncActionTypes.RequestCompleteSectionAction;
+                let theSection = completeSectionAction.section;
+
+                let course = state.currentCourse;
+                let lessons = course!.lessons;
+                let currentLesson = lessons[theSection.lessonNumber - 1];
+                let currentSection = currentLesson.sections[theSection.number - 1];
+                
+                currentSection.completed = true;
+
+                currentLesson.sections[state.currentSection.number - 1] = currentSection;
+                lessons[state.currentSection.lessonNumber - 1] = currentLesson;
+
+                return Object.assign({}, state, 
+                    {
+                        currentCourse: Object.assign({}, state.currentCourse,
+                            {
+                                lessons: Array.from(lessons)
+                            }
+                        ),
+                        currentSection: Object.assign({}, currentSection)    
+                    }
+                );
+            }
+            return state;
         default:
             return state;
     }

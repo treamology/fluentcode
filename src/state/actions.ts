@@ -112,6 +112,18 @@ export module AsyncActions {
             results: results
         };
     }
+    export function receiveCompleteSection(response: Response): AsyncActionTypes.ResponseAction {
+        return {
+            type: AsyncActionTypes.RECEIVE_COMPLETE_SECTION,
+            response: response
+        };
+    }
+    export function requestCompleteSection(section: Section): AsyncActionTypes.RequestCompleteSectionAction {
+        return {
+            type: AsyncActionTypes.REQUEST_COMPLETE_SECTION,
+            section: section
+        };
+    }
     export function checkConnection(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<ApplicationState>) => {
             Endpoints.callAPI(
@@ -257,6 +269,22 @@ export module AsyncActions {
                 (response: Response) => response.json()
             ).then(
                 (json: ResponseTypes.CourseDetailResponse) => dispatch(receiveCourseDetail(json))
+            ).catch(() => dispatch(checkConnection())
+            );
+        };
+    }
+
+    export function completeSection(section: Section): ThunkAction<void, {}, {}> {
+        return (dispatch: Dispatch<ApplicationState>) => {
+            dispatch(requestCompleteSection(section));
+            Endpoints.callAPI(
+                Endpoints.COMPLETE_EMPTY_SECTION_ENDPOINT,
+                'POST',
+                JSON.stringify({
+                    id: section.id
+                })
+            ).then(
+                (response: Response) => dispatch(receiveCompleteSection(response))
             ).catch(() => dispatch(checkConnection())
             );
         };
