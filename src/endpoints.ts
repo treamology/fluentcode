@@ -26,7 +26,7 @@ export function callAPI(endpoint: string, method: string, body: string = ''): Pr
     // }
 
     if (method === 'POST') {
-        headers.append('X-CSRFToken', Cookies.get('csrftoken')!)
+        headers.append('X-CSRFToken', Cookies.get('csrftoken')!);
     }
     
     let request: RequestInit = {

@@ -19,7 +19,7 @@ interface DraggablePropsCollected extends DraggableProps {
 
 interface DroppedCodeItem {
     droppedCode: string;
-    textFields: DraggableTextField[]
+    textFields: DraggableTextField[];
 }
 
 const draggableSource = {

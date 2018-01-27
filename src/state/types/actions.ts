@@ -56,10 +56,15 @@ export module ActionTypes {
         type: string;
         results: TestResult[];
     }
+    export interface CodeMirrorInitAction {
+        type: string;
+        cm: CodeMirror.Editor;
+    }
     
     export const SET_CODE = 'SET_CODE';
     export const SET_TEXTBOXES = 'SET_TEXTBOXES';
     export const SET_TEXTBOX_DATA = 'SET_TEXTBOX_DATA';
+    export const CODEMIRROR_INIT = 'CODEMIRROR_INIT';
 
     export const RESET_EXECUTION_STATE = 'RESET_EXECUTION_STATE';
 
@@ -72,7 +77,7 @@ export module ActionTypes {
 
     export const COMPLETE_REQUIREMENTS = 'COMPLETE_REQUIREMENTS';
 
-    export type CodeEditorActions = SetCodeAction | SetTextboxAction | SetTextboxDataAction;
+    export type CodeEditorActions = SetCodeAction | SetTextboxAction | SetTextboxDataAction | CodeMirrorInitAction;
 }
 
 export module ResponseTypes {

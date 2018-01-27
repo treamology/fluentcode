@@ -15,13 +15,15 @@ export module Actions {
             code
         };
     }
-    export function setTextboxes(changes: Map<CodeMirror.LineHandle, Array<TextBoxProps>>): ActionTypes.SetTextboxAction {
+    export function setTextboxes(changes: Map<CodeMirror.LineHandle,
+        Array<TextBoxProps>>): ActionTypes.SetTextboxAction {
         return {
             type: ActionTypes.SET_TEXTBOXES,
             changes
         };
     }
-    export function setTextboxData(data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>): ActionTypes.SetTextboxDataAction {
+    export function setTextboxData(data: Map<CodeMirror.LineHandle, 
+        Array<DraggableTextField>>): ActionTypes.SetTextboxDataAction {
         return {
             type: ActionTypes.SET_TEXTBOX_DATA,
             data
@@ -51,6 +53,12 @@ export module Actions {
     export function toggleRequirements(): AnyAction {
         return {
             type: ActionTypes.TOGGLE_REQUIREMENTS
+        };
+    }
+    export function codeMirrorInit(cm: CodeMirror.Editor): ActionTypes.CodeMirrorInitAction {
+        return {
+            type: ActionTypes.CODEMIRROR_INIT,
+            cm: cm
         };
     }
 }
@@ -120,19 +128,35 @@ export module AsyncActions {
     }
     export function runCode(): ThunkAction<void, {}, {}> {
         return (dispatch: Dispatch<CodeExecutionState>) => {
-            const currentCode = Store.getInstance().getState().codeEditor.currentEnteredCode;
-            const currentSection = Store.getInstance().getState().learning.currentSection;
+            const state = Store.getInstance().getState();
+            const currentSection = state.learning.currentSection;
+            const cm = state.codeEditor.codeMirror!.getDoc();
+            let currentCode = state.codeEditor.currentEnteredCode;
             let sectionID;
             if (currentSection) {
                 sectionID = currentSection.id;
             }
-            dispatch(requestRunCode(currentCode));
+
+            const textboxData = state.codeEditor.textboxData;
+            
+            let lines = currentCode.split('\n');
+            textboxData.forEach((fields, handle) => {
+                let lineNum = cm.getLineNumber(handle)!;
+                let line = lines[lineNum];
+                for (let field of fields) {
+                    lines[lineNum] = line.replace(field.placeholderText, field.currentText);
+                }
+            });
+
+            let replacedCode = lines.join('');
+
+            dispatch(requestRunCode(replacedCode));
             
             Endpoints.callAPI(
                 Endpoints.CODE_EXECUTE_ENDPOINT,
                 'POST',
                 JSON.stringify({
-                    code: currentCode,
+                    code: replacedCode,
                     section_id: sectionID
                 })
             ).then(

@@ -24,6 +24,7 @@ export interface DraggableTextField {
     endChar: number;
     lineNumber: number;
     placeholderText: string;
+    currentText: string;
 }
 
 export interface Lesson {

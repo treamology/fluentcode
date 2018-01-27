@@ -19,6 +19,7 @@ interface CodeEditorProps {
     updateCodeState: (newCode: string) => AnyAction;
     setTextboxData: (data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>) => AnyAction;
     setTextboxChanges: (changes: {}) => AnyAction;
+    setCodeMirror: (cm: CodeMirror.Editor) => AnyAction;
     textboxProps: Map<CodeMirror.LineHandle, Array<TextBoxProps>>;
     textboxData: Map<CodeMirror.LineHandle, Array<DraggableTextField>>;
 }
@@ -90,6 +91,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                             absDimensions={props.absDimensions}
                             placeholderText={props.placeholderText}
                             key={Number(line + tbIndex)}
+                            onChange={props.onChange}
                         />
                     );
                 }
@@ -136,6 +138,8 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
         this.tbContainerDiv.style.left = '0px';
 
         cm.on('beforeChange', this.dataBound);
+
+        this.props.setCodeMirror(cm);
     }
 
     // tslint:disable-next-line
@@ -162,20 +166,18 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
 
     // Don't allow dragging onto a line that already has a box
     checkIfDragValid(cm: CodeMirror.Editor, change: CodeMirror.EditorChangeCancellable) {
-        if (!this.lastDrop) return;
+        if (!this.lastDrop) { return; }
         let lastDrop = this.lastDrop;
 
         for (let index = 0; index < lastDrop.textFields.length; index++) {
             let realLine = index + change.from.line;
             let handle = cm.getDoc().getLineHandle(realLine);
-            let tbData = this.props.textboxData.get(handle)
+            let tbData = this.props.textboxData.get(handle);
             if (tbData && tbData.length !== 0) {
                 change.cancel();
                 return;
             }
         }
-
-        //this.calculateTextboxDataChanges(cm, change);
     }
 
     calculateTextboxDataChanges(
@@ -218,7 +220,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                 // No need to check if before or after because some of the boxes have already been deleted
                 if (line === change.from.line) {
                     for (let key of Object.keys(newData)) {
-                        //let box = data[key];
                         let numDel = change.to.ch - change.from.ch;
                         
                         if (change.from.ch <= newData[key].startChar) {
@@ -228,7 +229,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                     }
                 } else if (line === change.to.line) {
                     for (let key of Object.keys(newData)) {
-                        //let box = newData[key];
                         // Since this is the last line, the selection starts from the beginning
                         let numDel = change.to.ch; 
 
@@ -239,7 +239,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                     }
                 }
                 
-
                 this.dirtyLines.push(handle);
                 if (newData.length === 0) { 
                     textboxData.delete(handle);
@@ -248,7 +247,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                 }
                 
             }
-           // this.props.setTextboxes(tbChanges, textboxData);
         } else {
             for (let line = change.from.line; line <= change.to.line; line++) {
                 let handle = cm.getDoc().getLineHandle(line);
@@ -265,7 +263,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                     // This branch means that something was only typed, and not dropped.
                     if (line === change.from.line) {
                         for (let key of Object.keys(data)) {
-                            if (change.to.ch <= data[key].endChar && change.text.length == 1) {
+                            if (change.to.ch <= data[key].endChar && change.text.length === 1) {
                                 let text = String(change.text[0]);
                                 text.replace('\t', '    ');
                                 let numAdd = text.length;
@@ -279,26 +277,23 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                     this.dirtyLines.push(handle);
                 }
             }
-            //this.lastDrop = undefined;
         }
         this.props.setTextboxData(textboxData);
         cm.on('change', this.calcBound);
-        //this.calculateTextboxRenderChanges(cm, change);
     }
-
 
     calculateTextboxRenderChanges(
         cm: CodeMirror.Editor, 
         change: CodeMirror.EditorChangeLinkedList | CodeMirror.EditorChangeCancellable) {
     
-        let tbChanges = new Map<CodeMirror.LineHandle, Array<TextBoxProps>>([...this.props.textboxProps]); // For rendering
+        // For rendering
+        let tbChanges = new Map<CodeMirror.LineHandle, Array<TextBoxProps>>([...this.props.textboxProps]); 
 
         // let dirtyFields: DraggableTextField[] = [];
         // for (let line of this.dirtyLines) {
         //     let handle = cm.getDoc().getLineHandle(line)
         //     dirtyFields = dirtyFields.concat(this.props.textboxData.get(handle)!);
         // }
-        //this.dirtyLines = [];
         for (let handle of this.dirtyLines) {
             let dirtyFields = this.props.textboxData.get(handle)!;
             
@@ -309,7 +304,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
             for (let index = 0; index < dirtyFields.length; index++) {
                 if (!dirtyFields[index]) { continue; }
                 let field: DraggableTextField = dirtyFields[index];
-                //let realLine = index + change.from.line;
                 let realLine = cm.getDoc().getLineNumber(handle)!;
 
                 // if (!tbChanges.has(handle)) {
@@ -343,8 +337,15 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                     height: height
                 };
     
+                let renderObject = {
+                    absDimensions: dimensions,
+                    placeholderText: field.placeholderText,
+                    onChange: (text: string) => {
+                        field.currentText = text;
+                    }
+                };
                 
-                tbChanges.get(handle)!.push({ absDimensions: dimensions, placeholderText: field.placeholderText });
+                tbChanges.get(handle)!.push(renderObject);
                 
             }
         }
@@ -387,6 +388,9 @@ const mapDispatchToProps = (dispatch: Dispatch<CodeEditorState>) => {
         },
         setTextboxChanges: (changes: Map<CodeMirror.LineHandle, Array<TextBoxProps>>) => {
             dispatch(Actions.setTextboxes(changes));
+        },
+        setCodeMirror: (cm: CodeMirror.Editor) => {
+            dispatch(Actions.codeMirrorInit(cm));
         }
     };
 };

@@ -11,9 +11,15 @@ export interface TextBoxDimensions {
 export interface TextBoxProps {
     absDimensions: TextBoxDimensions;
     placeholderText: string;
+    onChange: (text: string) => void;
 }
 
 export default class TextBoxWidget extends React.Component<TextBoxProps, {}> {
+    constructor(props: TextBoxProps) {
+        super(props);
+        this.textChange = this.textChange.bind(this);
+    }
+
     render() {
 
         if (!this.props.absDimensions) {
@@ -26,6 +32,17 @@ export default class TextBoxWidget extends React.Component<TextBoxProps, {}> {
             height: this.props.absDimensions.height,
         };
 
-        return <input style={style} className="textboxWidget" placeholder={this.props.placeholderText}/>;
+        return (
+        <input
+            style={style}
+            className="textboxWidget"
+            placeholder={this.props.placeholderText}
+            onChange={this.textChange}
+        />
+        );
+    }
+
+    textChange(event: React.FormEvent<HTMLInputElement>) {
+        this.props.onChange(event.currentTarget.value);
     }
 }

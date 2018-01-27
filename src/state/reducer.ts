@@ -48,7 +48,8 @@ const defaultCodeEditorState: CodeEditorState = {
     currentEnteredCode: '',
     textBoxes: new Map<CodeMirror.LineHandle, Array<TextBoxProps>>(),
     textboxData: new Map<CodeMirror.LineHandle, Array<DraggableTextField>>(),
-    requirementsOpen: false
+    requirementsOpen: false,
+    codeMirror: undefined
 };
 
 const defaultLearningState: LearningState = {
@@ -114,6 +115,11 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
             let tbDataAction = action as ActionTypes.SetTextboxDataAction;
             let newTextboxData = { textboxData: tbDataAction.data};
             return Object.assign({}, state, newTextboxData);
+        case ActionTypes.CODEMIRROR_INIT:
+            let cmInitAction = action as ActionTypes.CodeMirrorInitAction;
+            return Object.assign({}, state, {
+                codeMirror: cmInitAction.cm
+            });
         case ActionTypes.TOGGLE_REQUIREMENTS:
             return Object.assign({}, state, {
                 requirementsOpen: !state.requirementsOpen

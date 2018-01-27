@@ -1,4 +1,4 @@
-import { Section, Course } from '../../models';
+import { Section, Course, DraggableTextField } from '../../models';
 
 export interface ApplicationState {
     apiKey: string;
@@ -17,8 +17,9 @@ export interface LearningState {
 export interface CodeEditorState {
     currentEnteredCode: string;
     requirementsOpen: boolean;
+    codeMirror?: CodeMirror.Editor;
     textBoxes: {};
-    textboxData: {};
+    textboxData: Map<CodeMirror.LineHandle, Array<DraggableTextField>>;
 }
 
 export enum ExecutionState {

@@ -22,6 +22,11 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
     numReqs: number;
     completedReqs: number;
 
+    constructor(props: RequirementsBarProps) {
+        super(props);
+        this.nextSection = this.nextSection.bind(this);
+    }
+
     render() {
         this.numReqs = 0;
         this.completedReqs = 0;
@@ -61,7 +66,7 @@ class UnconnectedRequirementsBar extends React.Component<RequirementsBarProps> {
                         {this.completedReqs} of {this.numReqs} requirements satisfied
                     </span>
                     <div className="nextSectionContainer">
-                        <span className={nextSectionClassName} onClick={this.nextSection.bind(this)}>
+                        <span className={nextSectionClassName} onClick={this.nextSection}>
                             Complete Section
                         </span>
                     </div>
