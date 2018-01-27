@@ -38,9 +38,15 @@ class ExecuteView(APIView):
                         result.forget()  # Don't cache the result if we send it out
                         if not exec_result.mainExecError:
                             reqs = [TestResult(*res) for res in exec_result.results]
-                            if len(reqs) != 0:
+                            reqsComplete = 0
+                            for req in reqs:
+                                if req.success:
+                                    reqsComplete += 1
+
+                            if len(reqs) == reqsComplete:
                                 profile = models.BaseProfile.objects.get(user=request.user)
                                 profile.completed_sections.add(profile.current_section)
+                                
                             return ExecutionResult(status=ExecutionState.success,
                                                    result=exec_result.mainExecOutput,
                                                    results=reqs)
