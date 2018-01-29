@@ -154,13 +154,13 @@ export module AsyncActions {
             let lines = currentCode.split('\n');
             textboxData.forEach((fields, handle) => {
                 let lineNum = cm.getLineNumber(handle)!;
-                let line = lines[lineNum];
                 for (let field of fields) {
+                    let line = lines[lineNum];
                     lines[lineNum] = line.replace(field.placeholderText, field.currentText);
                 }
             });
 
-            let replacedCode = lines.join('');
+            let replacedCode = lines.join('\n');
 
             dispatch(requestRunCode(replacedCode));
             
