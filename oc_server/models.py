@@ -53,7 +53,7 @@ class Section(models.Model):
 
 class Draggable(models.Model):
     codeName = models.CharField(max_length=16)
-    descName = models.CharField(max_length=16)
+    descName = models.CharField(max_length=16, blank=True, default='')
     descText = models.TextField()
     code = models.TextField()
     course = models.ForeignKey('Course', on_delete=models.CASCADE, null=True, related_name='draggables')
@@ -67,7 +67,7 @@ class DraggableTextField(models.Model):
     startChar = models.PositiveIntegerField()
     endChar = models.PositiveIntegerField()
     lineNumber = models.PositiveIntegerField()
-    placeholderText = models.CharField(max_length=24)
+    placeholderText = models.CharField(max_length=32)
 
     draggable = models.ForeignKey('Draggable', on_delete=models.CASCADE, related_name='textFields')
 
