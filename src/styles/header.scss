@@ -1,0 +1,20 @@
+@import 'palette';
+
+.header {
+    background: linear-gradient($color_header_top, $color_header_bottom);
+    box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.5);
+    z-index: 10;
+
+    min-height: 48px;
+    line-height: 48px;
+}
+
+.feedbackButton {
+    float: right;
+    margin-right: 16px;
+
+    color: white;
+    font-size: 16px; 
+}
+
+

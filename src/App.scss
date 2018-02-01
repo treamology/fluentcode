@@ -19,13 +19,6 @@ span {
   flex-direction: column;
 }
 
-.header {
-  background: linear-gradient($color_header_top, $color_header_bottom);
-  box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.5);
-  z-index: 10;
-  min-height: 48px;
-}
-
 // Everything but the header
 .appContent {
   flex: 1;
