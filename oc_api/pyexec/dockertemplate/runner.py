@@ -19,8 +19,13 @@ execStdErr = StringIO()
 sys.stdout = execStdOut
 sys.stderr = execStdErr
 
+# Transform the code into a function definition
+code = 'def studentFunc():\n' + code
+code.replace('\n', '\n    ')
+
 try:
     exec(code)
+    studentFunc()
 except Exception:
     print_formatted_exception()
 
