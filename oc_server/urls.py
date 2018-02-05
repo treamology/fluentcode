@@ -5,5 +5,6 @@ from oc_server.forms import CustomAuthForm
 
 urlpatterns = [
     url(r'^$', auth_views.LoginView.as_view(authentication_form=CustomAuthForm)),
-    url(r'^register/', server_views.register)
+    url(r'^register/', server_views.register),
+    url(r'^feedback/', server_views.feedback)
 ]

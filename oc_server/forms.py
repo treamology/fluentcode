@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm
-from django.contrib.auth.models import User
 from django import forms
+from oc_server.models import FeedbackSubmission
 
 class CustomAuthForm(AuthenticationForm):
     username = UsernameField(
@@ -45,4 +45,7 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
         return user
 
-
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = FeedbackSubmission
+        fields = ('message',)

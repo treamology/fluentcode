@@ -9,6 +9,10 @@ class BaseProfile(models.Model):
     completed_sections = models.ManyToManyField('Section', related_name='done_users')
     current_section = models.ForeignKey('Section', null=True)
 
+class FeedbackSubmission(models.Model):
+    user = models.ForeignKey('BaseProfile', related_name='feedback')
+    message = models.TextField()
+
 @receiver(post_save, sender=User)
 def create_initial_profile(sender, instance, created, **kwargs):
     if created:
