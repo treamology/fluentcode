@@ -328,7 +328,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                 let lastCharCoords: CoordsType = cm.charCoords(lastCharPos, 'local');
     
                 let width = lastCharCoords.right - firstCharCoords.left;
-                let height = lastCharCoords.bottom - lastCharCoords.top;
+                let height = lastCharCoords.bottom - lastCharCoords.top - 1;
     
                 let dimensions: TextBoxDimensions = {
                     x: firstCharCoords.left,
