@@ -150,12 +150,11 @@ USE_TZ = True
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_IMPORTS = []
+CELERY_IMPORTS = ['oc_api.pyexec.tasks']
 
 if DOCKER:
     CELERY_BROKER_URL = 'redis://redis:6379'
     CELERY_RESULT_BACKEND = 'redis://redis:6379'
-    CELERY_IMPORTS = ['oc_api.pyexec.tasks']
 
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

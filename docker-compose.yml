@@ -35,3 +35,6 @@ services:
   redis:
     ports:
       - "6379:6379"
+  celery:
+    command: celery -A oc_backend -l info worker
+    network_mode: "host"

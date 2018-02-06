@@ -1,0 +1,21 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{% static "oc_server/css/feedback.css" %}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
+    <title>Submit Feedback</title>
+</head>
+<body>
+    <div class="formContainer">
+        <p>Thank you for submitting feedback. Your response helps improve the site.</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <br /><input type="submit" value="Submit" />
+        </form>
+    </div>
+</body>
+</html>
