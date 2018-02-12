@@ -1,6 +1,10 @@
 import * as React from 'react';
 
-enum TextOperation {
+import { ApplicationState } from '../state/types/state';
+import { connect } from 'react-redux';
+import { DroppedCodeItem } from './draggable';
+
+export enum TextOperation {
     insert = 'insert',
     delete = 'delete'
 }
@@ -8,21 +12,21 @@ interface CharacterLocation {
     line: number;
     ch: number;
 }
-interface LineLocation {
-    startCh: number;
-    length: number;
-}
+// interface LineLocation {
+//     startCh: number;
+//     length: number;
+// }
 
 // Type information gets stripped when compiled to regular javascript :(
 enum WidgetType {
     textbox = "Textbox",
 }
-interface WidgetDimensions {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-}
+// interface WidgetDimensions {
+//     x: number;
+//     y: number;
+//     width: number;
+//     height: number;
+// }
 
 // Higher-level state information (not presentation related) for widgets.
 interface WidgetState<> {
@@ -31,6 +35,7 @@ interface WidgetState<> {
 interface TextboxWidgetState extends WidgetState {
     enteredText: string;
     placeholder: string;
+    onChange: (change: string) => void;
 }
 
 // Required base attributes for any widget component.
@@ -38,12 +43,12 @@ interface WidgetComponentProps {
     style: {};
     startChar: number;
 }
-class WidgetComponent<P = WidgetComponentProps, S = {}> extends React.Component<P, S> {}
+// class WidgetComponent<P = WidgetComponentProps, S = {}> extends React.Component<P, S> {}
 
 interface TextboxWidgetComponentProps extends WidgetComponentProps {
     placeholder: string;
-    enteredText: string;
-    onChange: string;
+    enteredText?: string;
+    onChange?: (change: string) => void;
 }
 class TextboxWidgetComponent extends React.Component<TextboxWidgetComponentProps> {
     constructor(props: TextboxWidgetComponentProps) {
@@ -56,31 +61,60 @@ class TextboxWidgetComponent extends React.Component<TextboxWidgetComponentProps
     }
     
     render() {
-        <input
+        return (<input
             style={this.props.style}
             className="textboxWidget"
             placeholder={this.props.placeholder}
             onChange={this.textChange}
-        />
+        />);
     }
 }
 
 interface WidgetContainerProps {
     cm: CodeMirror.Editor;
+    currentText: string;
 }
 interface WidgetContainerState {
-    
-}
-class WidgetContainer extends React.Component<WidgetContainerProps> {
-
     widgetComponents: WidgetState[];
+}
+class UnconnectedWidgetContainer extends React.Component<WidgetContainerProps, WidgetContainerState> {
 
-    textChanged(operation: TextOperation, delta: string, start: CharacterLocation, end: CharacterLocation) {
+    // widgetComponents: WidgetState[];
 
+    constructor(props: WidgetContainerProps) {
+        super(props);
+        this.state = {
+            widgetComponents: []
+        };
     }
 
-    handleToPos(line: CodeMirror.LineHandle): LineLocation {
+    textChanged(operation: TextOperation, delta: string, start: CharacterLocation, end: CharacterLocation, lastDrop?: DroppedCodeItem) {
+        if (!lastDrop) { return; }
+        switch (operation) {
+            case TextOperation.insert:
+                break;
+            case TextOperation.delete:
+                break;
+        }
+    }
 
+    checkChange(operation: TextOperation, delta: string, start: CharacterLocation, end: CharacterLocation, lastDrop?: DroppedCodeItem): boolean {
+        if (!lastDrop) { return true; }
+        return true;
+    }
+
+    // handleToPos(line: CodeMirror.LineHandle): LineLocation {
+        
+    // }
+
+    componentWillMount() {
+        this.setState((prevState) => {
+            prevState.widgetComponents[15] = {
+                type: WidgetType.textbox,
+                placeholder: "hello"
+            } as TextboxWidgetState;
+            return prevState;
+        });
     }
 
     indexToLoc(doc: CodeMirror.Doc, index: number): CharacterLocation {
@@ -90,10 +124,10 @@ class WidgetContainer extends React.Component<WidgetContainerProps> {
         let ch = 0;
 
         for (let lineNum = 0; lineNum < doc.lineCount(); lineNum++) {
-            let charsInLine = doc.getLine(lineNum).length;
-            accumulator += charsInLine;
+            let lastCharIndex = doc.getLine(lineNum).length - 1;
+            accumulator += lastCharIndex;
             if (accumulator >= index) {
-                ch = accumulator - index;
+                ch = accumulator - lastCharIndex + index;
                 break;
             }
         }
@@ -101,12 +135,23 @@ class WidgetContainer extends React.Component<WidgetContainerProps> {
         return { line,  ch }
     }
 
+    locToIndex(doc: CodeMirror.Doc, loc: CharacterLocation): number {
+        let charIndex = 0;
+        for (let lineNum = 0; lineNum < doc.lineCount(); lineNum++ ) {
+            if (lineNum > loc.line) { break; }
+            charIndex += doc.getLine(lineNum).length - 1;
+        }
+        charIndex += loc.ch;
+
+        return charIndex;
+    }
+
     render() {
         let cm = this.props.cm;
         let doc = cm.getDoc();
-        <div>
+        return <div>
             {
-                this.widgetComponents.map((widget, char) => {
+                this.state.widgetComponents.map((widget, char) => {
                     
                     // Every widget has a staring position, but each calculation of the ending position
                     // is different for each widget.
@@ -119,15 +164,15 @@ class WidgetContainer extends React.Component<WidgetContainerProps> {
 
                             // Calculate the ending position based on either the length of the placeholder
                             // or the length of the actual text.
-                            let endChar = textboxState.enteredText ? textboxState.enteredText.length : textboxState.placeholder.length;
-                            let endLoc = { line: loc.line, ch: endChar };
+                            let endChar = textboxState.enteredText ? textboxState.enteredText.length - 1: textboxState.placeholder.length - 1;
+                            let endLoc = { line: loc.line, ch: loc.ch + endChar };
                             let endPosition = cm.charCoords(endLoc, 'local');
 
                             const style = {
                                 left: startPosition.left,
                                 top: startPosition.top,
                                 width: endPosition.right - startPosition.left,
-                                height: endPosition.bottom - endPosition.top - 1 // So the border doesn't get cut off
+                                height: endPosition.bottom - endPosition.top // - 1 // So the border doesn't get cut off
                             };
 
                             return <TextboxWidgetComponent
@@ -136,6 +181,7 @@ class WidgetContainer extends React.Component<WidgetContainerProps> {
                                         enteredText={textboxState.enteredText}
                                         startChar={char}
                                         key={char}
+                                        onChange={textboxState.onChange}
                                     />
                         }
                     }
@@ -144,3 +190,11 @@ class WidgetContainer extends React.Component<WidgetContainerProps> {
         </div>
     }
 }
+
+const mapStateToWidgetContainerProps = (state: ApplicationState) => {
+    return {
+        currentText: state.codeEditor.currentEnteredCode
+    };
+}
+
+export const WidgetContainer = connect(mapStateToWidgetContainerProps)(UnconnectedWidgetContainer);

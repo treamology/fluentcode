@@ -11,6 +11,8 @@ import { DroppedCodeItem } from './draggable';
 import { DropTarget, DropTargetMonitor, DropTargetConnector, DndComponentClass } from 'react-dnd';
 import TextBoxWidget, { TextBoxProps, TextBoxDimensions } from './widgets/textbox';
 import { DraggableTextField } from '../models';
+import { WidgetContainer, TextOperation } from './widgets';
+import Store from '../store';
 
 // For some reason CodeMirror doesn't provide this.
 interface CoordsType { left: number; right: number; top: number; bottom: number; }
@@ -31,15 +33,15 @@ interface CodeEditorPropsCollected extends CodeEditorProps {
 }
 
 // Component just for holding the textboxes that gets attached to a div in the editor.
-interface EditorOverlayProps {
-    textBoxWidgets: Array<JSX.Element>;
-}
+// interface EditorOverlayProps {
+//     textBoxWidgets: Array<JSX.Element>;
+// }
 
-class EditorOverlay extends React.Component<EditorOverlayProps, {}> {
-    render() {
-        return <div>{this.props.textBoxWidgets.map((widget) => widget)}</div>;
-    }
-}
+// class EditorOverlay extends React.Component<EditorOverlayProps, {}> {
+//     render() {
+//         return <div>{this.props.textBoxWidgets.map((widget) => widget)}</div>;
+//     }
+// }
 
 class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
     static TAB_SIZE = 4;
@@ -47,6 +49,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
     static MAGIC_CHARACTER = '\\\\';
     
     editor: ReactCodeMirror.ReactCodeMirror;
+    widgetContainer: WidgetContainer;
 
     // Since CodeMirror isn't using React, we need to have a div to render into (the div gets turned
     // into a CodeMirror widget)
@@ -115,19 +118,29 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                             }
                         }
                     }}
+                    value="hellohellohellohellohellohellohellohellohellohello"
                 />
             </div>
         );
     }
 
+    renderWidgetContainer() {
+        ReactDOM.render(<WidgetContainer 
+            cm={Store.getInstance().getState().codeEditor.codeMirror!}
+            ref={(container => { this.widgetContainer = container! })}
+            />, this.tbContainerDiv);
+    }
+
     componentDidUpdate() {
         // You can't render something else inside a call to render so this needs to be here.
         // Places the container for the textboxes inside the div we created earlier.
-        ReactDOM.render(<EditorOverlay textBoxWidgets={this.currentTbWidgets}/>, this.tbContainerDiv);
+        //ReactDOM.render(<EditorOverlay textBoxWidgets={this.currentTbWidgets}/>, this.tbContainerDiv);
+        this.renderWidgetContainer();
     }
 
     componentDidMount() {
         let cm = this.editor.getCodeMirror();
+        this.renderWidgetContainer();
 
         // Make the container div a widget so it sticks to each line of the editor.
         // CM changes the positioning when you call this function so some styling needs to be applied afterward.
@@ -137,7 +150,22 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
         this.tbContainerDiv.style.top = '0px';
         this.tbContainerDiv.style.left = '0px';
 
-        cm.on('beforeChange', this.dataBound);
+        cm.on('beforeChange', (instance, changeObj) => {
+            let operation: TextOperation = TextOperation.insert;
+            if (changeObj.origin === "+delete") {
+                operation = TextOperation.delete;
+            }
+
+            return this.widgetContainer.checkChange(operation, changeObj.text.join('\n'), changeObj.from, changeObj.to);
+        });
+        cm.on('change', (instance, changeObj) => {
+            let operation: TextOperation = TextOperation.insert;
+            if (changeObj.origin === "+delete") {
+                operation = TextOperation.delete;
+            }
+
+            this.widgetContainer.textChanged(operation, changeObj.text.join('\n'), changeObj.from, changeObj.to);
+        })
 
         this.props.setCodeMirror(cm);
     }
@@ -154,14 +182,14 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
         
         // This is the only way to reorder codemirror editor events. Kill me.
         // Yes, this needs to be here twice.
-        codemirrorInstance.off('beforeChange', this.dataBound);
+        // codemirrorInstance.off('beforeChange', this.dataBound);
         
-        codemirrorInstance.on('beforeChange', this.validBound);
-        codemirrorInstance.on('beforeChange', this.dataBound);
-        codemirrorInstance.on('change', this.calcBound);
-        codemirrorInstance.getDoc().replaceRange(code.droppedCode, charCoords);
-        codemirrorInstance.off('beforeChange', this.validBound);
-        codemirrorInstance.off('change', this.calcBound);
+        // codemirrorInstance.on('beforeChange', this.validBound);
+        // codemirrorInstance.on('beforeChange', this.dataBound);
+        // codemirrorInstance.on('change', this.calcBound);
+        // codemirrorInstance.getDoc().replaceRange(code.droppedCode, charCoords);
+        // codemirrorInstance.off('beforeChange', this.validBound);
+        // codemirrorInstance.off('change', this.calcBound);
     }
 
     // Don't allow dragging onto a line that already has a box
