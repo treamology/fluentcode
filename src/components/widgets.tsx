@@ -3,8 +3,9 @@ import * as React from 'react';
 import { ApplicationState } from '../state/types/state';
 import { connect } from 'react-redux';
 import { DroppedCodeItem } from './draggable';
+// import { Store } from 'redux';
 
-export enum TextOperation {
+enum TextOperation {
     insert = 'insert',
     delete = 'delete'
 }
@@ -73,11 +74,12 @@ class TextboxWidgetComponent extends React.Component<TextboxWidgetComponentProps
 interface WidgetContainerProps {
     cm: CodeMirror.Editor;
     currentText: string;
+    // store: Store<ApplicationState>;
 }
 interface WidgetContainerState {
     widgetComponents: WidgetState[];
 }
-class UnconnectedWidgetContainer extends React.Component<WidgetContainerProps, WidgetContainerState> {
+export class UnconnectedWidgetContainer extends React.Component<WidgetContainerProps, WidgetContainerState> {
 
     // widgetComponents: WidgetState[];
 
@@ -92,6 +94,19 @@ class UnconnectedWidgetContainer extends React.Component<WidgetContainerProps, W
         if (!lastDrop) { return; }
         switch (operation) {
             case TextOperation.insert:
+                let newWidgets: WidgetState[] = [];
+                for (let field of lastDrop.textFields) {
+                    let line = start.line + field.lineNumber;
+                    let char = start.ch + field.startChar;
+                    let index = this.locToIndex(this.props.cm.getDoc(), { line, ch: char });
+                    newWidgets[index] = { type: WidgetType.textbox, placeholder: field.placeholderText } as TextboxWidgetState;
+                }
+                this.setState((prevState) => {
+                    newWidgets.forEach((state, index) => {
+                        prevState.widgetComponents[index] = state;
+                    });
+                    return prevState;
+                });
                 break;
             case TextOperation.delete:
                 break;
@@ -137,8 +152,8 @@ class UnconnectedWidgetContainer extends React.Component<WidgetContainerProps, W
 
     locToIndex(doc: CodeMirror.Doc, loc: CharacterLocation): number {
         let charIndex = 0;
-        for (let lineNum = 0; lineNum < doc.lineCount(); lineNum++ ) {
-            if (lineNum > loc.line) { break; }
+        for (let lineNum = 0; lineNum < loc.line; lineNum++ ) {
+            // if (lineNum > loc.line) { break; }
             charIndex += doc.getLine(lineNum).length - 1;
         }
         charIndex += loc.ch;
@@ -195,6 +210,8 @@ const mapStateToWidgetContainerProps = (state: ApplicationState) => {
     return {
         currentText: state.codeEditor.currentEnteredCode
     };
-}
+};
 
-export const WidgetContainer = connect(mapStateToWidgetContainerProps)(UnconnectedWidgetContainer);
+const WidgetContainer = connect(mapStateToWidgetContainerProps, null, null, { withRef: true })(UnconnectedWidgetContainer);
+
+export { TextOperation, WidgetContainer }
