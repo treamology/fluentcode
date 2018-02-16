@@ -69,7 +69,7 @@ export module Actions {
             widgets: widgets
         };
     }
-    export function removeWidget(position: number): ActionTypes.RemoveWidgetAction {
+    export function removeWidget(position: number[]): ActionTypes.RemoveWidgetAction {
         return {
             type: ActionTypes.REMOVE_WIDGET,
             position: position

@@ -117,7 +117,10 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
         case ActionTypes.REMOVE_WIDGET: {
             let removeAction = action as ActionTypes.RemoveWidgetAction;
             let newData = state.widgetData.slice();
-            newData.splice(removeAction.position, 1);
+            removeAction.position.forEach((position) => {
+                delete newData[position];
+            })
+            //newData.splice(removeAction.position, 1);
             return Object.assign({}, state, {
                 widgetData: newData
             });

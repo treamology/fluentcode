@@ -160,22 +160,30 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
 
         cm.on('beforeChange', (instance, changeObj) => {
             let operation: TextOperation = TextOperation.insert;
+            let removed = '';
+            if (changeObj.removed) {
+                removed = changeObj.removed.join('\n');
+            }
             if (changeObj.origin === "+delete") {
                 operation = TextOperation.delete;
             }
             if (!this.widgetContainer) {
                 return true;
             }
-            return this.widgetContainer.checkChange(operation, changeObj.text.join('\n'), changeObj.from, changeObj.to, this.lastDrop);
+            return this.widgetContainer.checkChange(operation, changeObj.text.join('\n'), changeObj.from, changeObj.to, this.lastDrop, removed);
         });
         cm.on('change', (instance, changeObj) => {
             let operation: TextOperation = TextOperation.insert;
+            let removed = '';
+            if (changeObj.removed) {
+                removed = changeObj.removed.join('\n');
+            }
             if (changeObj.origin === "+delete") {
                 operation = TextOperation.delete;
             }
 
             if (this.widgetContainer) {
-                this.widgetContainer.textChanged(operation, changeObj.text.join('\n'), changeObj.from, changeObj.to, this.lastDrop);
+                this.widgetContainer.textChanged(operation, changeObj.text.join('\n'), changeObj.from, changeObj.to, this.lastDrop, removed);
             }
             this.lastDrop = undefined;
         })

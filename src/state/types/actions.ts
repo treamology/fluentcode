@@ -89,7 +89,7 @@ export module ActionTypes {
     }
     export interface RemoveWidgetAction {
         type: string;
-        position: number;
+        position: number[];
     }
     export interface MoveWidgetAction {
         type: string;
