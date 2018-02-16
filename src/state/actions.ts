@@ -4,31 +4,16 @@ import { ThunkAction } from 'redux-thunk';
 import Store from '../store';
 import * as Endpoints from '../endpoints';
 import { ActionTypes, AsyncActionTypes, ResponseTypes, WidgetRepresentation, WidgetMove } from './types/actions';
-import { Section, TestResult, DraggableTextField } from '../models';
+import { Section, TestResult } from '../models';
+import { TextboxWidgetState, WidgetType } from '../components/widgets/state';
+import { CodeMirrorUtils } from '../components/widgets/util';
 import * as qs from 'query-string';
-// import { TextBoxProps } from '../components/widgets/textbox';
-//import { WidgetState } from '../components/widgets';
 
-interface TextBoxProps {};
 export module Actions {
     export function setCode(code: string): ActionTypes.SetCodeAction {
         return {
             type: ActionTypes.SET_CODE,
             code
-        };
-    }
-    export function setTextboxes(changes: Map<CodeMirror.LineHandle,
-        Array<TextBoxProps>>): ActionTypes.SetTextboxAction {
-        return {
-            type: ActionTypes.SET_TEXTBOXES,
-            changes
-        };
-    }
-    export function setTextboxData(data: Map<CodeMirror.LineHandle, 
-        Array<DraggableTextField>>): ActionTypes.SetTextboxDataAction {
-        return {
-            type: ActionTypes.SET_TEXTBOX_DATA,
-            data
         };
     }
     export function serverError(): AnyAction {
@@ -169,15 +154,19 @@ export module AsyncActions {
                 sectionID = currentSection.id;
             }
 
-            const textboxData = state.codeEditor.textboxData;
+            const widgetData = state.codeEditor.widgetData;
             
             let lines = currentCode.split('\n');
-            textboxData.forEach((fields, handle) => {
-                let lineNum = cm.getLineNumber(handle)!;
-                for (let field of fields) {
-                    let line = lines[lineNum];
-                    lines[lineNum] = line.replace(field.placeholderText, field.currentText);
-                }
+            widgetData.forEach((widget, index) => {
+                switch (widget.type) {
+                    case (WidgetType.textbox): {
+                        let field = widget as TextboxWidgetState;
+                        let loc = CodeMirrorUtils.indexToLoc(cm, index);
+                        //let lineNum = cm.getLineNumber(handle)!;
+                        lines[loc.line] = lines[loc.line].replace(field.placeholder, field.enteredText);
+                        break;
+                    }
+                }                
             });
 
             let replacedCode = lines.join('\n');

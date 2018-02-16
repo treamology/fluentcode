@@ -1,6 +1,6 @@
-import { Course, CourseListing, Section, TestResult, DraggableTextField } from '../../models';
+import { Course, CourseListing, Section, TestResult } from '../../models';
 //import { TextBoxProps } from '../../components/widgets/textbox';
-import { WidgetState } from '../../components/widgets';
+import { WidgetState } from '../../components/widgets/state';
 
 export module AsyncActionTypes {
     export interface ReceiveApiKeyAction {
@@ -61,15 +61,6 @@ export module ActionTypes {
         type: string;
         code: string;
     }
-    interface TextBoxProps {} //temp
-    export interface SetTextboxAction {
-        type: string;
-        changes: Map<CodeMirror.LineHandle, Array<TextBoxProps>>;
-    }
-    export interface SetTextboxDataAction {
-        type: string;
-        data: Map<CodeMirror.LineHandle, Array<DraggableTextField>>;
-    }
     export interface SelectSectionAction {
         type: string;
         section: Section;
@@ -97,8 +88,6 @@ export module ActionTypes {
     }
     
     export const SET_CODE = 'SET_CODE';
-    export const SET_TEXTBOXES = 'SET_TEXTBOXES';
-    export const SET_TEXTBOX_DATA = 'SET_TEXTBOX_DATA';
     export const CODEMIRROR_INIT = 'CODEMIRROR_INIT';
 
     export const RESET_EXECUTION_STATE = 'RESET_EXECUTION_STATE';
@@ -116,7 +105,7 @@ export module ActionTypes {
     export const ADD_WIDGET = 'ADD_WIDGET';
     export const REMOVE_WIDGET = 'REMOVE_WIDGET';
 
-    export type CodeEditorActions = SetCodeAction | SetTextboxAction | SetTextboxDataAction | CodeMirrorInitAction | AddWidgetAction | RemoveWidgetAction | MoveWidgetAction;
+    export type CodeEditorActions = SetCodeAction | CodeMirrorInitAction | AddWidgetAction | RemoveWidgetAction | MoveWidgetAction;
 }
 
 export module ResponseTypes {

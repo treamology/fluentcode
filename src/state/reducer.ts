@@ -11,7 +11,6 @@ import {
     LearningState,
 } from '../state/types/state';
 import { AnyAction } from 'redux';
-import { DraggableTextField } from '../models';
 //import { TextBoxProps } from '../components/widgets/textbox';
 
 const defaultCodeExecutionState: CodeExecutionState = {
@@ -20,11 +19,8 @@ const defaultCodeExecutionState: CodeExecutionState = {
     lastException: '',
     lastError: ''
 };
-interface TextBoxProps {};
 const defaultCodeEditorState: CodeEditorState = {
     currentEnteredCode: '',
-    textBoxes: new Map<CodeMirror.LineHandle, Array<TextBoxProps>>(),
-    textboxData: new Map<CodeMirror.LineHandle, Array<DraggableTextField>>(),
     requirementsOpen: false,
     codeMirror: undefined,
     widgetData: []
@@ -85,14 +81,6 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
             return Object.assign({}, state, {
                 currentEnteredCode: codeAction.code
             });
-        case ActionTypes.SET_TEXTBOXES:
-            let tbAction = action as ActionTypes.SetTextboxAction;
-            let newTextboxes = { textBoxes: tbAction.changes};
-            return Object.assign({}, state, newTextboxes);
-        case ActionTypes.SET_TEXTBOX_DATA:
-            let tbDataAction = action as ActionTypes.SetTextboxDataAction;
-            let newTextboxData = { textboxData: tbDataAction.data};
-            return Object.assign({}, state, newTextboxData);
         case ActionTypes.CODEMIRROR_INIT:
             let cmInitAction = action as ActionTypes.CodeMirrorInitAction;
             return Object.assign({}, state, {

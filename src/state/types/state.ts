@@ -1,5 +1,5 @@
-import { Section, Course, DraggableTextField } from '../../models';
-import { WidgetState } from '../../components/widgets';
+import { Section, Course } from '../../models';
+import { WidgetState } from '../../components/widgets/state';
 
 export interface ApplicationState {
     apiKey: string;
@@ -19,8 +19,6 @@ export interface CodeEditorState {
     currentEnteredCode: string;
     requirementsOpen: boolean;
     codeMirror?: CodeMirror.Editor;
-    textBoxes: {};
-    textboxData: Map<CodeMirror.LineHandle, Array<DraggableTextField>>;
     widgetData: WidgetState[];
 }
 
