@@ -11,6 +11,6 @@ export interface WidgetState<> {
 export interface TextboxWidgetState extends WidgetState {
     enteredText: string;
     placeholder: string;
-    onChange: (change: string) => void;
+    onChange: (value: string) => void;
     //getWidth: (enteredText: string, placeholder: string) => number;
 }

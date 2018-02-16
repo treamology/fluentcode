@@ -26,8 +26,10 @@ class TextboxWidgetComponent extends React.Component<TextboxWidgetComponentProps
         this.textChange = this.textChange.bind(this);
     }
 
-    textChange() {
-        
+    textChange(event: React.FormEvent<HTMLInputElement>) {
+        if (this.props.onChange) {
+            this.props.onChange(event.currentTarget.value);
+        }
     }
     
     render() {
@@ -107,7 +109,12 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                 let line = start.line + field.lineNumber;
                 let char = start.ch + field.startChar;
                 let index = locToIndex(this.props.cm.getDoc(), { line, ch: char });
-                newWidgets[index] = { type: WidgetType.textbox, placeholder: field.placeholderText, getWidth: (widget: TextboxWidgetState) => widget.enteredText ? widget.enteredText.length: widget.placeholder.length } as TextboxWidgetState;
+                newWidgets[index] = {
+                    type: WidgetType.textbox,
+                    placeholder: field.placeholderText,
+                    getWidth: (widget: TextboxWidgetState) => widget.enteredText ? widget.enteredText.length: widget.placeholder.length
+                } as TextboxWidgetState;
+                    
             }
             let widgetReps: WidgetRepresentation[] = newWidgets.map((widget, index) => {
                 return { widget: widget, position: index };
@@ -151,13 +158,20 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                                 height: endPosition.bottom - endPosition.top // - 1 // So the border doesn't get cut off
                             };
 
+                            const tbChange = (value: string) => {
+                                textboxState.enteredText = value;
+                                if (textboxState.onChange) {
+                                    textboxState.onChange(value);
+                                }
+                            };
+
                             return <TextboxWidgetComponent
                                         style={style}
                                         placeholder={textboxState.placeholder}
                                         enteredText={textboxState.enteredText}
                                         startChar={char}
                                         key={char}
-                                        onChange={textboxState.onChange}
+                                        onChange={tbChange}
                                     />
                         }
                     }
