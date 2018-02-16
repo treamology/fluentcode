@@ -162,10 +162,10 @@ export module AsyncActions {
                     case (WidgetType.textbox): {
                         let field = widget as TextboxWidgetState;
                         let loc = CodeMirrorUtils.indexToLoc(cm, index);
-                        //let lineNum = cm.getLineNumber(handle)!;
                         lines[loc.line] = lines[loc.line].replace(field.placeholder, field.enteredText);
                         break;
                     }
+                    default: break;
                 }                
             });
 

@@ -11,7 +11,6 @@ import {
     LearningState,
 } from '../state/types/state';
 import { AnyAction } from 'redux';
-//import { TextBoxProps } from '../components/widgets/textbox';
 
 const defaultCodeExecutionState: CodeExecutionState = {
     state: ExecutionState.none,
@@ -107,8 +106,7 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
             let newData = state.widgetData.slice();
             removeAction.position.forEach((position) => {
                 delete newData[position];
-            })
-            //newData.splice(removeAction.position, 1);
+            });
             return Object.assign({}, state, {
                 widgetData: newData
             });

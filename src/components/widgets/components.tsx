@@ -33,12 +33,14 @@ class TextboxWidgetComponent extends React.Component<TextboxWidgetComponentProps
     }
     
     render() {
-        return (<input
-            style={this.props.style}
-            className="textboxWidget"
-            placeholder={this.props.placeholder}
-            onChange={this.textChange}
-        />);
+        return (
+            <input
+                style={this.props.style}
+                className="textboxWidget"
+                placeholder={this.props.placeholder}
+                onChange={this.textChange}
+            />
+        );
     }
 }
 
@@ -59,13 +61,20 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         super(props);
     }
 
-    textChanged(operation: TextOperation, delta: string, start: CharacterLocation, end: CharacterLocation, lastDrop?: DroppedCodeItem, removed: string = '') {
-        
+    textChanged(
+        operation: TextOperation,
+        delta: string,
+        start: CharacterLocation,
+        end: CharacterLocation,
+        lastDrop?: DroppedCodeItem,
+        removed: string = ''
+    ) {
         let startIndex = locToIndex(this.props.cm.getDoc(), start);
         let endIndex = locToIndex(this.props.cm.getDoc(), end);
 
         let removalList: number[] = [];
-        // If the start of the selection or character insertion goes inside a widget, but doesn't necessarily hit the start character
+        // If the start of the selection or character insertion goes inside a widget,
+        // but doesn't necessarily hit the start character
         for (let index = startIndex; index >= 0; --index) {
             if (!this.props.widgetData[index]) { continue; }
 
@@ -112,7 +121,8 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                 newWidgets[index] = {
                     type: WidgetType.textbox,
                     placeholder: field.placeholderText,
-                    getWidth: (widget: TextboxWidgetState) => widget.enteredText ? widget.enteredText.length: widget.placeholder.length
+                    getWidth: (widget: TextboxWidgetState) =>
+                        widget.enteredText ? widget.enteredText.length : widget.placeholder.length
                 } as TextboxWidgetState;
                     
             }
@@ -123,7 +133,14 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         }
     }
 
-    checkChange(operation: TextOperation, delta: string, start: CharacterLocation, end: CharacterLocation, lastDrop?: DroppedCodeItem, removed: string = ''): boolean {
+    checkChange(
+        operation: TextOperation,
+        delta: string,
+        start: CharacterLocation,
+        end: CharacterLocation,
+        lastDrop?: DroppedCodeItem,
+        removed: string = ''
+    ): boolean {
         if (!lastDrop) { return true; }
         return true;
     }
@@ -131,7 +148,8 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
     render() {
         let cm = this.props.cm;
         let doc = cm.getDoc();
-        return <div>
+        return (
+        <div>
             {
                 this.props.widgetData.map((widget, char) => {
                     
@@ -146,7 +164,6 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
 
                             // Calculate the ending position based on either the length of the placeholder
                             // or the length of the actual text.
-                            //let endChar = textboxState.enteredText ? textboxState.enteredText.length - 1: textboxState.placeholder.length - 1;
                             let endChar = textboxState.getWidth(textboxState) - 1;
                             let endLoc = { line: loc.line, ch: loc.ch + endChar };
                             let endPosition = cm.charCoords(endLoc, 'local');
@@ -165,19 +182,23 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                                 }
                             };
 
-                            return <TextboxWidgetComponent
-                                        style={style}
-                                        placeholder={textboxState.placeholder}
-                                        enteredText={textboxState.enteredText}
-                                        startChar={char}
-                                        key={char}
-                                        onChange={tbChange}
-                                    />
+                            return (
+                                <TextboxWidgetComponent
+                                    style={style}
+                                    placeholder={textboxState.placeholder}
+                                    enteredText={textboxState.enteredText}
+                                    startChar={char}
+                                    key={char}
+                                    onChange={tbChange}
+                                />
+                            );
                         }
+                        default: return;
                     }
                 })
             }
         </div>
+        );
     }
 }
 
@@ -192,8 +213,8 @@ const mapDispatchToWidgetContainerProps = (dispatch: Dispatch<CodeEditorState>) 
         moveWidget: (moves: WidgetMove[]) => {
             dispatch(Actions.moveWidget(moves));
         }
-    }
-}
+    };
+};
 
 const mapStateToWidgetContainerProps = (state: ApplicationState) => {
     return {
@@ -202,4 +223,9 @@ const mapStateToWidgetContainerProps = (state: ApplicationState) => {
     };
 };
 
-export const WidgetContainer = connect(mapStateToWidgetContainerProps, mapDispatchToWidgetContainerProps, null, { withRef: true })(UnconnectedWidgetContainer);
+export const WidgetContainer = connect(
+    mapStateToWidgetContainerProps,
+    mapDispatchToWidgetContainerProps,
+    null,
+    { withRef: true }
+)(UnconnectedWidgetContainer);

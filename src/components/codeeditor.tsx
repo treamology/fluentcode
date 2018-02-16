@@ -87,12 +87,13 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
             <Provider store={Store.getInstance()}>
                 <WidgetContainer 
                     cm={this.editor.getCodeMirror()}
+                    // tslint:disable-next-line
                     ref={(container: any) => {
                         if (container) {
-                            this.widgetContainer = container.getWrappedInstance() 
+                            this.widgetContainer = container.getWrappedInstance() ;
                         }
                     }}
-                    />
+                />
             </Provider>
         ), this.tbContainerDiv);
     }
@@ -121,13 +122,19 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
             if (changeObj.removed) {
                 removed = changeObj.removed.join('\n');
             }
-            if (changeObj.origin === "+delete") {
+            if (changeObj.origin === '+delete') {
                 operation = TextOperation.delete;
             }
             if (!this.widgetContainer) {
                 return true;
             }
-            return this.widgetContainer.checkChange(operation, changeObj.text.join('\n'), changeObj.from, changeObj.to, this.lastDrop, removed);
+            return this.widgetContainer.checkChange(
+                operation,
+                changeObj.text.join('\n'),
+                changeObj.from, changeObj.to,
+                this.lastDrop,
+                removed
+            );
         });
         cm.on('change', (instance, changeObj) => {
             let operation: TextOperation = TextOperation.insert;
@@ -135,15 +142,20 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
             if (changeObj.removed) {
                 removed = changeObj.removed.join('\n');
             }
-            if (changeObj.origin === "+delete") {
+            if (changeObj.origin === '+delete') {
                 operation = TextOperation.delete;
             }
 
             if (this.widgetContainer) {
-                this.widgetContainer.textChanged(operation, changeObj.text.join('\n'), changeObj.from, changeObj.to, this.lastDrop, removed);
+                this.widgetContainer.textChanged(operation,
+                    changeObj.text.join('\n'),
+                    changeObj.from, changeObj.to,
+                    this.lastDrop,
+                    removed
+                );
             }
             this.lastDrop = undefined;
-        })
+        });
 
         this.props.setCodeMirror(cm);
     }

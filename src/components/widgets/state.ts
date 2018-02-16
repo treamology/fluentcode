@@ -1,6 +1,6 @@
 // Type information gets stripped when compiled to regular javascript :(
 export enum WidgetType {
-    textbox = "Textbox",
+    textbox = 'textbox',
 }
 
 // Higher-level state information (not presentation related) for widgets.
@@ -12,5 +12,4 @@ export interface TextboxWidgetState extends WidgetState {
     enteredText: string;
     placeholder: string;
     onChange: (value: string) => void;
-    //getWidth: (enteredText: string, placeholder: string) => number;
 }

@@ -1,5 +1,4 @@
 import { Course, CourseListing, Section, TestResult } from '../../models';
-//import { TextBoxProps } from '../../components/widgets/textbox';
 import { WidgetState } from '../../components/widgets/state';
 
 export module AsyncActionTypes {
@@ -105,7 +104,12 @@ export module ActionTypes {
     export const ADD_WIDGET = 'ADD_WIDGET';
     export const REMOVE_WIDGET = 'REMOVE_WIDGET';
 
-    export type CodeEditorActions = SetCodeAction | CodeMirrorInitAction | AddWidgetAction | RemoveWidgetAction | MoveWidgetAction;
+    export type CodeEditorActions = 
+        SetCodeAction |
+        CodeMirrorInitAction |
+        AddWidgetAction |
+        RemoveWidgetAction |
+        MoveWidgetAction;
 }
 
 export module ResponseTypes {
