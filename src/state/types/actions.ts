@@ -1,5 +1,6 @@
 import { Course, CourseListing, Section, TestResult, DraggableTextField } from '../../models';
-import { TextBoxProps } from '../../components/widgets/textbox';
+//import { TextBoxProps } from '../../components/widgets/textbox';
+import { WidgetState } from '../../components/widgets';
 
 export module AsyncActionTypes {
     export interface ReceiveApiKeyAction {
@@ -46,11 +47,21 @@ export module AsyncActionTypes {
     export type CodeExecutionActions = RequestRunCodeAction | APIAction;
 }
 
+export interface WidgetRepresentation {
+    widget: WidgetState;
+    position: number;
+}
+export interface WidgetMove {
+    from: number;
+    to: number;
+}
+
 export module ActionTypes {
     export interface SetCodeAction {
         type: string;
         code: string;
     }
+    interface TextBoxProps {} //temp
     export interface SetTextboxAction {
         type: string;
         changes: Map<CodeMirror.LineHandle, Array<TextBoxProps>>;
@@ -71,6 +82,19 @@ export module ActionTypes {
         type: string;
         cm: CodeMirror.Editor;
     }
+
+    export interface AddWidgetAction {
+        type: string;
+        widgets: WidgetRepresentation[];
+    }
+    export interface RemoveWidgetAction {
+        type: string;
+        position: number;
+    }
+    export interface MoveWidgetAction {
+        type: string;
+        moves: WidgetMove[];
+    }
     
     export const SET_CODE = 'SET_CODE';
     export const SET_TEXTBOXES = 'SET_TEXTBOXES';
@@ -88,7 +112,11 @@ export module ActionTypes {
 
     export const COMPLETE_REQUIREMENTS = 'COMPLETE_REQUIREMENTS';
 
-    export type CodeEditorActions = SetCodeAction | SetTextboxAction | SetTextboxDataAction | CodeMirrorInitAction;
+    export const MOVE_WIDGET = 'MOVE_WIDGET';
+    export const ADD_WIDGET = 'ADD_WIDGET';
+    export const REMOVE_WIDGET = 'REMOVE_WIDGET';
+
+    export type CodeEditorActions = SetCodeAction | SetTextboxAction | SetTextboxDataAction | CodeMirrorInitAction | AddWidgetAction | RemoveWidgetAction | MoveWidgetAction;
 }
 
 export module ResponseTypes {

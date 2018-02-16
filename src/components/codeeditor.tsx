@@ -118,7 +118,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                             }
                         }
                     }}
-                    value="hellohellohellohellohellohellohellohellohellohello"
                 />
             </div>
         );

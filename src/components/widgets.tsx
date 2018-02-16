@@ -1,7 +1,10 @@
 import * as React from 'react';
 
-import { ApplicationState } from '../state/types/state';
+import { ApplicationState, CodeEditorState } from '../state/types/state';
+import { WidgetRepresentation, WidgetMove } from '../state/types/actions';
+import { Actions } from '../state/actions';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { DroppedCodeItem } from './draggable';
 // import { Store } from 'redux';
 
@@ -30,7 +33,7 @@ enum WidgetType {
 // }
 
 // Higher-level state information (not presentation related) for widgets.
-interface WidgetState<> {
+export interface WidgetState<> {
     type: WidgetType;
 }
 interface TextboxWidgetState extends WidgetState {
@@ -74,26 +77,45 @@ class TextboxWidgetComponent extends React.Component<TextboxWidgetComponentProps
 interface WidgetContainerProps {
     cm: CodeMirror.Editor;
     currentText: string;
+    widgetData: WidgetState[];
+    addWidget: (widgets: WidgetRepresentation[]) => void;
+    removeWidget: (position: number) => void;
+    moveWidget: (moves: WidgetMove[]) => void;
     // store: Store<ApplicationState>;
 }
-interface WidgetContainerState {
-    widgetComponents: WidgetState[];
-}
-export class UnconnectedWidgetContainer extends React.Component<WidgetContainerProps, WidgetContainerState> {
+// interface WidgetContainerState {
+//     widgetComponents: WidgetState[];
+// }
+export class UnconnectedWidgetContainer extends React.Component<WidgetContainerProps> {
 
     // widgetComponents: WidgetState[];
 
     constructor(props: WidgetContainerProps) {
         super(props);
-        this.state = {
-            widgetComponents: []
-        };
     }
 
     textChanged(operation: TextOperation, delta: string, start: CharacterLocation, end: CharacterLocation, lastDrop?: DroppedCodeItem) {
-        if (!lastDrop) { return; }
         switch (operation) {
             case TextOperation.insert:
+                // TODO: right now this is constrained to just textboxes, we need to update DroppedCodeItem
+                
+                // First, we need to move all of the widgets that have been displaced by this update.
+                let startIndex = this.locToIndex(this.props.cm.getDoc(), start);
+                let offsetLength = delta.replace('\n', '').length; // Newlines don't count as characters here.
+                let moves: WidgetMove[] = [];
+                
+                this.props.widgetData.forEach((widget, index) => {
+                    // Widgets might run over each other here? I don't know if the order I do this matters or not.
+                    if (index < startIndex) { return; }
+
+                    moves.push({ from: index, to: index + offsetLength });
+                });
+                this.props.moveWidget(moves);
+
+                // If there isn't actually a drop, that's all we need to do.
+                if (!lastDrop) { return; }
+
+                // Create a list of the next widgets, then update the state with them.
                 let newWidgets: WidgetState[] = [];
                 for (let field of lastDrop.textFields) {
                     let line = start.line + field.lineNumber;
@@ -101,12 +123,10 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                     let index = this.locToIndex(this.props.cm.getDoc(), { line, ch: char });
                     newWidgets[index] = { type: WidgetType.textbox, placeholder: field.placeholderText } as TextboxWidgetState;
                 }
-                this.setState((prevState) => {
-                    newWidgets.forEach((state, index) => {
-                        prevState.widgetComponents[index] = state;
-                    });
-                    return prevState;
+                let widgetReps: WidgetRepresentation[] = newWidgets.map((widget, index) => {
+                    return { widget: widget, position: index };
                 });
+                this.props.addWidget(widgetReps);
                 break;
             case TextOperation.delete:
                 break;
@@ -123,13 +143,13 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
     // }
 
     componentWillMount() {
-        this.setState((prevState) => {
-            prevState.widgetComponents[15] = {
-                type: WidgetType.textbox,
-                placeholder: "hello"
-            } as TextboxWidgetState;
-            return prevState;
-        });
+        // this.setState((prevState) => {
+        //     prevState.widgetComponents[15] = {
+        //         type: WidgetType.textbox,
+        //         placeholder: "hello"
+        //     } as TextboxWidgetState;
+        //     return prevState;
+        // });
     }
 
     indexToLoc(doc: CodeMirror.Doc, index: number): CharacterLocation {
@@ -139,10 +159,14 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         let ch = 0;
 
         for (let lineNum = 0; lineNum < doc.lineCount(); lineNum++) {
-            let lastCharIndex = doc.getLine(lineNum).length - 1;
-            accumulator += lastCharIndex;
+            let lineLength = doc.getLine(lineNum).replace('\n', '').length;
+            if (lineLength === 0) continue; // Some lines have nothing in them.
+
+            accumulator += lineLength;
             if (accumulator >= index) {
-                ch = accumulator - lastCharIndex + index;
+                accumulator -= lineLength;
+                ch = index - accumulator;
+                line = lineNum
                 break;
             }
         }
@@ -154,7 +178,7 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         let charIndex = 0;
         for (let lineNum = 0; lineNum < loc.line; lineNum++ ) {
             // if (lineNum > loc.line) { break; }
-            charIndex += doc.getLine(lineNum).length - 1;
+            charIndex += doc.getLine(lineNum).replace('\n', '').length;
         }
         charIndex += loc.ch;
 
@@ -166,7 +190,7 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         let doc = cm.getDoc();
         return <div>
             {
-                this.state.widgetComponents.map((widget, char) => {
+                this.props.widgetData.map((widget, char) => {
                     
                     // Every widget has a staring position, but each calculation of the ending position
                     // is different for each widget.
@@ -206,12 +230,27 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
     }
 }
 
+const mapDispatchToWidgetContainerProps = (dispatch: Dispatch<CodeEditorState>) => {
+    return {
+        addWidget: (widgets: WidgetRepresentation[]) => {
+            dispatch(Actions.addWidget(widgets));
+        },
+        removeWidget: (position: number) => {
+            dispatch(Actions.removeWidget(position));
+        },
+        moveWidget: (moves: WidgetMove[]) => {
+            dispatch(Actions.moveWidget(moves));
+        }
+    }
+}
+
 const mapStateToWidgetContainerProps = (state: ApplicationState) => {
     return {
-        currentText: state.codeEditor.currentEnteredCode
+        currentText: state.codeEditor.currentEnteredCode,
+        widgetData: state.codeEditor.widgetData
     };
 };
 
-const WidgetContainer = connect(mapStateToWidgetContainerProps, null, null, { withRef: true })(UnconnectedWidgetContainer);
+const WidgetContainer = connect(mapStateToWidgetContainerProps, mapDispatchToWidgetContainerProps, null, { withRef: true })(UnconnectedWidgetContainer);
 
 export { TextOperation, WidgetContainer }

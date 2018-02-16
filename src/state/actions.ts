@@ -3,11 +3,13 @@ import { Dispatch, AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import Store from '../store';
 import * as Endpoints from '../endpoints';
-import { ActionTypes, AsyncActionTypes, ResponseTypes } from './types/actions';
+import { ActionTypes, AsyncActionTypes, ResponseTypes, WidgetRepresentation, WidgetMove } from './types/actions';
 import { Section, TestResult, DraggableTextField } from '../models';
 import * as qs from 'query-string';
-import { TextBoxProps } from '../components/widgets/textbox';
+// import { TextBoxProps } from '../components/widgets/textbox';
+//import { WidgetState } from '../components/widgets';
 
+interface TextBoxProps {};
 export module Actions {
     export function setCode(code: string): ActionTypes.SetCodeAction {
         return {
@@ -59,6 +61,24 @@ export module Actions {
         return {
             type: ActionTypes.CODEMIRROR_INIT,
             cm: cm
+        };
+    }
+    export function addWidget(widgets: WidgetRepresentation[]): ActionTypes.AddWidgetAction {
+        return {
+            type: ActionTypes.ADD_WIDGET,
+            widgets: widgets
+        };
+    }
+    export function removeWidget(position: number): ActionTypes.RemoveWidgetAction {
+        return {
+            type: ActionTypes.REMOVE_WIDGET,
+            position: position
+        };
+    }
+    export function moveWidget(moves: WidgetMove[]): ActionTypes.MoveWidgetAction {
+        return {
+            type: ActionTypes.MOVE_WIDGET,
+            moves: moves
         };
     }
 }

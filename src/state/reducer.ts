@@ -12,7 +12,7 @@ import {
 } from '../state/types/state';
 import { AnyAction } from 'redux';
 import { DraggableTextField } from '../models';
-import { TextBoxProps } from '../components/widgets/textbox';
+//import { TextBoxProps } from '../components/widgets/textbox';
 
 const defaultCodeExecutionState: CodeExecutionState = {
     state: ExecutionState.none,
@@ -20,13 +20,14 @@ const defaultCodeExecutionState: CodeExecutionState = {
     lastException: '',
     lastError: ''
 };
-
+interface TextBoxProps {};
 const defaultCodeEditorState: CodeEditorState = {
     currentEnteredCode: '',
     textBoxes: new Map<CodeMirror.LineHandle, Array<TextBoxProps>>(),
     textboxData: new Map<CodeMirror.LineHandle, Array<DraggableTextField>>(),
     requirementsOpen: false,
-    codeMirror: undefined
+    codeMirror: undefined,
+    widgetData: []
 };
 
 const defaultLearningState: LearningState = {
@@ -101,6 +102,38 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
             return Object.assign({}, state, {
                 requirementsOpen: !state.requirementsOpen
             });
+        case ActionTypes.ADD_WIDGET: {
+            let addAction = action as ActionTypes.AddWidgetAction;
+            let newData = state.widgetData.slice();
+
+            addAction.widgets.forEach((bundle) => {
+                newData[bundle.position] = bundle.widget;
+            });
+
+            return Object.assign({}, state, {
+                widgetData: newData
+            });
+        }
+        case ActionTypes.REMOVE_WIDGET: {
+            let removeAction = action as ActionTypes.RemoveWidgetAction;
+            let newData = state.widgetData.slice();
+            newData.splice(removeAction.position, 1);
+            return Object.assign({}, state, {
+                widgetData: newData
+            });
+        }
+        case ActionTypes.MOVE_WIDGET: {
+            let moveAction = action as ActionTypes.MoveWidgetAction;
+            let newData = state.widgetData.slice();
+            moveAction.moves.forEach((move) => {
+                let movedWidget = newData[move.from];
+                delete newData[move.from];
+                newData[move.to] = movedWidget;
+            });
+            return Object.assign({}, state, {
+                widgetData: newData
+            });
+        }
         default:
             return state;
     }
