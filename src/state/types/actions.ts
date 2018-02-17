@@ -85,6 +85,11 @@ export module ActionTypes {
         type: string;
         moves: WidgetMove[];
     }
+    export interface UpdateTextboxWidgetTextAction {
+        type: string;
+        index: number;
+        text: string;
+    }
     
     export const SET_CODE = 'SET_CODE';
     export const CODEMIRROR_INIT = 'CODEMIRROR_INIT';
@@ -103,13 +108,15 @@ export module ActionTypes {
     export const MOVE_WIDGET = 'MOVE_WIDGET';
     export const ADD_WIDGET = 'ADD_WIDGET';
     export const REMOVE_WIDGET = 'REMOVE_WIDGET';
+    export const UPDATE_TEXTBOX_WIDGET_TEXT = 'UPDATE_TEXTBOX_WIDGET_TEXT';
 
     export type CodeEditorActions = 
         SetCodeAction |
         CodeMirrorInitAction |
         AddWidgetAction |
         RemoveWidgetAction |
-        MoveWidgetAction;
+        MoveWidgetAction |
+        UpdateTextboxWidgetTextAction;
 }
 
 export module ResponseTypes {

@@ -11,6 +11,7 @@ import {
     LearningState,
 } from '../state/types/state';
 import { AnyAction } from 'redux';
+import { TextboxWidgetState } from '../components/widgets/state';
 
 const defaultCodeExecutionState: CodeExecutionState = {
     state: ExecutionState.none,
@@ -20,7 +21,7 @@ const defaultCodeExecutionState: CodeExecutionState = {
 };
 const defaultCodeEditorState: CodeEditorState = {
     currentEnteredCode: '',
-    requirementsOpen: false,
+    requirementsOpen: true,
     codeMirror: undefined,
     widgetData: []
 };
@@ -121,6 +122,16 @@ function codeEditor(state: CodeEditorState, action: ActionTypes.CodeEditorAction
             });
             return Object.assign({}, state, {
                 widgetData: newData
+            });
+        }
+        case ActionTypes.UPDATE_TEXTBOX_WIDGET_TEXT: {
+            let updateAction = action as ActionTypes.UpdateTextboxWidgetTextAction;
+            let textbox = state.widgetData[updateAction.index] as TextboxWidgetState;
+            let newData = state.widgetData.slice();
+            textbox.enteredText = updateAction.text;
+            newData[updateAction.index] = textbox;
+            return Object.assign({}, state, {
+                widgetData: newData 
             });
         }
         default:

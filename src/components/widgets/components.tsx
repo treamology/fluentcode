@@ -9,6 +9,9 @@ import { DroppedCodeItem } from '../draggable';
 import { WidgetState, WidgetType, TextboxWidgetState } from './state';
 import { TextOperation, CharacterLocation } from './util';
 
+const indexToLoc = CodeMirrorUtils.indexToLoc;
+const locToIndex = CodeMirrorUtils.locToIndex;
+
 // Required base attributes for any widget component.
 interface WidgetComponentProps {
     style: {};
@@ -16,6 +19,7 @@ interface WidgetComponentProps {
 }
 
 interface TextboxWidgetComponentProps extends WidgetComponentProps {
+    doc: CodeMirror.Doc;
     placeholder: string;
     enteredText?: string;
     onChange?: (change: string) => void;
@@ -44,9 +48,6 @@ class TextboxWidgetComponent extends React.Component<TextboxWidgetComponentProps
     }
 }
 
-const indexToLoc = CodeMirrorUtils.indexToLoc;
-const locToIndex = CodeMirrorUtils.locToIndex;
-
 interface WidgetContainerProps {
     cm: CodeMirror.Editor;
     currentText: string;
@@ -54,8 +55,11 @@ interface WidgetContainerProps {
     addWidget: (widgets: WidgetRepresentation[]) => void;
     removeWidget: (position: number[]) => void;
     moveWidget: (moves: WidgetMove[]) => void;
+    updateTextboxWidgetText: (index: number, text: string) => void;
 }
 export class UnconnectedWidgetContainer extends React.Component<WidgetContainerProps> {
+
+    tbExtendDelLength = 0;
 
     constructor(props: WidgetContainerProps) {
         super(props);
@@ -69,47 +73,71 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         lastDrop?: DroppedCodeItem,
         removed: string = ''
     ) {
+        let replaceText = '';
+        let replaceFrom;
+        let replaceTo;
+
         let startIndex = locToIndex(this.props.cm.getDoc(), start);
         let endIndex = locToIndex(this.props.cm.getDoc(), end);
 
-        let removalList: number[] = [];
-        // If the start of the selection or character insertion goes inside a widget,
-        // but doesn't necessarily hit the start character
-        for (let index = startIndex; index >= 0; --index) {
-            if (!this.props.widgetData[index]) { continue; }
-
-            let widget = this.props.widgetData[index];
-            let widgetEnd = index + widget.getWidth(widget);
-
-            if (startIndex < widgetEnd) {
-                removalList.push(index);
-            }
-        }
-
-        // If some text was removed, make sure we remove the textboxes that are overlaying them.
-        if (removed !== '') {
-            // Go through the selection and delete any widgets that are inside.
-            for (let index = startIndex; index < endIndex; index++) {
+        if (operation !== TextOperation.tbExtend) {
+            let removalList: number[] = [];
+            // If the start of the selection or character insertion goes inside a widget,
+            // but doesn't necessarily hit the start character
+            for (let index = startIndex; index >= 0; --index) {
                 if (!this.props.widgetData[index]) { continue; }
-                removalList.push(index);
+
+                let widget = this.props.widgetData[index];
+                let widgetEnd = index + widget.getWidth(widget);
+
+                if (startIndex < widgetEnd) {
+                    removalList.push(index);
+
+                    replaceFrom = indexToLoc(this.props.cm.getDoc(), index);
+                    replaceTo = indexToLoc(this.props.cm.getDoc(), widgetEnd - 1);
+                    replaceText = delta;
+                }
             }
+            
+            // If some text was removed, make sure we remove the textboxes that are overlaying them.
+            if (removed !== '') {
+                // Go through the selection and delete any widgets that are inside.
+                for (let index = startIndex; index < endIndex; index++) {
+                    if (!this.props.widgetData[index]) { continue; }
+                    removalList.push(index);
+                }
+            }
+
+            this.props.removeWidget(removalList);
+
+            // Next, we need to move all of the widgets that have been displaced by this update.
+            let insertLength = delta.replace(/\n/g, '').length; // Newlines don't count as characters here.
+            let removeLength = removed.replace(/\n/g, '').length;
+            let moves: WidgetMove[] = [];
+            
+            this.props.widgetData.forEach((widget, index) => {
+                // Widgets might run over each other here? I don't know if the order I do this matters or not.
+                if (index <= startIndex) { return; }
+
+                moves.push({ from: index, to: index + insertLength - removeLength });
+            });
+            this.props.moveWidget(moves);
+        } else {
+            if (removed !== '') {
+                this.tbExtendDelLength = removed.length;
+                return;
+            }
+            let moves: WidgetMove[] = [];
+            this.props.widgetData.forEach((widget, index) => {
+                // Widgets might run over each other here? I don't know if the order I do this matters or not.
+                if (index <= startIndex) { return; }
+
+                moves.push({ from: index, to: index + (delta.length - this.tbExtendDelLength) });
+            });
+            this.props.moveWidget(moves);
+            return;
         }
 
-        this.props.removeWidget(removalList);
-
-        // Next, we need to move all of the widgets that have been displaced by this update.
-        let insertLength = delta.replace(/\n/g, '').length; // Newlines don't count as characters here.
-        let removeLength = removed.replace(/\n/g, '').length;
-        let moves: WidgetMove[] = [];
-        
-        this.props.widgetData.forEach((widget, index) => {
-            // Widgets might run over each other here? I don't know if the order I do this matters or not.
-            if (index < startIndex) { return; }
-
-            moves.push({ from: index, to: index + insertLength - removeLength });
-        });
-        this.props.moveWidget(moves);
-        
         if (operation === TextOperation.insert && lastDrop) {
             // TODO: right now this is constrained to just textboxes, we need to update DroppedCodeItem
             // Create a list of the next widgets, then update the state with them.
@@ -122,7 +150,8 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                     type: WidgetType.textbox,
                     placeholder: field.placeholderText,
                     getWidth: (widget: TextboxWidgetState) =>
-                        widget.enteredText ? widget.enteredText.length : widget.placeholder.length
+                        widget.enteredText && widget.enteredText.length > widget.placeholder.length ?
+                            widget.enteredText.length : widget.placeholder.length
                 } as TextboxWidgetState;
                     
             }
@@ -130,6 +159,14 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                 return { widget: widget, position: index };
             });
             this.props.addWidget(widgetReps);
+        }
+
+        if (replaceFrom) {
+            // let change = delta;
+            // if (delta === '') {
+            //     change = removed;
+            // }
+            this.props.cm.getDoc().replaceRange(replaceText, replaceFrom, replaceTo);
         }
     }
 
@@ -141,7 +178,29 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         lastDrop?: DroppedCodeItem,
         removed: string = ''
     ): boolean {
-        if (!lastDrop) { return true; }
+        let startIndex = locToIndex(this.props.cm.getDoc(), start);
+        let endIndex = locToIndex(this.props.cm.getDoc(), end);
+
+        if (lastDrop) {
+            for (let index = 0; index < this.props.cm.getDoc().getLine(start.line).length; index++) {
+                if (this.props.widgetData[locToIndex(this.props.cm.getDoc(), { line: start.line, ch: index })]) {
+                    return false;
+                }
+            }
+        }
+
+        // Make sure text under the widget itself can't be modified
+        for (let index = startIndex; index >= 0; --index) {
+            if (!this.props.widgetData[index]) { continue; }
+
+            let widget = this.props.widgetData[index];
+            let widgetEnd = index + widget.getWidth(widget);
+            
+            return (startIndex === index && operation === TextOperation.delete) || 
+                (startIndex === widgetEnd - 1 && endIndex - startIndex === 1) || 
+                startIndex >= widgetEnd;
+        }
+
         return true;
     }
 
@@ -176,7 +235,19 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                             };
 
                             const tbChange = (value: string) => {
-                                textboxState.enteredText = value;
+                                let prevValue = textboxState.enteredText;
+                                this.props.updateTextboxWidgetText(char, value);
+                                
+                                // Handle width adjustment of textbox and editing underlying editor text.
+                                if (textboxState.enteredText.length >= textboxState.placeholder.length) {
+                                    doc.replaceRange('', loc, { line: endLoc.line, ch: endLoc.ch + 1 }, '+tbExtend');
+                                    doc.replaceRange(textboxState.enteredText, loc, undefined, '+tbExtend');
+                                } else if (prevValue && prevValue.length > textboxState.placeholder.length) {
+                                    doc.replaceRange('', loc,
+                                        { line: endLoc.line, ch: loc.ch + prevValue.length }, '+tbExtend');
+                                    doc.replaceRange(textboxState.placeholder, loc, undefined, '+tbExtend');
+                                }
+
                                 if (textboxState.onChange) {
                                     textboxState.onChange(value);
                                 }
@@ -190,6 +261,7 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                                     startChar={char}
                                     key={char}
                                     onChange={tbChange}
+                                    doc={this.props.cm.getDoc()}
                                 />
                             );
                         }
@@ -212,6 +284,9 @@ const mapDispatchToWidgetContainerProps = (dispatch: Dispatch<CodeEditorState>) 
         },
         moveWidget: (moves: WidgetMove[]) => {
             dispatch(Actions.moveWidget(moves));
+        },
+        updateTextboxWidgetText: (index: number, text: string) => {
+            dispatch(Actions.updateTextboxWidgetText(text, index));
         }
     };
 };

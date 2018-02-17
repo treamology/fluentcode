@@ -66,6 +66,13 @@ export module Actions {
             moves: moves
         };
     }
+    export function updateTextboxWidgetText(text: string, index: number): ActionTypes.UpdateTextboxWidgetTextAction {
+        return {
+            type: ActionTypes.UPDATE_TEXTBOX_WIDGET_TEXT,
+            index: index,
+            text: text
+        };
+    }
 }
 
 export module AsyncActions {

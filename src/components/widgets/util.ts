@@ -1,6 +1,7 @@
 export enum TextOperation {
     insert = 'insert',
-    delete = 'delete'
+    delete = 'delete',
+    tbExtend = 'tbExtend'
 }
 export interface CharacterLocation {
     line: number;

@@ -54,8 +54,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
         this.state = {
             lastDrop: undefined
         };
-
-        this.validBound = this.checkIfDragValid.bind(this);
     }
 
     render() {
@@ -117,6 +115,7 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
         this.tbContainerDiv.style.left = '0px';
 
         cm.on('beforeChange', (instance, changeObj) => {
+            if (changeObj.origin === '+tbExtend') { return; }
             let operation: TextOperation = TextOperation.insert;
             let removed = '';
             if (changeObj.removed) {
@@ -126,17 +125,22 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
                 operation = TextOperation.delete;
             }
             if (!this.widgetContainer) {
-                return true;
+                return;
             }
-            return this.widgetContainer.checkChange(
+            let accepted = this.widgetContainer.checkChange(
                 operation,
                 changeObj.text.join('\n'),
                 changeObj.from, changeObj.to,
                 this.lastDrop,
                 removed
             );
+            if (!accepted) { 
+                changeObj.cancel();
+                this.lastDrop = undefined;
+            }
         });
         cm.on('change', (instance, changeObj) => {
+            // if (changeObj.origin === '+tbExtend') { return; }
             let operation: TextOperation = TextOperation.insert;
             let removed = '';
             if (changeObj.removed) {
@@ -144,6 +148,8 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
             }
             if (changeObj.origin === '+delete') {
                 operation = TextOperation.delete;
+            } else if (changeObj.origin === '+tbExtend') {
+                operation = TextOperation.tbExtend;
             }
 
             if (this.widgetContainer) {
@@ -171,24 +177,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
         });
         
         codemirrorInstance.getDoc().replaceRange(code.droppedCode, charCoords);
-    }
-
-    // Don't allow dragging onto a line that already has a box
-    checkIfDragValid(cm: CodeMirror.Editor, change: CodeMirror.EditorChangeCancellable) {
-        // TODO: reimplement this
-
-        // if (!this.lastDrop) { return; }
-        // let lastDrop = this.lastDrop;
-
-        // for (let index = 0; index < lastDrop.textFields.length; index++) {
-        //     let realLine = index + change.from.line;
-        //     let handle = cm.getDoc().getLineHandle(realLine);
-        //     let tbData = this.props.textboxData.get(handle);
-        //     if (tbData && tbData.length !== 0) {
-        //         change.cancel();
-        //         return;
-        //     }
-        // }
     }
 }
 
