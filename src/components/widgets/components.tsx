@@ -19,7 +19,6 @@ interface WidgetComponentProps {
 }
 
 interface TextboxWidgetComponentProps extends WidgetComponentProps {
-    doc: CodeMirror.Doc;
     placeholder: string;
     enteredText?: string;
     onChange?: (change: string) => void;
@@ -121,19 +120,25 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
 
                 moves.push({ from: index, to: index + insertLength - removeLength });
             });
+
             this.props.moveWidget(moves);
         } else {
+            // When extending a textox, the existing underlying text is deleted, then it comes through again
+            // to insert the new underlying text. I account for that here by storing the removal length for later,
+            // and using that to calculate the amount I need to move the boxes.
             if (removed !== '') {
                 this.tbExtendDelLength = removed.length;
                 return;
             }
+
+            // The widgets are being moved in the same way as above, just calculating the change differently.
             let moves: WidgetMove[] = [];
             this.props.widgetData.forEach((widget, index) => {
-                // Widgets might run over each other here? I don't know if the order I do this matters or not.
                 if (index <= startIndex) { return; }
 
                 moves.push({ from: index, to: index + (delta.length - this.tbExtendDelLength) });
             });
+
             this.props.moveWidget(moves);
             return;
         }
@@ -162,10 +167,6 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         }
 
         if (replaceFrom) {
-            // let change = delta;
-            // if (delta === '') {
-            //     change = removed;
-            // }
             this.props.cm.getDoc().replaceRange(replaceText, replaceFrom, replaceTo);
         }
     }
@@ -229,9 +230,9 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
 
                             const style = {
                                 left: startPosition.left,
-                                top: startPosition.top,
+                                top: startPosition.top + 1,
                                 width: endPosition.right - startPosition.left,
-                                height: endPosition.bottom - endPosition.top // - 1 // So the border doesn't get cut off
+                                height: endPosition.bottom - endPosition.top - 1 // So the border doesn't get cut off
                             };
 
                             const tbChange = (value: string) => {
@@ -261,7 +262,6 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                                     startChar={char}
                                     key={char}
                                     onChange={tbChange}
-                                    doc={this.props.cm.getDoc()}
                                 />
                             );
                         }
