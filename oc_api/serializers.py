@@ -6,7 +6,7 @@ from oc_server import models
 class DraggableTextFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.DraggableTextField
-        fields = ('id', 'startChar', 'endChar', 'placeholderText')
+        fields = ('id', 'startChar', 'endChar', 'lineNumber', 'placeholderText')
 
 class DraggableSerializer(serializers.ModelSerializer):
     textFields = DraggableTextFieldSerializer(many=True)
