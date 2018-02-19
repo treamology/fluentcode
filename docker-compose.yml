@@ -29,6 +29,8 @@ services:
     expose:
       - "5000"
     network_mode: "host"
+    environment:
+      HOST_MODE: 1
   db:
     ports:
       - "5432:5432"
@@ -38,3 +40,5 @@ services:
   celery:
     command: celery -A oc_backend -l info worker
     network_mode: "host"
+    environment:
+      HOST_MODE: 1

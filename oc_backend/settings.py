@@ -15,7 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DOCKER = bool(os.environ.get('USING_DOCKER', False))
+DOCKER = bool(int(os.environ.get('USING_DOCKER', False)))
+HOST_MODE = bool(int(os.environ.get('HOST_MODE', False)))
 
 LOGIN_REDIRECT_URL = "/app/"
 
@@ -152,7 +153,7 @@ CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_IMPORTS = ['oc_api.pyexec.tasks']
 
-if DOCKER:
+if not HOST_MODE:
     CELERY_BROKER_URL = 'redis://redis:6379'
     CELERY_RESULT_BACKEND = 'redis://redis:6379'
 
