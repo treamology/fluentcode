@@ -1,6 +1,33 @@
 import sys, pickle, traceback
 from io import StringIO
 
+class persistent_locals2(object):
+    def __init__(self, func):
+        self._locals = {}
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        def tracer(frame, event, arg):
+            if event=='return':
+                self._locals = frame.f_locals.copy()
+
+        # tracer is activated on next call, return or exception
+        sys.setprofile(tracer)
+        try:
+            # trace the function call
+            res = self.func(*args, **kwargs)
+        finally:
+            # disable tracer and replace with old one
+            sys.setprofile(None)
+        return res
+
+    def clear_locals(self):
+        self._locals = {}
+
+    @property
+    def locals(self):
+        return self._locals
+
 def print_formatted_exception():
     t, v, tb = sys.exc_info()
     print("Traceback (most recent call last):", file=sys.stderr)
@@ -21,11 +48,17 @@ sys.stderr = execStdErr
 
 # Transform the code into a function definition
 code = 'def studentFunc():\n' + code
-code.replace('\n', '\n    ')
+code = code.replace('\n', '\n    ')
+
+studentFunc = None
 
 try:
     exec(code)
-    studentFunc()
+
+    studentFuncLocalsObj = persistent_locals2(studentFunc)
+    studentFuncLocalsRes = studentFuncLocalsObj()
+    studentFuncLocals = studentFuncLocalsObj.locals
+
 except Exception:
     print_formatted_exception()
 
@@ -48,7 +81,7 @@ if not mainExecError:
         task = sys.argv[i]
         try:
             exec(task)
-            success = test(mainExecOutput)
+            success = test(mainExecOutput, studentFunc, studentFuncLocals)
         except Exception:
             print_formatted_exception()
             break

@@ -26,7 +26,7 @@ def execute_code(code, tests):
         error_output = err.stderr
 
     # Unmangle our latin-1 string (which is hopefully utf-8), then encode it back into the bytes pickle expects.
-    # rdb.set_trace()
+    #rdb.set_trace()
     celery_result = pickle.loads(output.decode('utf-8').encode('latin-1'))
     main_out, main_err, req_results = celery_result
 
