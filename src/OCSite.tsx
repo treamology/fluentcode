@@ -52,6 +52,9 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
     return (
       <div className="appContainer">
         {connectionCheck}
+        <span style={{position: 'absolute', bottom: 4, right: 4, color: 'white', zIndex: 1000}}>
+          {process.env.REACT_APP_PROD_VERSION}
+        </span>
         <Header />
         <div className="appContent">
           <div className="sidebarLeft">
