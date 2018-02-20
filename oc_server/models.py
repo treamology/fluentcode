@@ -12,6 +12,7 @@ class BaseProfile(models.Model):
 class FeedbackSubmission(models.Model):
     user = models.ForeignKey('BaseProfile', related_name='feedback')
     message = models.TextField()
+    date = models.DateTimeField()
 
 @receiver(post_save, sender=User)
 def create_initial_profile(sender, instance, created, **kwargs):

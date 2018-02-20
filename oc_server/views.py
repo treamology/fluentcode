@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from oc_server.forms import CustomUserCreationForm, FeedbackForm
 from oc_server.models import FeedbackSubmission, BaseProfile
 from django.contrib.auth import authenticate, login
+import datetime
 
 def register(request):
     if request.method == 'POST':
@@ -25,7 +26,11 @@ def feedback(request):
                 user = request.user
                 message = form.cleaned_data.get('message')
 
-        feedback_submission = FeedbackSubmission.objects.create(user=BaseProfile.objects.get(user=user), message=message)
+        feedback_submission = FeedbackSubmission.objects.create(
+            user=BaseProfile.objects.get(user=user),
+            message=message,
+            date=datetime.datetime.now(datetime.timezone.utc)
+        )
         feedback_submission.save()
         return redirect('/')
     else:
