@@ -43,7 +43,7 @@ class SectionDetail(AuthAPIView):
 
 class Heartbeat(AuthAPIView):
     def get(self, request):
-        return Response() 
+        return Response()
 
 class CompleteEmptySection(AuthAPIView):
     def post(self, request):

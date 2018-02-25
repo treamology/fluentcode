@@ -7,7 +7,7 @@ from django.db.models.signals import post_save
 class BaseProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     completed_sections = models.ManyToManyField('Section', related_name='done_users')
-    current_section = models.ForeignKey('Section', null=True)
+    completed_section_requirements = models.ManyToManyField('SectionRequirement', related_name='done_users')
 
 class FeedbackSubmission(models.Model):
     user = models.ForeignKey('BaseProfile', related_name='feedback')

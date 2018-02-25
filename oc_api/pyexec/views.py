@@ -37,13 +37,20 @@ class ExecuteView(APIView):
                         exec_result = CeleryExecutionResult(*result.result)
                         result.forget()  # Don't cache the result if we send it out
                         if not exec_result.mainExecError:
-                            reqs = [TestResult(*res) for res in exec_result.results]
-                            if len(reqs) != 0:
-                                profile = models.BaseProfile.objects.get(user=request.user)
-                                profile.completed_sections.add(profile.current_section)
+                            reqs = [(res[0], TestResult(*res[1])) for res in exec_result.results]
+                            profile = models.BaseProfile.objects.get(user=request.user)
+                            section = models.Section.objects.get(id=exec_result.section_id)
+                            num_complete = 0
+                            for req in reqs:
+                                if req[1].success:
+                                    num_complete += 1
+                                    profile.completed_section_requirements.add(section.requirements.get(id=req[0]))
+                            if len(reqs) == num_complete and len(reqs) != 0:
+                                profile.completed_sections.add(section)
+                            raw_reqs = [req[1] for req in reqs]
                             return ExecutionResult(status=ExecutionState.success,
                                                    result=exec_result.mainExecOutput,
-                                                   results=reqs)
+                                                   results=raw_reqs)
                         else:
                             return ExecutionResult(status=ExecutionState.failed,
                                                    result=exec_result.mainExecOutput,
@@ -67,18 +74,16 @@ class ExecuteView(APIView):
 
         if serializer.is_valid(raise_exception=True):
             tests = []
+            section_id = serializer.validated_data['section_id']
+            section = models.Section.objects.get(id=section_id)
             try:
-                section_id = serializer.validated_data['section_id']
-                section = models.Section.objects.get(id=section_id)
                 for req in section.requirements.all():
-                    tests.append(req.unitTests)
-                profile = models.BaseProfile.objects.get(user=request.user)
-                profile.current_section = section
-                profile.save()
+                    tests.append((req.id, req.unitTests))
             except KeyError:  # tests are optional
                 pass
 
-            task = execute_code.apply_async(args=(serializer.validated_data['code'],
+            task = execute_code.apply_async(args=(section_id,
+                                                  serializer.validated_data['code'],
                                                   tests),
                                             task_id=token)
             return Response({'success': True})

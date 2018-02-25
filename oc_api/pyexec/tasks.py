@@ -12,13 +12,14 @@ def add(x, y):
     return x + y
 
 @shared_task(max_retries=1)
-def execute_code(code, tests):
+def execute_code(section_id, code, tests):
     client = docker.from_env()
     error_output = b''
     output = b''
     try:
         args = [code]
-        args.extend(tests)
+        tests_arg = [test[1] for test in tests]
+        args.extend(tests_arg)
 
         output = client.containers.run("python_runner", command=args)
 
@@ -29,6 +30,8 @@ def execute_code(code, tests):
     # rdb.set_trace()
     celery_result = pickle.loads(output.decode('utf-8').encode('latin-1'))
     main_out, main_err, req_results = celery_result
+    #raise Exception(req_results, len(tests))
+    results = [(test[0], req_results[index]) for index, test in enumerate(tests)]
 
     #rdb.set_trace()
-    return CeleryExecutionResult(mainExecOutput=main_out, mainExecError=main_err, results=req_results)
+    return CeleryExecutionResult(mainExecOutput=main_out, mainExecError=main_err, results=results, section_id=section_id)
