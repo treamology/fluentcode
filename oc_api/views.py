@@ -43,5 +43,12 @@ class SectionDetail(AuthAPIView):
 
 class Heartbeat(AuthAPIView):
     def get(self, request):
-        return Response()
+        return Response() 
 
+class CompleteEmptySection(AuthAPIView):
+    def post(self, request):
+        user = request.user
+        profile = models.BaseProfile.objects.get(user=user)
+        profile.completed_sections.add(models.Section.objects.get(pk=request.data["id"]))
+
+        return Response()
