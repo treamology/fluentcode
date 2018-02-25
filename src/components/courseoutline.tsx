@@ -150,10 +150,9 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
         if (this.props.currentCourse && this.props.currentCourse.lessons) {
             let lessonChildren: JSX.Element[][] = [];
             for (let h = 0; h < this.props.currentCourse.lessons.length; h++) {
-            // for (let h = this.props.currentCourse.lessons.length - 1; h >= 0; --h) {
                 let lesson = this.props.currentCourse.lessons[h];
                 let childrenArray: JSX.Element[] = [];
-                // for (let i = lesson.sections.length - 1; i >= 0; --i) {
+                
                 for (let i = 0; i < lesson.sections.length; i++) {
                     let section = lesson.sections[i];
                     let indicatorClass = 'sectionIndicator';
@@ -179,8 +178,6 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
                 lessonChildren.push(childrenArray);
             }
 
-            // for (let lesson of this.props.currentCourse.lessons) {
-            // for (let i = this.props.currentCourse.lessons.length - 1; i >= 0; --i) {
             const collapsedList = this.state.collapsedList;
             for (let i = 0; i < this.props.currentCourse.lessons.length; i++) {
                 let lesson = this.props.currentCourse.lessons[i];

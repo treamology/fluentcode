@@ -18,13 +18,35 @@ import { ApplicationState } from './state/types/state';
 import { Section } from './models';
 import RequirementsBar from './components/requirementsbar';
 
+let arrowImage = require('./assets/svg/arrow.svg');
+
 interface OCSiteProps {
   serverError: boolean;
   checkingConnection: boolean;
   currentSection: Section;
 }
 
-class UnconnectedOCSite extends React.Component<OCSiteProps> {
+interface OCSiteState {
+  courseOutlineCollapsed: boolean;
+}
+
+class UnconnectedOCSite extends React.Component<OCSiteProps, OCSiteState> {
+  constructor(props: OCSiteProps) {
+    super(props);
+
+    this.state = {
+      courseOutlineCollapsed: false
+    };
+
+    this.toggleCourseOutline = this.toggleCourseOutline.bind(this);
+  }
+
+  toggleCourseOutline() {
+    this.setState((prevState: OCSiteState) => {
+      return { courseOutlineCollapsed: !prevState.courseOutlineCollapsed };
+    });
+  }
+  
   render() {
     if (this.props.serverError) {
       return (
@@ -49,6 +71,12 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
     if (this.props.currentSection) {
       sectionTitle = 'Section ' + this.props.currentSection.number + ': ' + this.props.currentSection.name;
     }
+    let courseOutline = null;
+    let arrowClassName = 'courseOutlineArrow';
+    if (!this.state.courseOutlineCollapsed) {
+      courseOutline = <CourseOutline />;
+      arrowClassName += ' collapsed';
+    }
     return (
       <div className="appContainer">
         {connectionCheck}
@@ -58,8 +86,10 @@ class UnconnectedOCSite extends React.Component<OCSiteProps> {
         <Header />
         <div className="appContent">
           <div className="sidebarLeft">
-              <PanelHeader headerText="Course Outline" />
-              <CourseOutline />
+              <PanelHeader headerText="Course Outline" onClick={this.toggleCourseOutline}>
+                <img src={arrowImage} className={arrowClassName}/>
+              </PanelHeader>
+              {courseOutline}
               <PanelHeader headerText={sectionTitle} />
               <CurrentSection />
           </div>

@@ -133,3 +133,15 @@ span {
   font-size: 16px;
   display: block;
 }
+
+.courseOutlineArrow {
+  margin: auto;
+  margin-right: 6px;
+  transform: rotate(-90deg);
+  transition: 0.1s;
+  vertical-align: middle;
+}
+
+.courseOutlineArrow.collapsed {
+  transform: rotate(0deg);
+}
