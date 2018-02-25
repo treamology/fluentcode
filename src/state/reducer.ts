@@ -160,7 +160,7 @@ function learning(state: LearningState, action: AnyAction) {
                 let numComplete = 0;
                 completeRequirementsAction.results.map((result, index) => {
                     reqs[index].completed = result.success;
-                    numComplete++;
+                    if (result.success) { numComplete++; }
                 });
 
                 let lessons = course!.lessons;
