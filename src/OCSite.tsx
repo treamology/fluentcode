@@ -71,10 +71,8 @@ class UnconnectedOCSite extends React.Component<OCSiteProps, OCSiteState> {
     if (this.props.currentSection) {
       sectionTitle = 'Section ' + this.props.currentSection.number + ': ' + this.props.currentSection.name;
     }
-    let courseOutline = null;
     let arrowClassName = 'courseOutlineArrow';
     if (!this.state.courseOutlineCollapsed) {
-      courseOutline = <CourseOutline />;
       arrowClassName += ' collapsed';
     }
     return (
@@ -89,7 +87,7 @@ class UnconnectedOCSite extends React.Component<OCSiteProps, OCSiteState> {
               <PanelHeader headerText="Course Outline" onClick={this.toggleCourseOutline}>
                 <img src={arrowImage} className={arrowClassName}/>
               </PanelHeader>
-              {courseOutline}
+              <CourseOutline hidden={this.state.courseOutlineCollapsed}/>
               <PanelHeader headerText={sectionTitle} />
               <CurrentSection />
           </div>

@@ -72,6 +72,8 @@ interface CourseOutlineProps {
     match: match<{}>;
     location: Location;
     history: History;
+
+    hidden: boolean;
 }
 
 interface CourseOutlineState {
@@ -152,7 +154,7 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
             for (let h = 0; h < this.props.currentCourse.lessons.length; h++) {
                 let lesson = this.props.currentCourse.lessons[h];
                 let childrenArray: JSX.Element[] = [];
-                
+
                 for (let i = 0; i < lesson.sections.length; i++) {
                     let section = lesson.sections[i];
                     let indicatorClass = 'sectionIndicator';
@@ -196,9 +198,12 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
                 trees.push(tree);
             }
         }
-
+        let className = 'courseOutlineContainer';
+        if (this.props.hidden) {
+            className += ' hidden';
+        }
         return (
-        <div className="courseOutlineContainer">
+        <div className={className}>
             {trees.map((tree) => tree)}
         </div>
         );

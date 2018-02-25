@@ -15,6 +15,10 @@
     overflow: auto;
 }
 
+.courseOutlineContainer.hidden {
+    display: none;
+}
+
 .tree-view_arrow {
     order: 100;
     margin-right: 8px;
