@@ -130,6 +130,7 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
                         return true;
                     })
                 });
+                this.updateHistory(currentCourse, currentSection);
             }
 
             // First time the course gets set
@@ -140,6 +141,14 @@ class UnconnectedCourseOutline extends React.Component<CourseOutlineProps, Cours
                     currentCourse.lessons[parsed.lessonNum - 1].sections[parsed.sectionNum - 1]);
             }
         });
+    }
+
+    updateHistory(course: Course, section: Section) {
+        if (this.props.history) {
+            this.props.history.push(createRouterPath(course.id,
+                section.lessonNumber,
+                section.number));
+        }
     }
     
     lessonClicked(index: number) {
@@ -220,11 +229,6 @@ const mapStateToProps = (state: ApplicationState) => {
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => {
     return {
         setSection: (course: Course, section: Section, history?: History) => {
-            if (history) {
-                history.push(createRouterPath(course.id,
-                    section.lessonNumber,
-                    section.number));
-            }
             dispatch(Actions.selectSection(section));
         }
     };

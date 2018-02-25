@@ -139,6 +139,6 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => {
     };
 };
 
-const RequirementsBar = connect(mapStateToProps,  mapDispatchToProps)(UnconnectedRequirementsBar);
+const RequirementsBar = connect(mapStateToProps, mapDispatchToProps)(UnconnectedRequirementsBar);
 
 export default RequirementsBar;
