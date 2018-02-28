@@ -1,3 +1,4 @@
+import textwrap
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
@@ -9,10 +10,16 @@ class BaseProfile(models.Model):
     completed_sections = models.ManyToManyField('Section', related_name='done_users')
     completed_section_requirements = models.ManyToManyField('SectionRequirement', related_name='done_users')
 
+    def __str__(self):
+        return self.user.username
+
 class FeedbackSubmission(models.Model):
     user = models.ForeignKey('BaseProfile', related_name='feedback')
     message = models.TextField()
     date = models.DateTimeField()
+
+    def __str__(self):
+        return textwrap.shorten(self.message, width=32, placeholder='...')
 
 @receiver(post_save, sender=User)
 def create_initial_profile(sender, instance, created, **kwargs):

@@ -51,3 +51,14 @@ class DraggableTextFieldAdmin(admin.ModelAdmin):
     def course(self, obj):
         return obj.draggable.course.name
     course.admin_order_field = 'draggable__course__name'
+
+@admin.register(models.FeedbackSubmission)
+class FeedbackSubmissionAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'username', 'date')
+
+    def username(self, obj):
+        return obj.user.user.username
+
+@admin.register(models.BaseProfile)
+class BaseProfileAdmin(admin.ModelAdmin):
+    list_display = ('__str__',)
