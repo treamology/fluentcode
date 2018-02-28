@@ -17,9 +17,16 @@ class DraggableSerializer(serializers.ModelSerializer):
 
 
 class SectionRequirementSerializer(serializers.ModelSerializer):
+    completed = serializers.SerializerMethodField(method_name='requirement_completed')
+
+    def requirement_completed(self, obj):
+        user = self.context['user']
+        base_profile = models.BaseProfile.objects.get(user=user)
+        return bool(obj.done_users.filter(id=base_profile.id).exists())
+
     class Meta:
         model = models.SectionRequirement
-        fields = ('id', 'description')
+        fields = ('id', 'description', 'completed')
 
 
 class SectionSerializer(serializers.ModelSerializer):
