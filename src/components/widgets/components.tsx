@@ -77,7 +77,7 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         let replaceTo;
 
         let startIndex = locToIndex(this.props.cm.getDoc(), start);
-        let endIndex = locToIndex(this.props.cm.getDoc(), end);
+        let endIndex = locToIndex(this.props.cm.getDoc(), end) - 1;
 
         if (operation !== TextOperation.tbExtend) {
             let removalList: number[] = [];
@@ -87,17 +87,18 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
                 if (!this.props.widgetData[index]) { continue; }
 
                 let widget = this.props.widgetData[index];
-                let widgetEnd = index + widget.getWidth(widget);
+                let widgetEnd = index + widget.getWidth(widget) - 1;
 
-                if (startIndex < widgetEnd) {
+                if (startIndex <= widgetEnd) {
                     removalList.push(index);
 
                     replaceFrom = indexToLoc(this.props.cm.getDoc(), index);
                     replaceTo = indexToLoc(this.props.cm.getDoc(), widgetEnd - 1);
+                    replaceTo.ch += 1;
                     replaceText = delta;
                 }
             }
-            
+             
             // If some text was removed, make sure we remove the textboxes that are overlaying them.
             if (removed !== '') {
                 // Go through the selection and delete any widgets that are inside.
@@ -183,11 +184,7 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         let endIndex = locToIndex(this.props.cm.getDoc(), end);
 
         if (lastDrop) {
-            for (let index = 0; index < this.props.cm.getDoc().getLine(start.line).length; index++) {
-                if (this.props.widgetData[locToIndex(this.props.cm.getDoc(), { line: start.line, ch: index })]) {
-                    return false;
-                }
-            }
+            if (this.hasWidget(start.line)) { return false; }
         }
 
         // Make sure text under the widget itself can't be modified
@@ -203,6 +200,15 @@ export class UnconnectedWidgetContainer extends React.Component<WidgetContainerP
         }
 
         return true;
+    }
+
+    hasWidget(line: number) {
+        for (let index = 0; index < this.props.cm.getDoc().getLine(line).length; index++) {
+            if (this.props.widgetData[locToIndex(this.props.cm.getDoc(), { line: line, ch: index })]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     render() {

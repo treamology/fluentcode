@@ -140,7 +140,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
             }
         });
         cm.on('change', (instance, changeObj) => {
-            // if (changeObj.origin === '+tbExtend') { return; }
             let operation: TextOperation = TextOperation.insert;
             let removed = '';
             if (changeObj.removed) {
@@ -169,14 +168,25 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
     // tslint:disable-next-line
     dropCode(code: DroppedCodeItem, coords: any) {
         let codemirrorInstance: CodeMirror.Editor = this.editor.getCodeMirror();
+        let doc: CodeMirror.Doc = codemirrorInstance.getDoc();
 
-        this.lastDrop = code;
+        
+        
+        let droppedCode = code.droppedCode;
         let charCoords = codemirrorInstance.coordsChar({
             left: coords.x,
             top: coords.y
         });
+        let docBottomY = codemirrorInstance.charCoords({line: doc.lastLine(), ch: 0}).bottom;
+
+        if (coords.y > docBottomY && this.widgetContainer.hasWidget(doc.lastLine())) {
+            doc.replaceRange('\n', charCoords, undefined, 'move');
+            charCoords.line += 1;
+        }
         
-        codemirrorInstance.getDoc().replaceRange(code.droppedCode, charCoords);
+        this.lastDrop = code;
+
+        codemirrorInstance.getDoc().replaceRange(droppedCode, charCoords, undefined, 'drop');
     }
 }
 

@@ -9,7 +9,7 @@ export interface CharacterLocation {
 }
 export module CodeMirrorUtils {
     export function indexToLoc(doc: CodeMirror.Doc, index: number): CharacterLocation {
-        let accumulator = 0;
+        let accumulator = -1;
         
         let line = 0;
         let ch = 0;
@@ -21,7 +21,7 @@ export module CodeMirrorUtils {
             accumulator += lineLength;
             if (accumulator >= index) {
                 accumulator -= lineLength;
-                ch = index - accumulator;
+                ch = index - (accumulator + 1);
                 line = lineNum;
                 break;
             }
