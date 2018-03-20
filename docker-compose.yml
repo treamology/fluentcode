@@ -1,42 +1,48 @@
 version: '3'
 
 services:
-  # web:
-  #   build:
-  #     context: .
-  #     dockerfile: ./Dockerfile
-  #   command: python3 /code/manage.py runserver 0.0.0.0:8000
-  #   # command: ls
-  #   environment:
-  #     DOCKER_HOST: 'unix:///var/run/docker.sock'
-  #     DJANGO_DEBUG: 1
-  #   ports:
-  #     - "8000:8000" # postgres
-  #     - "6379:6379" # redis
-  #   depends_on:
-  #     - db
-  #     - redis
-  #     - celery
-  #   volumes:
-  #     - ./:/code/
   web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    working_dir: /code
+    depends_on:
+      - db
+      - redis
+      - celery
+    expose:
+      - "8000"
+    environment:
+      USING_DOCKER: 1
+      DJANGO_DEBUG: 1
+      # DJANGO_SETTINGS_MODULE: oc_backend.settings
+  nginx-proxy:
     image: nginx
     volumes:
-      - ./:/code/
       - ./${NGINX_CONF_NAME:-nginx}.conf:/etc/nginx/nginx.conf
     ports:
       - "5000:5000"
     expose:
       - "5000"
-    network_mode: "host"
-    environment:
-      HOST_MODE: 1
+#    environment:
+#      HOST_MODE: 1
+    depends_on:
+      - web
   db:
-    ports:
-      - "5432:5432"
+#    ports:
+#      - "5432:5432"
+    expose:
+      - "5432"
+    volumes:
+      - ./test_dump_2.sql:/docker-entrypoint-initdb.d/restore.sql
   redis:
-    ports:
-      - "6379:6379"
+#    ports:
+#      - "6379:6379"
+    expose:
+      - "6379"
   celery:
     command: celery -A oc_backend -l info worker
     network_mode: "host"

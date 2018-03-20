@@ -5,15 +5,14 @@ services:
     image: postgres
     environment:
       POSTGRES_DB: 'ocdev'
-    volumes:
-      - ${DB_RESTORE:-./requirements.txt}:/restore.dump/:ro
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
   redis:
     image: redis
   celery:
     build:
       context: .
       dockerfile: ./Dockerfile-Celery
-    #working_dir: /oc_backend/
     command: celery -A oc_backend -l info -b "redis://redis:6379" worker
     user: celery
     volumes:

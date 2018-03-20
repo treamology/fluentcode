@@ -15,7 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DOCKER = bool(int(os.environ.get('USING_DOCKER', False)))
+# DOCKER = bool(int(os.environ.get('USING_DOCKER', False)))
+DOCKER = bool(os.environ.get('USING_DOCKER', False))
 HOST_MODE = bool(int(os.environ.get('HOST_MODE', False)))
 
 LOGIN_REDIRECT_URL = "/app/"
@@ -170,6 +171,7 @@ REST_FRAMEWORK = {
 
 if DEBUG:
     CORS_ORIGIN_ALLOW_ALL = True
+    ALLOWED_HOSTS = ["*"]
     # CORS_ORIGIN_WHITELIST = (
     #     'localhost:3000',
     # )

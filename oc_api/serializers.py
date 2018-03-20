@@ -30,7 +30,9 @@ class SectionRequirementSerializer(serializers.ModelSerializer):
 
 
 class SectionSerializer(serializers.ModelSerializer):
-    draggables = DraggableSerializer(many=True, read_only=True)
+    # draggables = DraggableSerializer(many=True, read_only=True)
+    draggables = serializers.SerializerMethodField(method_name='draggable_ids')
+    # draggables = serializers.IntegerField(many=True, source='draggables.id')
     requirements = SectionRequirementSerializer(many=True, read_only=True)
     lessonNumber = serializers.IntegerField(source='lesson.number', label='lessonNumber')
     completed = serializers.SerializerMethodField(method_name='section_completed')
@@ -39,6 +41,11 @@ class SectionSerializer(serializers.ModelSerializer):
         user = self.context['user']
         base_profile = models.BaseProfile.objects.get(user=user)
         return bool(obj.done_users.filter(id=base_profile.id).exists())
+
+    def draggable_ids(self, obj):
+        draggables = obj.draggables.all();
+        id_list = [draggable.id for draggable in draggables]
+        return id_list
 
     class Meta:
         model = models.Section
