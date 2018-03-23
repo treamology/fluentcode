@@ -18,4 +18,6 @@ RUN groupadd -r ${APP_USER} \
     -s /usr/sbin/nologin \
     -g ${APP_USER} ${APP_USER}
 
+RUN usermod -aG daemon ${APP_USER}
+
 USER ${APP_USER}

@@ -16,7 +16,6 @@ services:
     expose:
       - "8000"
     environment:
-      USING_DOCKER: 1
       DJANGO_DEBUG: 1
       # DJANGO_SETTINGS_MODULE: oc_backend.settings
   nginx-proxy:
@@ -45,6 +44,6 @@ services:
       - "6379"
   celery:
     command: celery -A oc_backend -l info worker
-    network_mode: "host"
-    environment:
-      HOST_MODE: 1
+#    network_mode: "host"
+#    environment:
+#      HOST_MODE: 1

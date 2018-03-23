@@ -15,9 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# DOCKER = bool(int(os.environ.get('USING_DOCKER', False)))
-DOCKER = bool(os.environ.get('USING_DOCKER', False))
-HOST_MODE = bool(int(os.environ.get('HOST_MODE', False)))
+ON_HOST = bool(os.environ.get('ON_HOST', False))
+MAC_HOST_MODE = bool(os.environ.get('MAC_HOST_MODE', False))
 
 LOGIN_REDIRECT_URL = "/app/"
 
@@ -88,14 +87,14 @@ WSGI_APPLICATION = 'oc_backend.wsgi.application'
 
 DATABASES = {}
 
-if DOCKER:
+if ON_HOST:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'ocdev',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
-            'HOST': 'db',
+            'HOST': 'localhost',
             'PORT': '5432'
         }
     }
@@ -106,7 +105,7 @@ else:
             'NAME': 'ocdev',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
-            'HOST': 'localhost',
+            'HOST': 'db',
             'PORT': '5432'
         }
     }
@@ -154,9 +153,13 @@ CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_IMPORTS = ['oc_api.pyexec.tasks']
 
-if not HOST_MODE:
+if not ON_HOST:
     CELERY_BROKER_URL = 'redis://redis:6379'
     CELERY_RESULT_BACKEND = 'redis://redis:6379'
+
+    if MAC_HOST_MODE:
+        CELERY_BROKER_URL = 'redis://docker.for.mac.localhost:6379'
+        CELERY_RESULT_BACKEND = 'redis://docker.for.mac.localhost:6379'
 
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

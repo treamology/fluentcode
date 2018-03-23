@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  # web:
+  #   network_mode: "host"
+  #   environment:
+  #     HOST_MODE: 1
+  web:
+    environment:
+      MAC_HOST_MODE: 1
+  celery:
+    environment:
+      MAC_HOST_MODE: 1
+      DOCKER_HOST: "unix:///var/run/docker.sock"
+  nginx-proxy:
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
