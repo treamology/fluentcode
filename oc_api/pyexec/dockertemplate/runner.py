@@ -1,7 +1,8 @@
 import sys, pickle, traceback
 from io import StringIO
+import builtins
 
-class persistent_locals2(object):
+class PersistentLocals(object):
     def __init__(self, func):
         self._locals = {}
         self.func = func
@@ -28,76 +29,111 @@ class persistent_locals2(object):
     def locals(self):
         return self._locals
 
+class InputRequired(Exception):
+    pass
+
 def print_formatted_exception():
     t, v, tb = sys.exc_info()
     print("Traceback (most recent call last):", file=sys.stderr)
     traceback.print_tb(tb, limit=-len(traceback.extract_tb(tb)) + 1)
     print(*traceback.format_exception_only(t, v), file=sys.stderr)
 
-if len(sys.argv) == 1:
-    exit(2)
+def run_user_code(user_code, gathered_inputs, tests):
+    # We're going to replace the builtin input behavior with our own that suits the site.
+    _input = builtins.input
+    input_count = 0
 
-code = sys.argv[1]
+    def input():
+        nonlocal input_count
 
-execStdOut = StringIO()
-execStdErr = StringIO()
-
-# Redirect stdout and stderr
-sys.stdout = execStdOut
-sys.stderr = execStdErr
-
-# Transform the code into a function definition
-code = 'def studentFunc():\n' + code
-code = code.replace('\n', '\n    ')
-
-studentFunc = None
-
-try:
-    exec(code)
-
-    studentFuncLocalsObj = persistent_locals2(studentFunc)
-    studentFuncLocalsRes = studentFuncLocalsObj()
-    studentFuncLocals = studentFuncLocalsObj.locals
-
-except Exception:
-    print_formatted_exception()
-
-mainExecOutput = execStdOut.getvalue()
-mainExecError = execStdErr.getvalue()
-
-taskStdOut = []
-taskStdErr = []
-results = []
-
-testResults = []
-
-if not mainExecError:
-    for i in range(2, len(sys.argv)):
-        execStdOut = StringIO()
-        execStdErr = StringIO()
-        sys.stdout = execStdOut
-        sys.stderr = execStdErr
-
-        task = sys.argv[i]
         try:
-            exec(task)
-            success = test(mainExecOutput, studentFunc, studentFuncLocals)
-        except Exception:
-            print_formatted_exception()
-            break
+            the_input = gathered_inputs[input_count]
+        except IndexError:
+            raise InputRequired
 
-        result = (success, execStdOut.getvalue(), execStdErr.getvalue())
-        testResults.append(result)
+        input_count += 1
+        return the_input
 
-        execStdOut.close()
-        execStdErr.close()
+    builtins.input = input
 
-sys.stdout = sys.__stdout__
-sys.stderr = sys.__stderr__
+    #
+    # Code Execution
+    #
 
-# pickle returns a set of bytes, so we decode the bytes into latin-1 (which can store 256 bits).
-# When we send this off to stdout, it gets encoded into utf-8 (or whatever encoding the system uses).
-result = (mainExecOutput, mainExecError, testResults)
+    exec_std_out = StringIO()
+    exec_std_err = StringIO()
+
+    # Redirect stdout and stderr
+    sys.stdout = exec_std_out
+    sys.stderr = exec_std_err
+
+    # Transform the code into a function definition
+    code = 'def student_func():\n' + user_code
+    code = code.replace('\n', '\n    ')
+
+    try:
+        namespace = {}
+        exec(code, namespace)
+    except Exception:
+        print_formatted_exception()
+
+    try:
+        student_func_locals_obj = PersistentLocals(namespace['student_func'])
+        student_func_locals_res = student_func_locals_obj()
+        student_func_locals = student_func_locals_obj.locals
+    except InputRequired:
+        main_exec_output = exec_std_out.getvalue()
+        main_exec_error = exec_std_err.getvalue()
+        exec_std_out.close()
+        exec_std_err.close()
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+
+        return main_exec_output, main_exec_error, None, False
+    finally:
+        builtins.input = _input
+
+    main_exec_output = exec_std_out.getvalue()
+    main_exec_error = exec_std_err.getvalue()
+    exec_std_out.close()
+    exec_std_err.close()
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
+
+    test_results = []
+
+    if not main_exec_error:
+        for task in tests:
+            exec_std_out = StringIO()
+            exec_std_err = StringIO()
+            sys.stdout = exec_std_out
+            sys.stderr = exec_std_err
+
+            try:
+                exec(task)
+                success = test(main_exec_output, student_func, student_func_locals)
+            except Exception:
+                print_formatted_exception()
+                break
+
+            result = (success, exec_std_out.getvalue(), exec_std_err.getvalue())
+            test_results.append(result)
+
+            exec_std_out.close()
+            exec_std_err.close()
+
+    exec_std_out.close()
+    exec_std_err.close()
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
+
+    # pickle returns a set of bytes, so we decode the bytes into latin-1 (which can store 256 values).
+    # When we send this off to stdout, it gets encoded into utf-8 (or whatever encoding the system uses).
+    return main_exec_output, main_exec_error, test_results, True
+
 
 if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        exit(2)
+    result = run_user_code(sys.argv[1], sys.argv[2], sys.argv[3:])
     print(pickle.dumps(result).decode('latin-1'))
