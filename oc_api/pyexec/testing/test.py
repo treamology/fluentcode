@@ -1,17 +1,22 @@
 from oc_api.pyexec import tasks
 from oc_api.pyexec.models import CeleryExecutionResult, TestResult
 from celery.result import AsyncResult
-import sys, time
-from . import celery_app
+import sys, time, inspect
+from . import celery_app, input, unit_tests
 
 TASK_ID = 'deadbeef'
 
-input_file = open(sys.argv[1], 'r')
+test_members = inspect.getmembers(unit_tests)
+test_list = []
 
-celery_app.launch_app()
+for name, value in test_members:
+    if 'test_' in name:
+        source = inspect.getsource(value)
+        source = source.replace(name, 'test')
+        test_list.append((0, source))
 
 tasks.execute_code.apply_async(
-    args=(0, input_file.read(), []),
+    args=(0, inspect.getsource(input), test_list),
     task_id=TASK_ID
 )
 
@@ -28,10 +33,9 @@ while not complete:
     unknown_result.forget()
 
 
-print('stdout: ' + result.mainExecOutput)
+print('stdout: ' + result.mainExecOutput, end='')
 print('stderr: ' + result.mainExecError)
-for test, index in result.results:
-    print('test ' + index + ' stdout: ' + test.out)
-    print('test ' + index + ' stderr: ' + test.err)
-
-input_file.close()
+for index, test in result.results:
+    print('test ' + str(index) + ' result: ' + str(test[0]))
+    print('test ' + str(index) + ' stdout: ' + test[1], end='')
+    print('test ' + str(index) + ' stderr: ' + test[2], end='')
