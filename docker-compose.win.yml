@@ -6,3 +6,6 @@ services:
   celery:
     environment:
       DOCKER_HOST: "tcp://docker.for.win.localhost:2375"
+  redis:
+    ports:
+      - '6379:6379'
