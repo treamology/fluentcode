@@ -46,15 +46,15 @@ $requirements_bar_height: 40px;
 
 
 .requirementsListContainer {
-    position: absolute;
+    // position: absolute;
     width: 100%;
-    left: 0;
-    z-index: -1;
+    // left: 0;
+    // z-index: -1;
 
     overflow: hidden;
     
-    bottom: $requirements_bar_height;
-    top: auto;
+    // bottom: $requirements_bar_height;
+    // top: auto;
 
     background-color: $color_dark_highlight;
 }

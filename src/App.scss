@@ -42,16 +42,24 @@ span {
   max-width: inherit;
 }
 
+.outputStuff {
+  display: flex;
+  flex-direction: column;
+  min-height: 344px;
+  max-height: 344px;
+}
+
 .outputPanel {
   background-color: $color_panel;
   border-top-style: solid;
   border-top-color: $color_dark_highlight;
   border-top-width: 1px;
   z-index: 10;
-  height: 344px;
+  height: auto;
 
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .outputArea {

@@ -94,8 +94,10 @@ class UnconnectedOCSite extends React.Component<OCSiteProps, OCSiteState> {
           <div className="centerContent">
             <CodeEditor />
             <RunBar />
-            <OutputPanel />
-            <RequirementsBar />
+            <div className="outputStuff">
+              <OutputPanel />
+              <RequirementsBar />
+            </div>
           </div>
           <div className="sidebarRight">
             <PanelHeader headerText="Code Blocks" />
