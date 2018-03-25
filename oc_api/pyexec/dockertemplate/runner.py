@@ -39,6 +39,8 @@ def print_formatted_exception():
     print(*traceback.format_exception_only(t, v), file=sys.stderr)
 
 def run_user_code(user_code, gathered_inputs, tests):
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
     # We're going to replace the builtin input behavior with our own that suits the site.
     _input = builtins.input
     input_count = 0
@@ -86,8 +88,8 @@ def run_user_code(user_code, gathered_inputs, tests):
         main_exec_error = exec_std_err.getvalue()
         exec_std_out.close()
         exec_std_err.close()
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
 
         return main_exec_output, main_exec_error, None, False
     finally:
@@ -97,8 +99,8 @@ def run_user_code(user_code, gathered_inputs, tests):
     main_exec_error = exec_std_err.getvalue()
     exec_std_out.close()
     exec_std_err.close()
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+    sys.stdout = old_stdout
+    sys.stderr = old_stderr
 
     test_results = []
 
@@ -131,8 +133,8 @@ def run_user_code(user_code, gathered_inputs, tests):
 
     exec_std_out.close()
     exec_std_err.close()
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+    sys.stdout = old_stdout
+    sys.stderr = old_stderr
 
     # pickle returns a set of bytes, so we decode the bytes into latin-1 (which can store 256 values).
     # When we send this off to stdout, it gets encoded into utf-8 (or whatever encoding the system uses).
@@ -143,6 +145,4 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         exit(2)
     result = run_user_code(sys.argv[1], sys.argv[2], sys.argv[3:])
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
-    print(pickle.dumps(result).decode('latin-1'), file=sys.__stdout__)
+    print(pickle.dumps(result).decode('latin-1'))
