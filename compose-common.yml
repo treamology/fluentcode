@@ -15,5 +15,8 @@ services:
       dockerfile: ./Dockerfile-Celery
     command: celery -A oc_backend -l info -b "redis://redis:6379" worker
     user: celery
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    network_mode: "host"
+    environment:
+      DOCKER_HOST: "tcp://localhost:2375"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
