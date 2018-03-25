@@ -143,4 +143,6 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         exit(2)
     result = run_user_code(sys.argv[1], sys.argv[2], sys.argv[3:])
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
     print(pickle.dumps(result).decode('latin-1'))
