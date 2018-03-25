@@ -9,6 +9,15 @@ export interface Course extends CourseListing {
     draggables: DraggableData[];
 }
 
+export function draggableByID(id: number, draggables: DraggableData[]) {
+    for (let draggable of draggables) {
+        if (draggable.id === id) {
+            return draggable
+        }
+    }
+    return null
+}
+
 export interface DraggableData {
     id: number;
     codeName: string;

@@ -2,7 +2,7 @@ import '../App.scss';
 
 import * as React from 'react';
 
-import { Course, Section, DraggableData } from '../models';
+import { Course, Section, DraggableData, draggableByID } from '../models';
 import Draggable from './draggable';
 import { ApplicationState } from '../state/types/state';
 import { connect } from 'react-redux';
@@ -18,8 +18,9 @@ class UnconnectedDraggableList extends React.Component<DraggableListProps> {
         let draggables: JSX.Element[] = [];
 
         if (this.props.currentCourse && this.props.currentSection) {
-            for (let id of Object.keys(this.props.currentSection.draggables)) {
-                draggableData.push(this.props.currentCourse.draggables[id]);
+            for (let index of Object.keys(this.props.currentSection.draggables)) {
+                let id = this.props.currentSection.draggables[index];
+                draggableData.push(draggableByID(id, this.props.currentCourse.draggables)!);
             }
 
             draggables = draggableData.map((codeBlock, index) =>

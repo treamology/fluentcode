@@ -170,8 +170,6 @@ class UnwrappedCodeEditor extends React.Component<CodeEditorPropsCollected> {
         let codemirrorInstance: CodeMirror.Editor = this.editor.getCodeMirror();
         let doc: CodeMirror.Doc = codemirrorInstance.getDoc();
 
-        
-        
         let droppedCode = code.droppedCode;
         let charCoords = codemirrorInstance.coordsChar({
             left: coords.x,
