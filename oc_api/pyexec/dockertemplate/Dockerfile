@@ -6,4 +6,4 @@ COPY . .
 
 RUN python --version
 
-ENTRYPOINT ["python", "-u", "./runner.py"]
+ENTRYPOINT ["python", "./runner.py"]
