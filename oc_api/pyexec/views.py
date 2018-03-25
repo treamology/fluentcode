@@ -16,7 +16,8 @@ class ExecutionState(IntEnum):
     running = 2,
     success = 0,
     failed = 1,
-    metafail = 3
+    metafail = 3,
+    input_required = 4
 
 class ExecuteView(APIView):
     authentication_classes = (SessionAuthentication,)
@@ -37,20 +38,24 @@ class ExecuteView(APIView):
                         exec_result = CeleryExecutionResult(*result.result)
                         result.forget()  # Don't cache the result if we send it out
                         if not exec_result.mainExecError:
-                            reqs = [(res[0], TestResult(*res[1])) for res in exec_result.results]
-                            profile = models.BaseProfile.objects.get(user=request.user)
-                            section = models.Section.objects.get(id=exec_result.section_id)
-                            num_complete = 0
-                            for req in reqs:
-                                if req[1].success:
-                                    num_complete += 1
-                                    profile.completed_section_requirements.add(section.requirements.get(id=req[0]))
-                            if len(reqs) == num_complete and len(reqs) != 0:
-                                profile.completed_sections.add(section)
-                            raw_reqs = [req[1] for req in reqs]
-                            return ExecutionResult(status=ExecutionState.success,
-                                                   result=exec_result.mainExecOutput,
-                                                   results=raw_reqs)
+                            if exec_result.finished:
+                                reqs = [(res[0], TestResult(*res[1])) for res in exec_result.results]
+                                profile = models.BaseProfile.objects.get(user=request.user)
+                                section = models.Section.objects.get(id=exec_result.section_id)
+                                num_complete = 0
+                                for req in reqs:
+                                    if req[1].success:
+                                        num_complete += 1
+                                        profile.completed_section_requirements.add(section.requirements.get(id=req[0]))
+                                if len(reqs) == num_complete and len(reqs) != 0:
+                                    profile.completed_sections.add(section)
+                                raw_reqs = [req[1] for req in reqs]
+                                return ExecutionResult(status=ExecutionState.success,
+                                                       result=exec_result.mainExecOutput,
+                                                       results=raw_reqs)
+                            else:
+                                return ExecutionResult(status=ExecutionState.input_required,
+                                                       result=exec_result.mainExecOutput)
                         else:
                             return ExecutionResult(status=ExecutionState.failed,
                                                    result=exec_result.mainExecOutput,
@@ -74,6 +79,8 @@ class ExecuteView(APIView):
 
         if serializer.is_valid(raise_exception=True):
             tests = []
+            code = serializer.validated_data['code']
+            inputs = serializer.validated_data['inputs']
             section_id = serializer.validated_data['section_id']
             section = models.Section.objects.get(id=section_id)
             try:
@@ -83,7 +90,8 @@ class ExecuteView(APIView):
                 pass
 
             task = execute_code.apply_async(args=(section_id,
-                                                  serializer.validated_data['code'],
+                                                  code,
+                                                  inputs,
                                                   tests),
                                             task_id=token)
             return Response({'success': True})

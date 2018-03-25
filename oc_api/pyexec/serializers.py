@@ -9,6 +9,9 @@ from rest_framework import serializers
 class ExecutionRequestSerializer(serializers.Serializer):
     """Sent by the client when it wants to execute some code"""
     code = serializers.CharField()
+    inputs = serializers.ListField(
+        child=serializers.CharField()
+    )
     section_id = serializers.IntegerField(required=False)
 
 class ExecutionStateSerializer(serializers.Serializer):

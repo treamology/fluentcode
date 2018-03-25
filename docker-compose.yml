@@ -11,8 +11,6 @@ services:
     working_dir: /code
     depends_on:
       - db
-      - redis
-      - celery
     expose:
       - "8000"
     environment:

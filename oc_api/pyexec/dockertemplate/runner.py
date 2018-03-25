@@ -68,17 +68,17 @@ def run_user_code(user_code, gathered_inputs, tests):
     sys.stderr = exec_std_err
 
     # Transform the code into a function definition
-    code = 'def student_func():\n' + user_code
-    code = code.replace('\n', '\n    ')
+    funcd_code = 'def student_func():\n' + user_code
+    funcd_code = funcd_code.replace('\n', '\n    ')
 
     try:
-        namespace = {}
-        exec(code, namespace)
+        student_namespace = {}
+        exec(funcd_code, student_namespace)
     except Exception:
         print_formatted_exception()
 
     try:
-        student_func_locals_obj = PersistentLocals(namespace['student_func'])
+        student_func_locals_obj = PersistentLocals(student_namespace['student_func'])
         student_func_locals_res = student_func_locals_obj()
         student_func_locals = student_func_locals_obj.locals
     except InputRequired:
@@ -110,12 +110,19 @@ def run_user_code(user_code, gathered_inputs, tests):
             sys.stderr = exec_std_err
 
             try:
-                exec(task)
-                success = test(main_exec_output, student_func, student_func_locals)
+                namespace = {}
+                exec(task, namespace)
+                success = namespace['test'](
+                    main_exec_output,
+                    student_namespace['student_func'],
+                    student_func_locals,
+                    user_code
+                )
             except Exception:
                 print_formatted_exception()
-                break
 
+            if 'success' not in vars():
+                success = False
             result = (success, exec_std_out.getvalue(), exec_std_err.getvalue())
             test_results.append(result)
 

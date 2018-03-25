@@ -45,9 +45,10 @@ while not result.finished:
 
 print('stdout: ' + result.mainExecOutput, end='')
 print('stderr: ' + result.mainExecError)
-for index, test in result.results:
+for index in range(len(result.results)):
+    test = result.results[index][1]
     print('test ' + str(index) + ' result: ' + str(test[0]))
-    print('test ' + str(index) + ' stdout: ' + test[1], end='')
-    print('test ' + str(index) + ' stderr: ' + test[2], end='')
+    print('test ' + str(index) + ' stdout: ' + test[1])
+    print('test ' + str(index) + ' stderr: ' + test[2])
 
 input_file.close()
