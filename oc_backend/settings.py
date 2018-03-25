@@ -154,8 +154,8 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_IMPORTS = ['oc_api.pyexec.tasks']
 
 if not ON_HOST:
-    CELERY_BROKER_URL = 'redis://redis:6379'
-    CELERY_RESULT_BACKEND = 'redis://redis:6379'
+    CELERY_BROKER_URL = 'redis://localhost:6379'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 
     if MAC_HOST_MODE:
         CELERY_BROKER_URL = 'redis://docker.for.mac.localhost:6379'
