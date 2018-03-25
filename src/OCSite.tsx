@@ -17,6 +17,8 @@ import { AsyncActions } from './state/actions';
 import { ApplicationState } from './state/types/state';
 import { Section } from './models';
 import RequirementsBar from './components/requirementsbar';
+import InputBox from './components/inputbox';
+import { ExecutionState } from './state/types/state';
 
 let arrowImage = require('./assets/svg/arrow.svg');
 
@@ -24,6 +26,7 @@ interface OCSiteProps {
   serverError: boolean;
   checkingConnection: boolean;
   currentSection: Section;
+  codeExecutionState: ExecutionState;
 }
 
 interface OCSiteState {
@@ -75,6 +78,10 @@ class UnconnectedOCSite extends React.Component<OCSiteProps, OCSiteState> {
     if (!this.state.courseOutlineCollapsed) {
       arrowClassName += ' collapsed';
     }
+    let inputBox: JSX.Element | null = null;
+    if (this.props.codeExecutionState === ExecutionState.input_required) {
+      inputBox = <InputBox />;
+    }
     return (
       <div className="appContainer">
         {connectionCheck}
@@ -96,6 +103,7 @@ class UnconnectedOCSite extends React.Component<OCSiteProps, OCSiteState> {
             <RunBar />
             <div className="outputStuff">
               <OutputPanel />
+              {inputBox}
               <RequirementsBar />
             </div>
           </div>
@@ -118,7 +126,8 @@ const mapStateToProps = (state: ApplicationState) => {
   return {
       serverError: state.serverError,
       checkingConnection: state.checkingConnection,
-      currentSection: state.learning.currentSection
+      currentSection: state.learning.currentSection,
+      codeExecutionState: state.codeExecution.state
   };
 };
 

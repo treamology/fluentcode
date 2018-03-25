@@ -73,6 +73,12 @@ export module Actions {
             text: text
         };
     }
+    export function updateInputs(input: string): ActionTypes.UpdateInputsAction {
+        return {
+            type: ActionTypes.UPDATE_INPUTS,
+            input: input
+        };
+    }
 }
 
 export module AsyncActions {
@@ -185,6 +191,7 @@ export module AsyncActions {
                 'POST',
                 JSON.stringify({
                     code: replacedCode,
+                    inputs: state.codeExecution.currentInputs,
                     section_id: sectionID
                 })
             ).then(
@@ -203,6 +210,11 @@ export module AsyncActions {
         };
     }
     export function getCodeStatus(): ThunkAction<void, {}, {}> {
+        const executionReset = (dispatch: Dispatch<CodeExecutionState>) => {
+            setTimeout(() => {
+                dispatch(resetExecutionState());
+            }, 2000);
+        };
         return (dispatch: Dispatch<CodeExecutionState>) => {
             Endpoints.callAPI(
                 Endpoints.CODE_EXECUTE_ENDPOINT,
@@ -218,15 +230,15 @@ export module AsyncActions {
                                 dispatch(getCodeStatus());
                             }, 2000);
                             return;
+                        case ExecutionState.input_required:
+                            return;
                         case ExecutionState.success:
                             if (json.results) {
                                 dispatch(completeRequirements(json.results));
                             }
                             // falls through
                         default:
-                            setTimeout(() => {
-                                dispatch(resetExecutionState());
-                            }, 2000);
+                            executionReset(dispatch);
                             return;
                     }
                 }

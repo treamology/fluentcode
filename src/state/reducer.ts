@@ -17,7 +17,8 @@ const defaultCodeExecutionState: CodeExecutionState = {
     state: ExecutionState.none,
     lastOutput: '',
     lastException: '',
-    lastError: ''
+    lastError: '',
+    currentInputs: []
 };
 const defaultCodeEditorState: CodeEditorState = {
     currentEnteredCode: '',
@@ -40,7 +41,10 @@ const defaultApplicationState: ApplicationState = {
     checkingConnection: false
 };
 
-function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeExecutionActions) {
+function codeExecution(
+    state: CodeExecutionState,
+    action: AsyncActionTypes.CodeExecutionActions | ActionTypes.CodeExecutionActions
+) {
     switch (action.type) {
         case AsyncActionTypes.REQUEST_RUN_CODE:
             return Object.assign({}, state, {
@@ -67,7 +71,13 @@ function codeExecution(state: CodeExecutionState, action: AsyncActionTypes.CodeE
             return Object.assign({}, state, stateObject);
         case ActionTypes.RESET_EXECUTION_STATE:
             return Object.assign({}, state, {
-               state: ExecutionState.none
+               state: ExecutionState.none,
+               currentInputs: []
+            });
+        case ActionTypes.UPDATE_INPUTS:
+            let inputAction = action as ActionTypes.UpdateInputsAction;
+            return Object.assign({}, state, {
+                currentInputs: state.currentInputs.concat([inputAction.input])
             });
         default:
             return state;

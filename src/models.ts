@@ -12,10 +12,10 @@ export interface Course extends CourseListing {
 export function draggableByID(id: number, draggables: DraggableData[]) {
     for (let draggable of draggables) {
         if (draggable.id === id) {
-            return draggable
+            return draggable;
         }
     }
-    return null
+    return null;
 }
 
 export interface DraggableData {

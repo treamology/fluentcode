@@ -27,7 +27,8 @@ export enum ExecutionState {
     running = 2,
     success = 0,
     failed = 1,
-    metafail = 3
+    metafail = 3,
+    input_required = 4
 }
 
 export interface CodeExecutionState {
@@ -35,4 +36,5 @@ export interface CodeExecutionState {
     lastOutput: string;
     lastException: string;
     lastError: string;
+    currentInputs: string[];
 }

@@ -90,6 +90,10 @@ export module ActionTypes {
         index: number;
         text: string;
     }
+    export interface UpdateInputsAction {
+        type: string;
+        input: string;
+    }
     
     export const SET_CODE = 'SET_CODE';
     export const CODEMIRROR_INIT = 'CODEMIRROR_INIT';
@@ -110,6 +114,8 @@ export module ActionTypes {
     export const REMOVE_WIDGET = 'REMOVE_WIDGET';
     export const UPDATE_TEXTBOX_WIDGET_TEXT = 'UPDATE_TEXTBOX_WIDGET_TEXT';
 
+    export const UPDATE_INPUTS = 'UPDATE_INPUTS';
+
     export type CodeEditorActions = 
         SetCodeAction |
         CodeMirrorInitAction |
@@ -117,6 +123,8 @@ export module ActionTypes {
         RemoveWidgetAction |
         MoveWidgetAction |
         UpdateTextboxWidgetTextAction;
+    export type CodeExecutionActions =
+        UpdateInputsAction;
 }
 
 export module ResponseTypes {
