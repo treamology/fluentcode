@@ -9,13 +9,11 @@ services:
       POSTGRES_PASSWORD: 'postgres'
   redis:
     image: redis
-    ports:
-      - "6379:6379"
   celery:
     build:
       context: .
       dockerfile: ./Dockerfile-Celery
-    command: celery -A oc_backend -l info -b "redis://localhost:6379" worker
+    command: celery -A oc_backend -l info -b "redis://redis:6379" worker
     user: celery
     network_mode: "host"
     environment:
