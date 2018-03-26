@@ -25,7 +25,7 @@ class UnconnectedRunBar extends React.Component<RunBarProps> {
             case ExecutionState.input_required:
                 return (
                     <div className="runBar running">
-                        <span className="runningText">Some input was request by your code.</span>
+                        <span className="runningText">Some input was requested by your code.</span>
                     </div>
                 );
             case ExecutionState.failed:
