@@ -1,8 +1,6 @@
-{% extends "registration/login-register-base.html" %}
+{% extends "registration/base.html" %}
 
-{% block title %}fluentcode{% endblock %}
-
-{% block form %}
+{% block content %}
 <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}

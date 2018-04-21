@@ -1,0 +1,17 @@
+{% extends "registration/base.html" %}
+{% load static %}
+
+{% block content %}
+<img
+    id="appImage"
+    src="{% static "oc_server/images/Screenshot.png" %}"
+    srcset="{% static "oc_server/images/Screenshot@2x.png" %} 2x"
+    alt=""
+>
+<main>
+    <h1>Learn to program. Every step of the way.</h1>
+    <p>fluentcode is a website that is designed to teach newcomers to programming the basics of computer science along with the skills needed to write in an actual programming language. It assumes no prior knowledge of programming, and tries to explain basic concepts in an as simple to understand manner as possible. It utilize a novel approach to programming, teaching the principles of computer science before starting to go into the specifics of a language. This is done through the “draggable”, which allows a person completely unfamiliar with a language to begin writing code immediately.</p>
+    <p>This site was developed as my senior capstone project at Ensworth High School, and is completely free to use. Its source code is also available on GitHub. At this time, there is a single course available for a student to take, but I hope to soon add functionality that allows others to contribute their own knowledge. Stay tuned.</p>
+    <p>Thanks to Karen Boles, my capstone advisor, along with Iain Zwiebel, Caroline Seitz, Blake Burdeen, Jeffrey Tang, and David Allen, who all provided invaluable feedback during the testing of this project.</p>
+</main>
+{% endblock %}

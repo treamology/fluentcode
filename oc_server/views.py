@@ -36,3 +36,6 @@ def feedback(request):
     else:
         form = FeedbackForm()
     return render(request, 'feedback.html', {'form': form})
+
+def frontpage(request):
+    return render(request, 'registration/frontpage.html')
