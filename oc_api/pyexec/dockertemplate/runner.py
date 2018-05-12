@@ -38,7 +38,7 @@ def print_formatted_exception():
     traceback.print_tb(tb, limit=-len(traceback.extract_tb(tb)) + 1)
     print(*traceback.format_exception_only(t, v), file=sys.stderr)
 
-def run_user_code(user_code, gathered_inputs, tests):
+def run_user_code(user_code, gathered_inputs, tests=[]):
     old_stdout = sys.stdout
     old_stderr = sys.stderr
     # We're going to replace the builtin input behavior with our own that suits the site.
@@ -83,7 +83,13 @@ def run_user_code(user_code, gathered_inputs, tests):
         student_func_locals_obj = PersistentLocals(student_namespace['student_func'])
         student_func_locals_res = student_func_locals_obj()
         student_func_locals = student_func_locals_obj.locals
-    except InputRequired:
+    except Exception as e:
+        done = True
+        if type(e) == InputRequired:
+            done = False
+        else:
+            print_formatted_exception()
+
         main_exec_output = exec_std_out.getvalue()
         main_exec_error = exec_std_err.getvalue()
         exec_std_out.close()
@@ -91,7 +97,7 @@ def run_user_code(user_code, gathered_inputs, tests):
         sys.stdout = old_stdout
         sys.stderr = old_stderr
 
-        return main_exec_output, main_exec_error, None, False
+        return main_exec_output, main_exec_error, None, done
     finally:
         builtins.input = _input
 
@@ -144,5 +150,13 @@ def run_user_code(user_code, gathered_inputs, tests):
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         exit(2)
+    if len(sys.argv) < 4:
+        sys.argv.append([])
+        sys.argv.append([])
+    if type(sys.argv[2]) == str:
+        if sys.argv[2] == '':
+            sys.argv[2] = []
+        else:
+            sys.argv[2] = sys.argv[2].split('|')
     result = run_user_code(sys.argv[1], sys.argv[2], sys.argv[3:])
     print(pickle.dumps(result).decode('latin-1'))

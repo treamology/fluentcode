@@ -34,6 +34,7 @@ class ExecuteView(APIView):
                 if result is not None:
                     if result.children is None:
                         failure_reason = 'Could not connect to the execution backend.'
+                        result.forget()
                     elif result.ready():
                         exec_result = CeleryExecutionResult(*result.result)
                         result.forget()  # Don't cache the result if we send it out

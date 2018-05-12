@@ -10,7 +10,7 @@ COPY /oc_backend/celery.py /oc_backend/settings.py /oc_backend/__init__.py ./oc_
 COPY /oc_api/pyexec ./oc_api/pyexec
 
 ENV APP_USER celery
-ENV APP_ROOT /src
+ENV APP_ROOT /oc_backend
 
 RUN groupadd -r ${APP_USER} \
     && useradd -r -m \
@@ -19,5 +19,6 @@ RUN groupadd -r ${APP_USER} \
     -g ${APP_USER} ${APP_USER}
 
 RUN usermod -aG daemon ${APP_USER}
+RUN usermod -aG root ${APP_USER}
 
 USER ${APP_USER}

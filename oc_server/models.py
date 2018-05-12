@@ -60,7 +60,7 @@ class Section(models.Model):
     lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, null=True, related_name="sections")
 
     def __str__(self):
-        return "Section " + str(self.number) + ": " + self.name
+        return str(self.lesson.number) + "-" + str(self.number) + ": " + self.name
 
 
 class Draggable(models.Model):

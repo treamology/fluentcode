@@ -17,7 +17,7 @@ def execute_code(section_id, code, inputs, tests):
     output = b''
     celery_result = None
     try:
-        args = [code]
+        args = [code, '|'.join(inputs)]
         tests_arg = [test[1] for test in tests]
         args.extend(tests_arg)
 
