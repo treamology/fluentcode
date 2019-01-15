@@ -1,0 +1,29 @@
+@import 'palette';
+
+.panelHeader {
+    display: flex;
+    align-items: center;
+    height: 26px;
+    width: 100%;
+
+    background-color: $color_dark_highlight;
+    color: #FFF;
+    font-family: 'Open Sans';
+    font-size: 14px;
+}
+
+.panelHeaderText {
+	margin-left: 10px;
+}
+
+.runButton {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+
+    color: white;
+    font-family: 'Open Sans';
+    font-size: 32px;
+    font-weight: bold;
+    text-decoration: none;
+}

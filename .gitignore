@@ -102,3 +102,30 @@ ENV/
 .mypy_cache/
 
 docker-compose.combo.yml
+
+# ==============
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+/.vscode
+
+# dependencies
+/oc_site/node_modules
+
+# testing
+/oc_site/coverage
+
+# production
+/oc_site/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+

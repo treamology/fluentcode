@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="10px" height="18px" viewBox="0 0 10 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-1155.000000, -652.000000)" fill="#FFFFFF">
+            <g id="Run-Bar" transform="translate(375.000000, 640.000000)">
+                <g id="Run-Button" transform="translate(738.000000, 8.000000)">
+                    <path d="M50,6.80571562 L50,17 L50,17 C50,17.5522847 49.5522847,18 49,18 L38.8057156,18 L38.8057156,18 C38.2534309,18 37.8057156,17.5522847 37.8057156,17 C37.8057156,16.7347835 37.9110725,16.4804296 38.0986088,16.2928932 L48.2928932,6.09860884 L48.2928932,6.09860884 C48.6834175,5.70808455 49.3165825,5.70808455 49.7071068,6.09860884 C49.8946432,6.28614522 50,6.54049913 50,6.80571562 Z" id="Run-Triangle" transform="translate(45.000000, 13.000000) rotate(-45.000000) translate(-45.000000, -13.000000) "></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
