@@ -1,0 +1,11 @@
+version: '3'
+services:
+  nginx-proxy:
+    volumes:
+      - ./nginx-win.conf:/etc/nginx/nginx.conf
+  celery:
+    environment:
+      DOCKER_HOST: "tcp://docker.for.win.localhost:2375"
+  redis:
+    ports:
+      - '6379:6379'
