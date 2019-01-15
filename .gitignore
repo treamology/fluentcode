@@ -3,13 +3,13 @@
 /.vscode
 
 # dependencies
-/node_modules
+/oc_site/node_modules
 
 # testing
-/coverage
+/oc_site/coverage
 
 # production
-/build
+/oc_site/build
 
 # misc
 .DS_Store
